@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Copy, Download } from "lucide-react";
 import { learningGuides } from "@/data/learning-guides";
 import { Button, buttonStyles } from "@/components/ui/button";
+import { DecisionPractice } from "./decision-practice";
 
 export function LearningGuide({ sessionId }: { sessionId: string }) {
   const guide = learningGuides[sessionId];
@@ -31,5 +32,6 @@ export function LearningGuide({ sessionId }: { sessionId: string }) {
       </div><p role="status" className="mt-2 text-muted">{message}</p>
     </details>
     <div><h4 className="font-semibold text-navy-900">Between sessions</h4><p className="mt-2 text-muted">{guide.practice}</p></div>
+    <DecisionPractice sessionId={sessionId} />
   </div>;
 }

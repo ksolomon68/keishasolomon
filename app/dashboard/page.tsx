@@ -4,17 +4,20 @@ import { DeliverableHub, type FileInfo } from "@/components/dashboard/deliverabl
 import { FrictionLog } from "@/components/dashboard/friction-log";
 import { SessionGrid } from "@/components/dashboard/session-grid";
 import { NextStep } from "@/components/dashboard/next-step";
+import { PromptWorkshop } from "@/components/dashboard/prompt-workshop";
+import { SessionRoadmap } from "@/components/dashboard/session-roadmap";
 import { capstoneSteps, deliverableSessions, sessions } from "@/data/cohortData";
 import { requireUser } from "@/lib/auth/session";
 import { getStore } from "@/lib/store";
 import { ACCEPT_ATTR } from "@/lib/uploads";
 import Link from "next/link";
-import { Award } from "lucide-react";
+import { Award, Lock, CheckCircle2 } from "lucide-react";
 import { buttonStyles } from "@/components/ui/button";
 import React from "react";
 
 const sections = [
   { id: "sessions", label: "Sessions" },
+  { id: "practice", label: "Practice" },
   { id: "friction", label: "Friction log" },
   { id: "deliverables", label: "Deliverables" },
   { id: "capstone", label: "Capstone" },
@@ -49,6 +52,8 @@ export default async function DashboardPage() {
   const capstoneDone = capstone.filter((c) =>
     capstoneSteps.some((s) => s.id === c.stepId),
   ).length;
+  const totalCapstoneSteps = capstoneSteps.length;
+  const isCertUnlocked = user.role === "admin" || capstoneDone >= totalCapstoneSteps;
   const openFriction = friction.filter((f) => !f.done).length;
   const firstName = user.name.split(" ")[0];
 
@@ -84,7 +89,7 @@ export default async function DashboardPage() {
             </dd>
           </div>
           <Stat label="Deliverables submitted" value={`${submitted}/${deliverableSessions.length}`} />
-          <Stat label="Capstone steps done" value={`${capstoneDone}/${capstoneSteps.length}`} />
+          <Stat label="Capstone steps done" value={`${capstoneDone}/${totalCapstoneSteps}`} />
           <Stat label="Open friction tasks" value={String(openFriction)} />
         </dl>
         <NextStep deliverables={deliverables} hasFriction={friction.length > 0} />
@@ -110,7 +115,11 @@ export default async function DashboardPage() {
 
       <div className="mx-auto max-w-7xl space-y-20 px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
         <DashSection id="sessions" eyebrow="The roadmap" title="Session modules">
-          <SessionGrid resources={resources} />
+          <SessionRoadmap><SessionGrid resources={resources} /></SessionRoadmap>
+        </DashSection>
+
+        <DashSection id="practice" eyebrow="Build your own playbook" title="Better briefs. Better decisions.">
+          <PromptWorkshop />
         </DashSection>
 
         <DashSection id="friction" eyebrow="Steer the labs" title="Workplace Friction log">
@@ -137,7 +146,18 @@ export default async function DashboardPage() {
         >
           <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="label text-amber-deep">Programme credential</p>
+              <div className="flex items-center gap-2">
+                <p className="label text-amber-deep">Programme credential</p>
+                {isCertUnlocked ? (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800">
+                    <CheckCircle2 className="size-3" /> Unlocked & Ready
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-amber/20 px-2.5 py-0.5 text-xs font-semibold text-amber-deep">
+                    <Lock className="size-3" /> Locked ({capstoneDone}/{totalCapstoneSteps} steps)
+                  </span>
+                )}
+              </div>
               <h2
                 id="certificate-title"
                 className="mt-2 font-display text-3xl text-navy-900 sm:text-4xl"
@@ -145,19 +165,29 @@ export default async function DashboardPage() {
                 Certificate of Completion
               </h2>
               <p className="mt-2 max-w-lg text-muted">
-                Upon completing the eight-month cohort, download your personalised EVOBRAND
-                Concepts certificate — ready to share on LinkedIn, with your team, or for
-                your records.
+                {isCertUnlocked
+                  ? "Congratulations! Your official EVOBRAND Concepts certificate is ready for download — share on LinkedIn or save for your records."
+                  : `Complete all ${totalCapstoneSteps} capstone steps to unlock your official EVOBRAND Concepts certificate of completion.`}
               </p>
             </div>
-            <Link
-              href="/certificate"
-              id="download-certificate-link"
-              className={buttonStyles({ variant: "primary" })}
-            >
-              <Award className="size-4" />
-              View Certificate
-            </Link>
+            {isCertUnlocked ? (
+              <Link
+                href="/certificate"
+                id="download-certificate-link"
+                className={buttonStyles({ variant: "primary" })}
+              >
+                <Award className="size-4" />
+                View & Download Certificate
+              </Link>
+            ) : (
+              <a
+                href="#capstone"
+                className={buttonStyles({ variant: "secondary" })}
+              >
+                <Lock className="size-4" />
+                Complete Capstone ({capstoneDone}/{totalCapstoneSteps})
+              </a>
+            )}
           </div>
         </section>
       </div>

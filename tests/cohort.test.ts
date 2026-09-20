@@ -6,6 +6,7 @@ import path from "node:path";
 import { nextSessionId, sessionStatus } from "../lib/dates";
 import { sessions, deliverableSessions } from "../data/cohortData";
 import { learningGuides } from "../data/learning-guides";
+import { buildPracticePrompt, exampleBrief, decisionPractice } from "../data/cohort-practice";
 import { createFileStore } from "../lib/store/file";
 import { mergeDeliverable, normalizeDeliverable } from "../lib/store/deliverable-state";
 
@@ -69,5 +70,19 @@ test("all deliverables have preparation, a starter, a worked example, and review
     assert.ok(guide?.prepare && guide.example && guide.starter && guide.practice);
     assert.equal(guide.steps.length, 3);
     assert.ok(guide.criteria.length >= 3);
+    const practice = decisionPractice[session.id];
+    assert.equal(practice.choices.filter((choice) => choice.recommended).length, 1);
+    assert.ok(practice.choices.every((choice) => choice.feedback.length > 20));
   }
+});
+
+test("prompt builder preserves the brief, adds clarification, and switches challenge mode", () => {
+  const prompt = buildPracticePrompt({ ...exampleBrief, task: "  Draft only. Do not publish.  " });
+  assert.ok(prompt.includes("TASK\nDraft only. Do not publish."));
+  assert.ok(prompt.includes(exampleBrief.constraints));
+  assert.ok(prompt.includes("CLARIFY BEFORE PROCEEDING"));
+  assert.ok(prompt.includes("CHALLENGE THE PLAN"));
+  const simpler = buildPracticePrompt({ ...exampleBrief, challenge: false });
+  assert.ok(!simpler.includes("CHALLENGE THE PLAN"));
+  assert.ok(simpler.includes("REVIEW\nList what a person should verify"));
 });

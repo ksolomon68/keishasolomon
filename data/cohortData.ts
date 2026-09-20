@@ -23,7 +23,7 @@ export const instructor = {
 
 export const cohortStats = [
   { value: "8", label: "Monthly sessions" },
-  { value: "90", label: "Minutes, all hands-on" },
+  { value: "90", label: "Minutes per session" },
   { value: "7", label: "Working assets built" },
   { value: "0", label: "Coding required" },
 ] as const;
@@ -155,18 +155,18 @@ export const sessions: Session[] = [
     concepts: [
       "Generative AI vs. traditional automation: cutting through the hype",
       "The anatomy of a high-leverage prompt: context, role, constraints and feedback loops",
-      "Cognitive offloading: the repetitive mental tasks that drain 30–40% of an executive's day",
+      "Cognitive offloading: identify repetitive mental tasks and measure the time they take",
       "Finding operational bottlenecks and high-impact use cases",
     ],
     lab: {
-      name: "Build Your Executive Digital Twin",
+      name: "Build Your Personal AI Assistant",
       description:
-        "Program a persistent workspace with your background, voice, communication style and business constraints, so you never start a conversation from scratch again.",
+        "Build a personal AI assistant that uses your instructions, preferences and approved examples to help you draft, organize and review everyday work.",
     },
     deliverable: {
       title: "AI Readiness Audit",
       description:
-        "A personal AI Readiness & Opportunity Audit for your business or role, plus a role-calibrated AI system ready for daily email drafting, meeting synthesis and decision analysis.",
+        "A personal AI Readiness & Opportunity Audit for your business or role, plus a Personal AI Assistant configured and tested for email drafting, meeting summaries and decision support, with human review.",
     },
     agenda: standardAgenda,
   },
@@ -228,7 +228,7 @@ export const sessions: Session[] = [
     deliverable: {
       title: "Executive Triage Workspace",
       description:
-        "A working Triage Assistant template that returns an estimated 3–5 hours per week.",
+        "A reusable Triage Assistant template, with before-and-after timing that includes human review and correction.",
     },
     agenda: standardAgenda,
   },
@@ -395,8 +395,8 @@ export const valueMatrix = {
       body: "Every session has a hook: a duel, an escape room, a pitch round. You learn by doing, and by trying to break each other's work.",
     },
     {
-      title: "Zero fluff, immediate ROI",
-      body: "Every month ends with a finished, working asset you can deploy the very next morning.",
+      title: "Useful work, measured results",
+      body: "Build a practical asset, test its quality and time cost, and decide whether to pilot it in your business.",
     },
   ],
   rows: [

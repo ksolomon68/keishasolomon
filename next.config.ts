@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Isolated output for synthetic local testing; leaves deployment artifacts untouched.
+  distDir: process.env.COHORT_TEST_BUILD === "1" ? ".next-cohort-test" : ".next",
   poweredByHeader: false,
   typescript: {
     // Shared hosts have tight process limits (prevent spawn tsc EAGAIN)

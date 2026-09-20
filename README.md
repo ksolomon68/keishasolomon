@@ -107,6 +107,18 @@ server.js            startup file for cPanel Node.js hosting (Passenger)
 
 `npm run dev` · `build` · `start` · `lint` · `typecheck` · `db:migrate` · `admin:create`
 
+## Guided practice and instructor feedback
+
+The dashboard includes a reusable prompt workshop and seven decision exercises adapted from the supplied cohort source summary. See `CONTENT-SOURCE-NOTES.md` for the source mapping, editorial choices, and validation limits. Core guides live in `data/learning-guides.ts`; no AI API or paid scheduling tool is required to use them.
+
+Instructor feedback is stored separately from participant notes and identifies the revision reviewed. Changing evidence or notes on reviewed work returns it for review; concurrent stale saves are rejected. For changes inside a linked document, participants should describe their changes in the progress notes and resubmit. The site cannot detect edits made at an unchanged external URL.
+
+**Existing MySQL sites:** run `npm run db:migrate` before deploying this version. It adds the feedback and revision columns idempotently. Existing local-file records receive compatible defaults when read.
+
+`npm test` runs focused scheduling, revision, persistence, and practice-content tests. For isolated HTTP testing, first run `node --import tsx scripts/seed-cohort-test.ts`, then start a development server on port 3100 with `DATA_BACKEND=file`, `LOCAL_DATA_DIR=.data/cohort-browser-test`, `COHORT_TEST_BUILD=1`, and a development `SESSION_SECRET`. Use `npm run dev -- --port 3100 --webpack`, then `node scripts/smoke-cohort.mjs`. The smoke test uses fictional accounts and modifies only their fixture records. It refuses to run if the fixture includes non-test email addresses. Do not use the fixture server as the deployed site.
+
+Set `NEXT_PUBLIC_CONTACT_EMAIL` to the real public support address. Time, time zone, venue, and the pending March date still need confirmation. Avoid publishing guessed logistics.
+
 ## Accessibility
 
 Built to WCAG 2.1 AA: semantic landmarks, skip link, keyboard-operable accordions/filters/forms, visible focus rings, `aria-live`

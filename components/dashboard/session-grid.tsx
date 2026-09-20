@@ -40,7 +40,7 @@ function SessionCard({ session, resources }: { session: Session; resources: Reso
           </p>
         </div>
 
-        {session.deliverable && <details className="border border-line p-4">
+        {session.deliverable && <details data-session-guide className="border border-line p-4">
           <summary className="min-h-7 cursor-pointer text-sm font-semibold">Preparation, starter &amp; success checklist</summary>
           <div className="mt-5"><LearningGuide sessionId={session.id} /></div>
         </details>}

@@ -46,6 +46,10 @@ export function NextStep({ deliverables, hasFriction }: { deliverables: Delivera
       <a href={`#${action.target}`} className={`${buttonStyles({ variant: "secondary" })} mt-6`} onClick={() => {
         const target = document.getElementById(action.target);
         if (target instanceof HTMLDetailsElement) target.open = true;
+        const roadmap = target?.closest("details");
+        if (roadmap) roadmap.open = true;
+        const guide = target?.querySelector<HTMLDetailsElement>("details[data-session-guide]");
+        if (guide) guide.open = true;
       }}>{action.label}<ArrowRight className="size-4" aria-hidden="true" /></a>
     </div>
     <aside className="border-t border-line bg-paper p-6 sm:p-8 lg:border-l lg:border-t-0">
