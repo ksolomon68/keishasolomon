@@ -13,8 +13,6 @@ set -euo pipefail
 HOME="${HOME:-$(getent passwd "$(id -u)" | cut -d: -f6)}"
 export HOME
 
-# Keep a readable log: cPanel's own deployment log does not include this script's output.
-exec > >(tee -a "$HOME/deploy.log") 2>&1
 echo "==== $(date -u +%FT%TZ) deploy started (user $(id -un), HOME=$HOME) ===="
 
 APP_NAME="${APP_NAME:-sandbox-app}"
