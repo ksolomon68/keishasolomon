@@ -27,7 +27,7 @@ if command -v rsync >/dev/null 2>&1; then
   rsync -a --delete \
     --exclude='.git' \
     --exclude='node_modules' \
-    --exclude='.next' \
+    --exclude='.next/cache' \
     --exclude='.env.local' --exclude='.env.production' --exclude='.env.production.local' \
     --exclude='storage' \
     --exclude='.data' \
