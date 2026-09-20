@@ -9,6 +9,14 @@
 # Override the app directory name by exporting APP_NAME before running (default below).
 set -euo pipefail
 
+# cPanel's deploy runner can start with a minimal environment (no HOME), so resolve it explicitly.
+HOME="${HOME:-$(getent passwd "$(id -u)" | cut -d: -f6)}"
+export HOME
+
+# Keep a readable log: cPanel's own deployment log does not include this script's output.
+exec > >(tee -a "$HOME/deploy.log") 2>&1
+echo "==== $(date -u +%FT%TZ) deploy started (user $(id -un), HOME=$HOME) ===="
+
 APP_NAME="${APP_NAME:-sandbox-app}"
 APP_DIR="$HOME/$APP_NAME"
 REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
