@@ -52,7 +52,7 @@ export async function registerAction(_prev: FormState, formData: FormData): Prom
     }
     throw error;
   }
-  redirect("/dashboard");
+  redirect("/onboarding");
 }
 
 export async function loginAction(_prev: FormState, formData: FormData): Promise<FormState> {

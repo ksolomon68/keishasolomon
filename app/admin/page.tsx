@@ -4,6 +4,8 @@ import { capstoneSteps, deliverableSessions, sessions } from "@/data/cohortData"
 import { requireAdmin } from "@/lib/auth/session";
 import { getStore } from "@/lib/store";
 import { ACCEPT_ATTR } from "@/lib/uploads";
+import { buttonStyles } from "@/components/ui/button";
+import { Mail } from "lucide-react";
 
 export default async function AdminPage() {
   await requireAdmin("/admin");
@@ -66,9 +68,18 @@ export default async function AdminPage() {
 
       <div className="mx-auto max-w-7xl space-y-16 px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
         <section aria-labelledby="roster-title">
-          <h2 id="roster-title" className="mb-6 font-display text-3xl text-navy-900 sm:text-4xl">
-            Cohort roster
-          </h2>
+          <div className="mb-6 flex items-center justify-between">
+            <h2 id="roster-title" className="font-display text-3xl text-navy-900 sm:text-4xl">
+              Cohort roster
+            </h2>
+            <a
+              href={`mailto:?subject=Welcome to the AI Executive Sandbox!&body=Hi everyone,%0D%0A%0D%0AWelcome to the AI Executive Sandbox!%0D%0A%0D%0APlease register for your account here:%0D%0Ahttps://keishasolomon.com/register%0D%0A%0D%0AAccess Code: ${process.env.COHORT_ACCESS_CODE || 'cohort-2026'}`}
+              className={buttonStyles({ variant: "secondary", size: "sm" })}
+            >
+              <Mail className="size-4" />
+              Email Invite
+            </a>
+          </div>
           <Roster entries={entries} />
         </section>
 
