@@ -46,12 +46,31 @@ ADMIN_PASSWORD='choose-a-long-password' npm run admin:create -- "Keisha Solomon"
 
 Never commit `.env.local` (it is git-ignored). Copy `.env.example` when configuring a new environment.
 
-## Deploying
+## Deploying (cPanel Git deployment)
 
-- Requires Node.js ≥ 20.9. Build with `npm run build`, run with `npm start`.
-- Serve over **HTTPS** (session cookies are `Secure` in production).
-- Set every variable above in the host's environment; point `UPLOAD_DIR` at storage that survives deploys.
-- Behind a reverse proxy, forward the public host in `X-Forwarded-Host` (Server Actions check origin).
+The repo includes `.cpanel.yml`, which runs [`scripts/cpanel-deploy.sh`](scripts/cpanel-deploy.sh). On each deploy it copies the
+code to `~/sandbox-app`, keeps the server's `.env.local`, `storage/` and `node_modules/`, runs `npm install` and
+`npm run build`, then restarts the app.
+
+**One-time setup**
+
+1. **cPanel → Setup Node.js App → Create Application**: Node **20.9 or newer**, mode *Production*, Application root
+   `sandbox-app`, Application URL your domain, Startup file `server.js`. (To use another folder name, change `APP_NAME` in the script.)
+2. Create `~/sandbox-app/.env.local` on the server (File Manager or SSH) with the production values from `.env.example`:
+   `DATA_BACKEND=mysql`, `DB_*`, a fresh `SESSION_SECRET`, `COHORT_ACCESS_CODE`, and `UPLOAD_DIR=./storage`. The deploy stops with a clear error if it is missing.
+3. **cPanel → Git Version Control → Create**, clone `https://github.com/ksolomon68/keishasolomon.git` (branch `main`).
+4. First deploy: **Manage → Pull or Deploy → Update from Remote**, then **Deploy HEAD Commit**.
+5. After the first deploy, in the app's terminal (Setup Node.js App shows the command to enter the virtual environment):
+   `npm run db:migrate` then `ADMIN_PASSWORD='…' npm run admin:create -- "Keisha Solomon" you@yourdomain.com`.
+
+**Every later deploy:** push to `main`, then *Update from Remote* and *Deploy HEAD Commit*.
+
+**If cPanel says "uncommitted changes"**: the server's clone has edited or untracked files. Never edit files inside the Git Version Control
+clone (the app lives in `~/sandbox-app`, not there). Over SSH, in the clone: `git status`, then `git restore .` (and `git clean -fd` for untracked files), then pull again.
+
+**Troubleshooting**: the build needs roughly 1.5 GB of memory; if the host kills it, build locally with `npm run build` instead and ask your host to raise the limit.
+Deploy output is shown in the Git Version Control deployment log. Serve the site over **HTTPS** (session cookies are `Secure` in production).
+Behind a reverse proxy, forward the public host in `X-Forwarded-Host` (Server Actions check origin).
 
 ## Editing content
 
@@ -71,7 +90,9 @@ lib/auth/            passwords (bcrypt), session (signed JWT cookie), login rate
 lib/store/           Store interface + mysql.ts and file.ts implementations
 lib/uploads.ts       upload validation (10 MB cap, extension allowlist, random stored names)
 db/schema.sql        MySQL schema
-scripts/             migrate.ts, create-admin.ts
+scripts/             migrate.ts, create-admin.ts, cpanel-deploy.sh
+server.js            startup file for cPanel Node.js hosting (Passenger)
+.cpanel.yml          cPanel Git deployment tasks
 ```
 
 ## Security notes
