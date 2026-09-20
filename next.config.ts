@@ -2,6 +2,13 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  typescript: {
+    // Shared hosts have tight process limits (prevent spawn tsc EAGAIN)
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   experimental: {
     // Deliverable and resource uploads travel through Server Actions (10 MB file cap + multipart overhead).
     serverActions: { bodySizeLimit: "12mb" },

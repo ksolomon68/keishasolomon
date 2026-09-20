@@ -66,6 +66,7 @@ fi
 
 # 3) Install (devDependencies are needed for the build) and build. Shared hosts have tight memory limits.
 export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=1536}"
+export NEXT_CPU_COUNT=1
 echo "==> Installing dependencies"
 npm install --no-audit --no-fund --include=dev
 echo "==> Building"
