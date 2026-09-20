@@ -1,0 +1,136 @@
+@import "tailwindcss";
+
+/*
+  The AI Executive Sandbox: design tokens.
+  Every text/background pairing below was checked against WCAG 2.1 AA (>= 4.5:1).
+  Use `text-amber-deep` / `text-cyan-deep` on light surfaces, `text-amber` / `text-cyan` on navy.
+*/
+@theme {
+  --color-navy-950: #070e1c;
+  --color-navy-900: #0b1730;
+  --color-navy-800: #12233f;
+  --color-navy-700: #1b3357;
+  --color-ink: #16233a;
+  --color-muted: #46566e;
+  --color-paper: #f6f3ec;
+  --color-paper-deep: #ede9df;
+  --color-line: #cfc8b6; /* decorative hairlines only */
+  --color-edge: #66748a; /* form control borders (>= 3:1 non-text contrast) */
+  --color-on-navy: #aebbd0;
+  --color-amber: #f4b63f;
+  --color-amber-deep: #7a4a00;
+  --color-cyan: #5ad7ec;
+  --color-cyan-deep: #0a6577;
+  --color-danger: #b42318;
+  --color-success: #146c3a;
+
+  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-instrument), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --animate-rise: rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+
+:root {
+  --focus: var(--color-navy-900);
+  color-scheme: light;
+}
+
+/* Dark surfaces flip the focus ring to amber so it stays >= 3:1. */
+[data-surface="dark"] {
+  --focus: var(--color-amber);
+}
+[data-surface="light"] {
+  --focus: var(--color-navy-900);
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5.5rem; /* clear the sticky header when jumping to anchors */
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+::selection {
+  background: var(--color-amber);
+  color: var(--color-navy-950);
+}
+
+/* Small caps-style mono label used for dates, session numbers, tags. */
+.label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.2;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Blueprint grid backdrop for dark hero surfaces. */
+.grid-backdrop {
+  background-image:
+    linear-gradient(to right, rgb(174 187 208 / 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(174 187 208 / 0.07) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+/* Smooth expand/collapse without measuring heights. Pair with the `inert` attribute when closed. */
+.expander {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.28s ease;
+}
+.expander[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+.expander > div {
+  overflow: hidden;
+  min-height: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media print {
+  header,
+  footer,
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+  }
+}
