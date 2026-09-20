@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/KSOLO/OneDrive/Documents/keishasolomon/app/error.tsx"],"sourcesContent":["\"use client\";\n\nimport { Button } from \"@/components/ui/button\";\n\nexport default function ErrorPage({ reset }: { error: Error & { digest?: string }; reset: () => void }) {\n  return (\n    <div className=\"mx-auto max-w-2xl px-4 py-24 text-center\" role=\"alert\">\n      <p className=\"label text-danger\">Something went wrong</p>\n      <h1 className=\"mt-3 font-display text-4xl font-light text-navy-900\">We couldn&rsquo;t load this page.</h1>\n      <p className=\"mt-4 text-muted\">Please try again. If it keeps happening, let your instructor know.</p>\n      <Button variant=\"secondary\" className=\"mt-8\" onClick={reset}>\n        Try again\n      </Button>\n    </div>\n  );\n}\n"],"names":["ErrorPage","reset","className","role","variant","onClick"],"mappings":";;;;;AAEA;AAFA;;;AAIe,SAASA,UAAU,EAAEC,KAAK,EAA6D;IACpG,qBACE,6LAAC;QAAIC,WAAU;QAA2CC,MAAK;;0BAC7D,6LAAC;gBAAED,WAAU;0BAAoB;;;;;;0BACjC,6LAAC;gBAAGA,WAAU;0BAAsD;;;;;;0BACpE,6LAAC;gBAAEA,WAAU;0BAAkB;;;;;;0BAC/B,6LAAC,wIAAM;gBAACE,SAAQ;gBAAYF,WAAU;gBAAOG,SAASJ;0BAAO;;;;;;;;;;;;AAKnE;KAXwBD"}}]
+}

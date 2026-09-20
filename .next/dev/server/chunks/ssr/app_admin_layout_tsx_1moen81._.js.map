@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/KSOLO/OneDrive/Documents/keishasolomon/app/admin/layout.tsx"],"sourcesContent":["import type { Metadata } from \"next\";\nimport { requireAdmin } from \"@/lib/auth/session\";\n\nexport const metadata: Metadata = { title: \"Instructor view\", robots: { index: false, follow: false } };\n\n/** Instructor-only gate; participants are redirected to their dashboard. */\nexport default async function AdminLayout({ children }: { children: React.ReactNode }) {\n  await requireAdmin(\"/admin\");\n  return children;\n}\n"],"names":["metadata","title","robots","index","follow","AdminLayout","children"],"mappings":";;;;;;AACA;;AAEO,MAAMA,WAAqB;IAAEC,OAAO;IAAmBC,QAAQ;QAAEC,OAAO;QAAOC,QAAQ;IAAM;AAAE;AAGvF,eAAeC,YAAY,EAAEC,QAAQ,EAAiC;IACnF,MAAM,IAAA,sIAAY,EAAC;IACnB,OAAOA;AACT"}}]
+}

@@ -68,9 +68,8 @@ fi
 export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=1536}"
 export NEXT_CPU_COUNT=1
 echo "==> Installing dependencies"
-npm install --no-audit --no-fund --include=dev
-echo "==> Building"
-NODE_ENV=production npm run build
+npm install --no-audit --no-fund --omit=dev
+echo "==> Build output shipped from git (.next). Skipping npm run build."
 
 # 4) Passenger restarts the app when this file's timestamp changes.
 mkdir -p tmp

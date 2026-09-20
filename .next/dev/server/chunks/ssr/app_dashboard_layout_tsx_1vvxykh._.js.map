@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/KSOLO/OneDrive/Documents/keishasolomon/app/dashboard/layout.tsx"],"sourcesContent":["import type { Metadata } from \"next\";\nimport { requireUser } from \"@/lib/auth/session\";\n\nexport const metadata: Metadata = { title: \"Participant dashboard\", robots: { index: false, follow: false } };\n\n/** Authoritative gate for everything under /dashboard; pages and actions re-check the session too. */\nexport default async function DashboardLayout({ children }: { children: React.ReactNode }) {\n  await requireUser(\"/dashboard\");\n  return children;\n}\n"],"names":["metadata","title","robots","index","follow","DashboardLayout","children"],"mappings":";;;;;;AACA;;AAEO,MAAMA,WAAqB;IAAEC,OAAO;IAAyBC,QAAQ;QAAEC,OAAO;QAAOC,QAAQ;IAAM;AAAE;AAG7F,eAAeC,gBAAgB,EAAEC,QAAQ,EAAiC;IACvF,MAAM,IAAA,qIAAW,EAAC;IAClB,OAAOA;AACT"}}]
+}

@@ -13,8 +13,8 @@
 # testing
 /coverage
 
-# next.js
-/.next/
+# next.js — track build output so cPanel doesn't need to build
+/.next/cache
 /out/
 
 # production
