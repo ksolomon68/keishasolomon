@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test tests/cohort.test.ts",
     "db:migrate": "node --env-file=.env.local scripts/migrate.js",
     "admin:create": "node --env-file=.env.local scripts/create-admin.js"
   },

@@ -105,7 +105,7 @@
         "transform": "lodash/{{member}}"
       }
     },
-    "outputFileTracingRoot": "C:\\Users\\KSOLO\\OneDrive\\Documents\\keishasolomon",
+    "outputFileTracingRoot": "C:\\dev\\keishasolomon",
     "enablePrerenderSourceMaps": true,
     "cacheComponents": false,
     "cacheLife": {
@@ -323,14 +323,14 @@
     "htmlLimitedBots": "[\\w-]+-Google|Google-[\\w-]+|Chrome-Lighthouse|Slurp|DuckDuckBot|baiduspider|yandex|sogou|bitlybot|tumblr|vkShare|quora link preview|redditbot|ia_archiver|Bingbot|BingPreview|applebot|facebookexternalhit|facebookcatalog|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|SkypeUriPreview|Yeti|googleweblight",
     "bundlePagesRouterDependencies": false,
     "configFileName": "next.config.ts",
-    "repoRoot": "C:\\Users\\KSOLO\\OneDrive\\Documents\\keishasolomon",
+    "repoRoot": "C:\\dev\\keishasolomon",
     "turbopack": {
-      "root": "C:\\Users\\KSOLO\\OneDrive\\Documents\\keishasolomon"
+      "root": "C:\\dev\\keishasolomon"
     },
     "distDirRoot": ".next",
     "supportsImmutableAssets": false
   },
-  "appDir": "C:\\Users\\KSOLO\\OneDrive\\Documents\\keishasolomon",
+  "appDir": "C:\\dev\\keishasolomon",
   "relativeAppDir": "",
   "files": [
     ".next\\package.json",

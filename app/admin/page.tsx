@@ -1,5 +1,6 @@
 import { Roster, type RosterEntry } from "@/components/admin/roster";
 import { ResourceManager } from "@/components/admin/resource-manager";
+import { FrictionReview } from "@/components/admin/friction-review";
 import { capstoneSteps, deliverableSessions, sessions } from "@/data/cohortData";
 import { requireAdmin } from "@/lib/auth/session";
 import { getStore } from "@/lib/store";
@@ -29,12 +30,16 @@ export default async function AdminPage() {
       attended: attendance.filter((a) => a.userId === u.id).map((a) => a.sessionId),
       deliverables: deliverables
         .filter((d) => d.userId === u.id)
-        .map((d) => ({ sessionId: d.sessionId, status: d.status, linkUrl: d.linkUrl, fileId: d.fileId, notes: d.notes })),
+        .map((d) => ({ sessionId: d.sessionId, status: d.status, linkUrl: d.linkUrl, fileId: d.fileId, notes: d.notes,
+          version: d.version, revision: d.revision, feedback: d.feedback, feedbackRevision: d.feedbackRevision })),
       capstoneDone: capstone.filter((c) => c.userId === u.id && stepIds.has(c.stepId)).length,
       capstoneTotal: capstoneSteps.length,
     }));
 
   const n = entries.length;
+  const friction = (await Promise.all(users.filter((u) => u.role === "participant").map(async (u) =>
+    (await store.listFriction(u.id)).map((entry) => ({ ...entry, participant: u.name })),
+  ))).flat();
   const avg = (total: number, denominator: number) => (n && denominator ? Math.round((total / (n * denominator)) * 100) : 0);
   const submittedTotal = entries.reduce(
     (sum, e) => sum + e.deliverables.filter((d) => d.status === "submitted" || d.status === "reviewed").length,
@@ -67,6 +72,12 @@ export default async function AdminPage() {
       </section>
 
       <div className="mx-auto max-w-7xl space-y-16 px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
+        <section aria-labelledby="lab-needs-title">
+          <p className="label text-amber-deep">Plan the next build lab</p>
+          <h2 id="lab-needs-title" className="mb-3 mt-2 font-display text-3xl sm:text-4xl">What the cohort needs help with</h2>
+          <p className="mb-6 max-w-3xl text-muted">Use participants&rsquo; workplace problems to choose examples, pair exercises, and follow-up support. Do not share their private entries with the group.</p>
+          <FrictionReview entries={friction} />
+        </section>
         <section aria-labelledby="roster-title">
           <div className="mb-6 flex items-center justify-between">
             <h2 id="roster-title" className="font-display text-3xl text-navy-900 sm:text-4xl">

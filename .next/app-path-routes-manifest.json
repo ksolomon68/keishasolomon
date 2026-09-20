@@ -6,6 +6,7 @@
   "/page": "/",
   "/(auth)/login/page": "/login",
   "/(auth)/register/page": "/register",
+  "/certificate/page": "/certificate",
   "/onboarding/page": "/onboarding",
   "/admin/page": "/admin",
   "/dashboard/page": "/dashboard"

@@ -4,6 +4,7 @@ import { ShieldCheck } from "lucide-react";
 import { OnboardingChecklist } from "@/components/onboarding/checklist";
 import { buttonStyles } from "@/components/ui/button";
 import { safeHarbor, sessions } from "@/data/cohortData";
+import { SessionLogistics } from "@/components/layout/participant-help";
 
 export const metadata: Metadata = {
   title: "Before Day 1: Participant Onboarding",
@@ -28,6 +29,7 @@ export default function OnboardingPage() {
 
       <div className="mx-auto max-w-7xl space-y-16 px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
         <OnboardingChecklist />
+        <SessionLogistics />
 
         <section aria-labelledby="safe-harbor-notice" className="border-l-4 border-cyan-deep bg-white p-6 sm:p-8">
           <h2 id="safe-harbor-notice" className="flex items-center gap-3 font-display text-2xl text-navy-900">

@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { RegisterForm } from "@/components/auth/auth-forms";
 import { getCurrentUser } from "@/lib/auth/session";
+import { ParticipantHelp } from "@/components/layout/participant-help";
 
 export const metadata: Metadata = { title: "Create your account" };
 
@@ -12,8 +13,8 @@ export default async function RegisterPage() {
 
   return (
     <AuthShell
-      eyebrow="Join the cohort"
-      title="Create your account"
+      eyebrow="For invited participants"
+      title="Activate your participant account"
       intro="Enter the access code from your welcome message to open your participant portal."
       footer={
         <>
@@ -25,6 +26,7 @@ export default async function RegisterPage() {
       }
     >
       <RegisterForm />
+      <ParticipantHelp />
     </AuthShell>
   );
 }

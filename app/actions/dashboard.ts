@@ -5,6 +5,7 @@ import { z } from "zod";
 import { capstoneSteps, sessionById } from "@/data/cohortData";
 import { requireUser } from "@/lib/auth/session";
 import { getStore } from "@/lib/store";
+import { DeliverableError } from "@/lib/store/deliverable-state";
 import { removeFile, saveUpload, UploadError } from "@/lib/uploads";
 import {
   deliverableSchema,
@@ -25,6 +26,7 @@ export async function addFrictionAction(_prev: FormState, formData: FormData): P
 
   await (await getStore()).addFriction(user.id, parsed.data);
   revalidatePath("/dashboard");
+  revalidatePath("/admin");
   return { ok: true, message: "Added to your friction log." };
 }
 
@@ -58,12 +60,17 @@ export async function saveDeliverableAction(_prev: FormState, formData: FormData
   if (parsed.data.status === "reviewed" && current?.status !== "reviewed") {
     return { message: "Only your instructor can mark work as reviewed.", values };
   }
+  if (parsed.data.status === "needs_revision" && current?.status !== "needs_revision") {
+    return { message: "Only your instructor can request revisions.", values };
+  }
+  const version = z.coerce.number().int().nonnegative().safeParse(formData.get("version"));
+  if (!version.success) return { message: "Reload this page before saving.", values };
   const upload = formData.get("file");
   const hasNewFile = upload instanceof File && upload.size > 0;
   const removeExisting = formData.get("removeFile") === "on";
 
   const keepsFile = hasNewFile || (!!current?.fileId && !removeExisting);
-  if (parsed.data.status === "submitted" && !linkUrl && !keepsFile) {
+  if ((parsed.data.status === "submitted" || parsed.data.status === "reviewed") && !linkUrl && !keepsFile) {
     return { errors: { linkUrl: ["Add a link or upload a file before marking this submitted."] }, values };
   }
 
@@ -79,13 +86,19 @@ export async function saveDeliverableAction(_prev: FormState, formData: FormData
     newFileId = null;
   }
 
-  const status = current?.status === "reviewed" ? "reviewed" : parsed.data.status;
-  await store.upsertDeliverable(user.id, sessionId, {
-    status,
-    linkUrl,
-    notes,
-    ...(newFileId !== undefined && { fileId: newFileId }),
-  });
+  try {
+    await store.upsertDeliverable(user.id, sessionId, {
+      status: parsed.data.status,
+      linkUrl,
+      notes,
+      expectedVersion: version.data,
+      ...(newFileId !== undefined && { fileId: newFileId }),
+    });
+  } catch (error) {
+    if (newFileId) await removeFile(newFileId);
+    if (error instanceof DeliverableError) return { message: error.message, values };
+    throw error;
+  }
   // Only drop the old bytes once the row points at the new file.
   if (newFileId !== undefined) await removeFile(current?.fileId ?? null);
 

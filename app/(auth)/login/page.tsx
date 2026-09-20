@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { LoginForm } from "@/components/auth/auth-forms";
 import { getCurrentUser } from "@/lib/auth/session";
+import { ParticipantHelp } from "@/components/layout/participant-help";
 
 export const metadata: Metadata = { title: "Sign in" };
 
@@ -26,6 +27,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
       }
     >
       <LoginForm next={next} />
+      <ParticipantHelp />
     </AuthShell>
   );
 }

@@ -40,6 +40,12 @@ export interface Deliverable {
   notes: string;
   fileId: string | null;
   updatedAt: string;
+  /** Increments on every saved change, including instructor decisions. */
+  version: number;
+  /** Increments only when the participant's evidence or notes change. */
+  revision: number;
+  feedback: string;
+  feedbackRevision: number | null;
 }
 
 export interface CapstoneProgress {
@@ -86,7 +92,9 @@ export type NewUser = Pick<User, "email" | "name" | "organization" | "role"> & {
 
 export type NewFriction = Pick<FrictionEntry, "task" | "frequency" | "minutes" | "sessionId">;
 
-export type DeliverablePatch = Partial<Pick<Deliverable, "status" | "linkUrl" | "notes" | "fileId">>;
+export type DeliverablePatch = Partial<Pick<Deliverable, "status" | "linkUrl" | "notes" | "fileId" | "feedback">> & {
+  expectedVersion: number;
+};
 
 export type NewResource = Pick<Resource, "sessionId" | "title" | "kind" | "linkUrl" | "fileId" | "createdBy">;
 

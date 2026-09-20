@@ -33,9 +33,10 @@ export function countdownTo(target: Date, now: Date): CountdownParts {
   };
 }
 
-/** The first session that hasn't already passed (a TBA session counts as upcoming). */
+/** Pending dates are displayed separately; they must not hide confirmed sessions. */
 export function nextSessionId(all: Pick<Session, "id" | "date">[], now: Date): string | null {
-  return all.find((s) => sessionStatus(s, now) !== "past")?.id ?? null;
+  return [...all].filter((s) => s.date && sessionStatus(s, now) !== "past")
+    .sort((a, b) => a.date!.localeCompare(b.date!))[0]?.id ?? null;
 }
 
 export const formatDateTime = (iso: string): string =>

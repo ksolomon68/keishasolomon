@@ -53,7 +53,7 @@ export function SiteFooter() {
               </p>
             ) : null}
           </address>
-          <p className="mt-4 text-sm">Questions or account-setup help are available by email before the first session.</p>
+          <p className="mt-4 text-sm">{site.contactEmail ? "Email your instructor for session details or account help. Never send your password." : "For session details or account help, reply to your instructor’s welcome message. A public support email has not been posted yet."}</p>
         </div>
       </div>
       <div className="border-t border-white/10">

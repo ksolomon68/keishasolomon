@@ -3,6 +3,7 @@ import { resourceKinds, sessions, type Session } from "@/data/cohortData";
 import { Tag } from "@/components/ui/tag";
 import type { Resource } from "@/lib/store";
 import { Countdown } from "./countdown";
+import { LearningGuide } from "./learning-guide";
 
 const kindLabel = Object.fromEntries(resourceKinds.map((k) => [k.value, k.label]));
 
@@ -18,12 +19,13 @@ export function SessionGrid({ resources }: { resources: Resource[] }) {
 
 function SessionCard({ session, resources }: { session: Session; resources: Resource[] }) {
   return (
-    <li className="flex flex-col border border-line bg-white">
-      <div className="flex items-start justify-between gap-3 border-b border-line p-5">
+    <li id={`session-${session.id}`} className="flex scroll-mt-36 flex-col border border-line bg-white">
+      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-line p-5">
         <div>
           <p className="label text-amber-deep">Session {String(session.number).padStart(2, "0")}</p>
           <p className="label mt-1 text-ink">{session.dateLabel}</p>
         </div>
+
         <Countdown date={session.date} />
       </div>
 
@@ -37,6 +39,11 @@ function SessionCard({ session, resources }: { session: Session; resources: Reso
             <span className="font-semibold text-ink">Lab:</span> {session.lab.name}
           </p>
         </div>
+
+        {session.deliverable && <details className="border border-line p-4">
+          <summary className="min-h-7 cursor-pointer text-sm font-semibold">Preparation, starter &amp; success checklist</summary>
+          <div className="mt-5"><LearningGuide sessionId={session.id} /></div>
+        </details>}
 
         <details className="group border border-line">
           <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-2 px-3 py-2 text-sm font-semibold text-ink marker:content-none hover:bg-paper [&::-webkit-details-marker]:hidden">

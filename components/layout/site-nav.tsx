@@ -66,7 +66,7 @@ export function SiteNav({ links, account }: SiteNavProps) {
         Sign in
       </Link>
       <Link href="/register" className={buttonStyles({ variant: "primary", size: "sm" })}>
-        Join the cohort
+        Activate account
       </Link>
     </>
   );

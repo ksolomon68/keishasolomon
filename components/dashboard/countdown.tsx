@@ -2,7 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import type { Session } from "@/data/cohortData";
-import { countdownTo, nextSessionId, sessionStart, sessionStatus } from "@/lib/dates";
+import { nextSessionId, sessionStart, sessionStatus } from "@/lib/dates";
 
 /** Ticks once a minute. The server snapshot is null so the first paint never disagrees with hydration. */
 function subscribe(callback: () => void) {
@@ -33,24 +33,16 @@ export function Countdown({ date, onDark = false }: { date: string | null; onDar
   }
 
   const status = sessionStatus(session, now);
-  if (status === "past") return <p className={`label ${onDark ? "text-cyan" : "text-success"}`}>Completed</p>;
+  if (status === "past") return <p className={`label ${onDark ? "text-on-navy" : "text-muted"}`}>Session has passed</p>;
   if (status === "today") return <p className={`label ${onDark ? "text-amber" : "text-amber-deep"}`}>Session day is here</p>;
 
-  const { days, hours, minutes } = countdownTo(start, now);
-  const parts = [
-    { value: days, unit: "days" },
-    { value: hours, unit: "hrs" },
-    { value: minutes, unit: "min" },
-  ];
+  const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  const target = Date.UTC(start.getFullYear(), start.getMonth(), start.getDate());
+  const days = Math.round((target - today) / 86_400_000);
   return (
-    <div role="timer" aria-label={`${days} days, ${hours} hours, ${minutes} minutes until session day`} className="flex gap-2">
-      {parts.map((p) => (
-        <div key={p.unit} aria-hidden="true" className={`min-w-14 border px-2 py-1.5 text-center text-white ${onDark ? "border-white/30 bg-navy-950" : "border-navy-900 bg-navy-900"}`}>
-          <p className="font-display text-2xl leading-none text-amber tabular-nums">{p.value}</p>
-          <p className="label mt-1 !text-[0.625rem] text-on-navy">{p.unit}</p>
-        </div>
-      ))}
-    </div>
+    <p className={`text-sm font-semibold ${onDark ? "text-amber" : "text-amber-deep"}`}>
+      {days === 1 ? "Tomorrow" : `In ${days} days`} · session date
+    </p>
   );
 }
 
@@ -62,7 +54,7 @@ export function NextSessionSummary({ sessions }: { sessions: NextInput[] }) {
   const next = now ? sessions.find((s) => s.id === nextSessionId(sessions, now)) : undefined;
 
   if (!now) return <div className="h-20" aria-hidden="true" />;
-  if (!next) return <p className="font-display text-2xl">Cohort complete. Congratulations!</p>;
+  if (!next) return <p className="text-sm">No upcoming confirmed dates.{sessions.some((s) => !s.date) ? " A session date is still awaiting confirmation." : " Your work and feedback remain available below."}</p>;
 
   return (
     <div>

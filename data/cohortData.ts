@@ -487,7 +487,7 @@ export const safeHarbor = {
     },
     {
       title: "Your work stays yours",
-      body: "Deliverables are shared only with the instructor. Everything you record on this platform is visible to you and Keisha alone.",
+      body: "Your friction log, submissions and progress are visible to you and authorized instructors. Other participants cannot view your private work on this platform.",
     },
   ],
 } as const;
@@ -575,6 +575,7 @@ export const deliverableStatuses = [
   { value: "not_started", label: "Not started" },
   { value: "in_progress", label: "In progress" },
   { value: "submitted", label: "Submitted" },
+  { value: "needs_revision", label: "Needs revision" },
   { value: "reviewed", label: "Reviewed" },
 ] as const;
 

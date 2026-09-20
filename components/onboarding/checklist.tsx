@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { Check, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { onboardingChecklist, type ChecklistItem } from "@/data/cohortData";
@@ -44,14 +44,16 @@ const groups: { key: ChecklistItem["group"]; title: string; note: string }[] = [
 
 export function OnboardingChecklist() {
   const raw = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-  const checked = parse(raw);
+  const [temporary, setTemporary] = useState<string[] | null>(null);
+  const checked = temporary ?? parse(raw);
 
   const toggle = (id: string) => {
     const next = checked.includes(id) ? checked.filter((x) => x !== id) : [...checked, id];
     try {
       window.localStorage.setItem(KEY, JSON.stringify(next));
+      setTemporary(null);
     } catch {
-      /* ignore: storage unavailable */
+      setTemporary(next);
     }
     window.dispatchEvent(new Event(EVENT));
   };
@@ -123,7 +125,7 @@ export function OnboardingChecklist() {
           </fieldset>
         ))}
       </div>
-      <p className="no-print mt-5 text-sm text-muted">Your checklist progress is saved in this browser only.</p>
+      <p role="status" className="no-print mt-5 text-sm text-muted">{temporary ? "Browser storage is unavailable. Your checklist works for this visit, but will reset when you reload." : "Your checklist progress is saved in this browser only."}</p>
     </div>
   );
 }

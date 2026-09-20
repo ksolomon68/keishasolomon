@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import mysql, { type Pool, type ResultSetHeader, type RowDataPacket } from "mysql2/promise";
+import { mergeDeliverable } from "./deliverable-state";
 import type { DeliverableStatus, FrictionFrequency, ResourceKind } from "@/data/cohortData";
 import {
   EmailTakenError,
@@ -65,6 +66,10 @@ const toDeliverable = (r: Row): Deliverable => ({
   notes: r.notes,
   fileId: nullable(r.file_id),
   updatedAt: iso(r.updated_at),
+  version: r.version,
+  revision: r.revision,
+  feedback: r.feedback ?? "",
+  feedbackRevision: r.feedback_revision ?? null,
 });
 
 const toResource = (r: Row): Resource => ({
@@ -168,21 +173,30 @@ export function createMysqlStore(pool: Pool = createPool()): Store {
     },
     getDeliverable,
     async upsertDeliverable(userId, sessionId, patch) {
-      const current = await getDeliverable(userId, sessionId);
-      const next = {
-        status: patch.status ?? current?.status ?? "not_started",
-        linkUrl: patch.linkUrl === undefined ? (current?.linkUrl ?? null) : patch.linkUrl,
-        notes: patch.notes ?? current?.notes ?? "",
-        fileId: patch.fileId === undefined ? (current?.fileId ?? null) : patch.fileId,
-      };
-      await exec(
-        `INSERT INTO deliverables (user_id, session_id, status, link_url, notes, file_id)
-         VALUES (?, ?, ?, ?, ?, ?)
-         ON DUPLICATE KEY UPDATE status = VALUES(status), link_url = VALUES(link_url),
-                                 notes = VALUES(notes), file_id = VALUES(file_id)`,
-        [userId, sessionId, next.status, next.linkUrl, next.notes, next.fileId],
-      );
-      return (await getDeliverable(userId, sessionId))!;
+      const connection = await pool.getConnection();
+      try {
+        await connection.beginTransaction();
+        // Lock even the first save, so feedback cannot approve a concurrently replaced artifact.
+        await connection.execute(
+          `INSERT INTO deliverables (user_id, session_id, notes) VALUES (?, ?, '')
+           ON DUPLICATE KEY UPDATE user_id = VALUES(user_id)`, [userId, sessionId]);
+        const [locked] = await connection.execute<Row[]>(
+          "SELECT * FROM deliverables WHERE user_id = ? AND session_id = ? FOR UPDATE", [userId, sessionId]);
+        const next = mergeDeliverable(toDeliverable(locked[0]), patch);
+        await connection.execute(
+          `UPDATE deliverables SET status = ?, link_url = ?, notes = ?, file_id = ?,
+           version = ?, revision = ?, feedback = ?, feedback_revision = ?
+           WHERE user_id = ? AND session_id = ?`,
+          [next.status, next.linkUrl, next.notes, next.fileId, next.version, next.revision,
+            next.feedback, next.feedbackRevision, userId, sessionId]);
+        await connection.commit();
+        return next;
+      } catch (error) {
+        await connection.rollback();
+        throw error;
+      } finally {
+        connection.release();
+      }
     },
 
     async listCapstone(userId) {

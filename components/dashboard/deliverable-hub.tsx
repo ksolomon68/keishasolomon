@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import { CheckCircle2, ChevronDown, Download } from "lucide-react";
 import { saveDeliverableAction } from "@/app/actions/dashboard";
 import { FormMessage, SelectField, TextAreaField, TextField } from "@/components/ui/fields";
@@ -9,6 +9,7 @@ import { Tag } from "@/components/ui/tag";
 import { deliverableSessions, deliverableStatuses, type DeliverableStatus } from "@/data/cohortData";
 import type { Deliverable } from "@/lib/store";
 import type { FormState } from "@/lib/validation";
+import { LearningGuide } from "./learning-guide";
 
 export interface FileInfo {
   name: string;
@@ -20,6 +21,7 @@ const statusTone = {
   in_progress: "cyan",
   submitted: "amber",
   reviewed: "success",
+  needs_revision: "cyan",
 } as const satisfies Record<DeliverableStatus, string>;
 
 const statusLabel = Object.fromEntries(deliverableStatuses.map((s) => [s.value, s.label])) as Record<
@@ -28,7 +30,7 @@ const statusLabel = Object.fromEntries(deliverableStatuses.map((s) => [s.value, 
 >;
 
 /** Reviewed is set by the instructor, so it only appears as a choice once it applies. */
-const participantStatuses = deliverableStatuses.filter((s) => s.value !== "reviewed");
+const participantStatuses = deliverableStatuses.filter((s) => s.value !== "reviewed" && s.value !== "needs_revision");
 
 export function DeliverableHub({
   deliverables,
@@ -88,11 +90,23 @@ function DeliverableRow({
   const isReviewed = status === "reviewed";
   const v = state.values ?? {};
   const id = `deliv-${session.id}`;
+  const disclosure = useRef<HTMLDetailsElement>(null);
+  useEffect(() => {
+    const reveal = () => {
+      if (window.location.hash === `#deliverable-${session.id}` && disclosure.current) {
+        disclosure.current.open = true;
+        disclosure.current.scrollIntoView({ block: "start" });
+      }
+    };
+    reveal();
+    window.addEventListener("hashchange", reveal);
+    return () => window.removeEventListener("hashchange", reveal);
+  }, [session.id]);
 
   return (
     <li>
-      <details className="group border border-line bg-white open:border-navy-900">
-        <summary className="flex min-h-16 cursor-pointer list-none items-center gap-4 p-4 marker:content-none hover:bg-paper sm:px-5 [&::-webkit-details-marker]:hidden">
+      <details ref={disclosure} id={`deliverable-${session.id}`} className="group scroll-mt-36 border border-line bg-white open:border-navy-900">
+        <summary className="flex min-h-16 cursor-pointer list-none flex-wrap items-center gap-3 p-4 marker:content-none hover:bg-paper sm:px-5 [&::-webkit-details-marker]:hidden">
           <span className="grid size-10 shrink-0 place-items-center border border-navy-900 font-display text-lg text-navy-900" aria-hidden="true">
             {session.number}
           </span>
@@ -109,9 +123,22 @@ function DeliverableRow({
           <ChevronDown className="size-5 shrink-0 transition-transform group-open:rotate-180 motion-reduce:transition-none" aria-hidden="true" />
         </summary>
 
+        <div className="border-t border-line p-4 sm:p-5">
+          {deliverable?.feedback && <aside aria-label="Instructor feedback" className="mb-5 border-l-4 border-cyan-deep bg-paper p-4">
+            <p className="label text-cyan-deep">Instructor feedback · revision {deliverable.feedbackRevision}</p>
+            <p className="mt-3 whitespace-pre-wrap break-words">{deliverable.feedback}</p>
+            {deliverable.feedbackRevision !== deliverable.revision && <p className="mt-3 text-sm text-muted">This feedback is for an earlier revision. Your updated work has not been reviewed yet.</p>}
+          </aside>}
+          <details className="border border-line p-4"><summary className="min-h-7 cursor-pointer font-semibold">Build guide &amp; submission checklist</summary>
+            <div className="mt-5"><LearningGuide sessionId={session.id} /></div>
+          </details>
+        </div>
+
         <form action={action} noValidate className="space-y-4 border-t border-line p-4 sm:p-5">
           <p className="max-w-2xl text-sm text-muted">{session.deliverable.description}</p>
           <input type="hidden" name="sessionId" value={session.id} />
+          <input type="hidden" name="version" value={deliverable?.version ?? 0} />
+          <p className="text-sm text-muted">{deliverable ? `Current revision: ${deliverable.revision}. ` : ""}Changes to your link, file, or notes create a new revision. Editing reviewed work sends it back for review. For changes within a linked document, describe the changes in your notes when resubmitting.</p>
 
           <div className="grid gap-4 md:grid-cols-2">
             {isReviewed ? (
@@ -126,7 +153,7 @@ function DeliverableRow({
                 name="status"
                 label="Status"
                 options={participantStatuses}
-                defaultValue={v.status ?? status}
+                defaultValue={v.status ?? (status === "needs_revision" ? "in_progress" : status)}
                 errors={state.errors?.status}
               />
             )}
@@ -191,7 +218,7 @@ function DeliverableRow({
 
           <div className="flex flex-wrap items-center gap-4">
             <SubmitButton variant="secondary">Save deliverable</SubmitButton>
-            <FormMessage ok={state.ok} message={state.message} />
+            <FormMessage ok={state.ok} message={state.message ?? (state.errors ? "Check the fields above. Reattach any selected upload before trying again." : undefined)} />
           </div>
         </form>
       </details>

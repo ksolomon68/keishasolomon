@@ -20,6 +20,18 @@ async function main() {
   const connection = await mysql.createConnection(config);
   try {
     await connection.query(sql);
+    // CREATE TABLE IF NOT EXISTS does not upgrade existing installations.
+    const [columns] = await connection.query("SHOW COLUMNS FROM deliverables");
+    const present = new Set(columns.map((column) => column.Field));
+    const additions = {
+      version: "INT UNSIGNED NOT NULL DEFAULT 0",
+      revision: "INT UNSIGNED NOT NULL DEFAULT 1",
+      feedback: "TEXT NULL",
+      feedback_revision: "INT UNSIGNED NULL",
+    };
+    for (const [name, definition] of Object.entries(additions)) {
+      if (!present.has(name)) await connection.query(`ALTER TABLE deliverables ADD COLUMN ${name} ${definition}`);
+    }
     const [tables] = await connection.query("SHOW TABLES");
     console.log(`Schema applied. Tables: ${tables.map((r) => Object.values(r)[0]).join(", ")}`);
   } finally {

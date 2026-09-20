@@ -1,27 +1,16 @@
 "use client";
 
-import { Fragment, useOptimistic, useState, useTransition } from "react";
+import { useActionState, useState, useTransition } from "react";
 import { ChevronDown, Download, ExternalLink } from "lucide-react";
-import {
-  setAttendanceAction,
-  setDeliverableStatusAction,
-} from "@/app/actions/admin";
+import { reviewDeliverableAction, setAttendanceAction } from "@/app/actions/admin";
+import { FormMessage, SelectField, TextAreaField } from "@/components/ui/fields";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { Tag } from "@/components/ui/tag";
-import {
-  deliverableSessions,
-  deliverableStatuses,
-  sessions,
-  type DeliverableStatus,
-} from "@/data/cohortData";
+import { deliverableSessions, deliverableStatuses, sessions } from "@/data/cohortData";
+import { learningGuides } from "@/data/learning-guides";
+import type { Deliverable } from "@/lib/store";
 
-export interface RosterDeliverable {
-  sessionId: string;
-  status: DeliverableStatus;
-  linkUrl: string | null;
-  fileId: string | null;
-  notes: string;
-}
-
+export type RosterDeliverable = Pick<Deliverable, "sessionId" | "status" | "linkUrl" | "fileId" | "notes" | "feedback" | "feedbackRevision" | "revision" | "version">;
 export interface RosterEntry {
   id: string;
   name: string;
@@ -33,323 +22,86 @@ export interface RosterEntry {
   capstoneTotal: number;
 }
 
-type Change =
-  | { type: "attendance"; userId: string; sessionId: string; present: boolean }
-  | {
-      type: "status";
-      userId: string;
-      sessionId: string;
-      status: DeliverableStatus;
-    };
-
-const tone = {
-  not_started: "neutral",
-  in_progress: "cyan",
-  submitted: "amber",
-  reviewed: "success",
-} as const;
-
 export function Roster({ entries }: { entries: RosterEntry[] }) {
-  const [, startTransition] = useTransition();
-  const [rows, apply] = useOptimistic(entries, (current, change: Change) =>
-    current.map((row) => {
-      if (row.id !== change.userId) return row;
-      if (change.type === "attendance") {
-        const rest = row.attended.filter((s) => s !== change.sessionId);
-        return {
-          ...row,
-          attended: change.present ? [...rest, change.sessionId] : rest,
-        };
-      }
-      const existing = row.deliverables.find(
-        (d) => d.sessionId === change.sessionId,
-      );
-      const deliverables = existing
-        ? row.deliverables.map((d) =>
-            d === existing ? { ...d, status: change.status } : d,
-          )
-        : [
-            ...row.deliverables,
-            {
-              sessionId: change.sessionId,
-              status: change.status,
-              linkUrl: null,
-              fileId: null,
-              notes: "",
-            },
-          ];
-      return { ...row, deliverables };
-    }),
-  );
-  const [openId, setOpenId] = useState<string | null>(null);
+  const [reviewOnly, setReviewOnly] = useState(false);
+  const visible = entries.filter((entry) => !reviewOnly || entry.deliverables.some((d) => d.status === "submitted"));
+  return <div className="space-y-4">
+    <label className="flex min-h-11 items-center gap-3 text-sm font-semibold">
+      <input type="checkbox" checked={reviewOnly} onChange={(e) => setReviewOnly(e.target.checked)} className="size-5 accent-navy-900" />
+      Show participants awaiting review
+    </label>
+    {!visible.length && <p role="status" className="border border-dashed border-edge p-6 text-muted">
+      {entries.length ? "No participants are awaiting review." : "No participants have activated their accounts yet."}
+    </p>}
+    {visible.map((entry) => <Participant key={entry.id} entry={entry} />)}
+  </div>;
+}
 
-  const setAttendance = (userId: string, sessionId: string, present: boolean) =>
-    startTransition(async () => {
-      apply({ type: "attendance", userId, sessionId, present });
-      await setAttendanceAction(userId, sessionId, present);
-    });
-
-  const setStatus = (
-    userId: string,
-    sessionId: string,
-    status: DeliverableStatus,
-  ) =>
-    startTransition(async () => {
-      apply({ type: "status", userId, sessionId, status });
-      await setDeliverableStatusAction(userId, sessionId, status);
-    });
-
-  if (rows.length === 0) {
-    return (
-      <p className="border border-dashed border-edge p-8 text-muted">
-        No participants have registered yet. Share the cohort access code from
-        your environment settings.
-      </p>
-    );
-  }
-
-  return (
-    <div className="overflow-x-auto border border-line bg-white">
-      <table className="w-full min-w-[46rem] border-collapse text-left">
-        <caption className="sr-only">
-          Cohort roster with attendance, deliverable and capstone progress
-        </caption>
-        <thead>
-          <tr className="border-b-2 border-navy-900 bg-paper text-sm">
-            <th scope="col" className="px-4 py-3 font-semibold">
-              Participant
-            </th>
-            <th scope="col" className="px-4 py-3 font-semibold">
-              Attendance
-            </th>
-            <th scope="col" className="px-4 py-3 font-semibold">
-              Deliverables
-            </th>
-            <th scope="col" className="px-4 py-3 font-semibold">
-              Capstone
-            </th>
-            <th scope="col" className="px-4 py-3">
-              <span className="sr-only">Manage</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => {
-            const open = openId === row.id;
-            const submitted = row.deliverables.filter(
-              (d) => d.status === "submitted" || d.status === "reviewed",
-            ).length;
-            const percent = row.capstoneTotal
-              ? Math.round((row.capstoneDone / row.capstoneTotal) * 100)
-              : 0;
-            return (
-              <Fragment key={row.id}>
-                <tr className="border-b border-line align-middle">
-                  <th scope="row" className="px-4 py-4 text-left font-normal">
-                    <span className="block font-semibold text-ink">
-                      {row.name}
-                    </span>
-                    <span className="block text-sm text-muted">
-                      {row.organization || row.email}
-                    </span>
-                  </th>
-                  <td className="px-4 py-4 tabular-nums">
-                    <span className="font-display text-2xl text-navy-900">
-                      {row.attended.length}
-                    </span>
-                    <span className="text-muted"> / {sessions.length}</span>
-                  </td>
-                  <td className="px-4 py-4 tabular-nums">
-                    <span className="font-display text-2xl text-navy-900">
-                      {submitted}
-                    </span>
-                    <span className="text-muted">
-                      {" "}
-                      / {deliverableSessions.length}
-                    </span>
-                  </td>
-                  <td className="px-4 py-4">
-                    <div className="flex items-center gap-3">
-                      <progress
-                        className="h-2 w-24 overflow-hidden [&::-moz-progress-bar]:bg-navy-900 [&::-webkit-progress-bar]:bg-line [&::-webkit-progress-value]:bg-navy-900"
-                        value={row.capstoneDone}
-                        max={row.capstoneTotal}
-                        aria-label={`${row.name} capstone progress`}
-                      />
-                      <span className="label text-ink">{percent}%</span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-4 text-right">
-                    <button
-                      type="button"
-                      aria-expanded={open}
-                      aria-controls={`manage-${row.id}`}
-                      onClick={() => setOpenId(open ? null : row.id)}
-                      className="inline-flex min-h-11 items-center gap-1.5 px-2 text-sm font-semibold text-navy-900 underline underline-offset-4"
-                    >
-                      Manage
-                      <span className="sr-only"> {row.name}</span>
-                      <ChevronDown
-                        className={`size-4 transition-transform motion-reduce:transition-none ${open ? "rotate-180" : ""}`}
-                        aria-hidden="true"
-                      />
-                    </button>
-                  </td>
-                </tr>
-                {open && (
-                  <tr
-                    id={`manage-${row.id}`}
-                    className="border-b border-navy-900 bg-paper"
-                  >
-                    <td colSpan={5} className="p-4 sm:p-6">
-                      {/* Sticky + viewport-bound so the panel stays in view instead of inheriting the table's min width on phones. */}
-                      <div className="sticky left-0 w-[min(calc(100vw-4.5rem),100%)]">
-                        <p className="mb-5 text-sm text-muted">
-                          {row.email}
-                          {row.organization && ` · ${row.organization}`}
-                        </p>
-                        <div className="grid gap-8 lg:grid-cols-[minmax(0,18rem)_1fr]">
-                          <fieldset>
-                            <legend className="label mb-3 text-ink">
-                              Attendance
-                            </legend>
-                            <ul className="grid grid-cols-2 gap-2">
-                              {sessions.map((s) => (
-                                <li key={s.id}>
-                                  <label className="flex min-h-11 cursor-pointer items-center gap-2.5 border border-line bg-white px-3 text-sm">
-                                    <input
-                                      type="checkbox"
-                                      className="size-4 accent-navy-900"
-                                      checked={row.attended.includes(s.id)}
-                                      onChange={(e) =>
-                                        setAttendance(
-                                          row.id,
-                                          s.id,
-                                          e.target.checked,
-                                        )
-                                      }
-                                    />
-                                    <span>
-                                      S{s.number}{" "}
-                                      <span className="text-muted">
-                                        · {s.shortDate}
-                                      </span>
-                                    </span>
-                                  </label>
-                                </li>
-                              ))}
-                            </ul>
-                          </fieldset>
-
-                          <div>
-                            <p className="label mb-3 text-ink">Deliverables</p>
-                            <ul className="space-y-2">
-                              {deliverableSessions.map((s) => {
-                                const d = row.deliverables.find(
-                                  (x) => x.sessionId === s.id,
-                                );
-                                const status = d?.status ?? "not_started";
-                                return (
-                                  <li
-                                    key={s.id}
-                                    className="grid gap-3 border border-line bg-white p-3 sm:grid-cols-[1fr_auto] sm:items-center"
-                                  >
-                                    <div className="min-w-0">
-                                      <p className="text-sm font-semibold text-ink">
-                                        S{s.number}: {s.deliverable.title}
-                                      </p>
-                                      <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
-                                        <Tag tone={tone[status]}>
-                                          {
-                                            deliverableStatuses.find(
-                                              (x) => x.value === status,
-                                            )?.label
-                                          }
-                                        </Tag>
-                                        {d?.linkUrl && (
-                                          <a
-                                            href={d.linkUrl}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-1 font-medium text-navy-900 underline underline-offset-4"
-                                          >
-                                            <ExternalLink
-                                              className="size-3.5"
-                                              aria-hidden="true"
-                                            />{" "}
-                                            Link
-                                            <span className="sr-only">
-                                              {" "}
-                                              for session {s.number} (opens in a
-                                              new tab)
-                                            </span>
-                                          </a>
-                                        )}
-                                        {d?.fileId && (
-                                          <a
-                                            href={`/api/files/${d.fileId}`}
-                                            className="inline-flex items-center gap-1 font-medium text-navy-900 underline underline-offset-4"
-                                          >
-                                            <Download
-                                              className="size-3.5"
-                                              aria-hidden="true"
-                                            />{" "}
-                                            File
-                                            <span className="sr-only">
-                                              {" "}
-                                              for session {s.number}
-                                            </span>
-                                          </a>
-                                        )}
-                                      </div>
-                                      {d?.notes && (
-                                        <p className="mt-2 text-sm text-muted">
-                                          “{d.notes}”
-                                        </p>
-                                      )}
-                                    </div>
-                                    <div>
-                                      <label
-                                        htmlFor={`status-${row.id}-${s.id}`}
-                                        className="sr-only"
-                                      >
-                                        Status for session {s.number}{" "}
-                                        deliverable
-                                      </label>
-                                      <select
-                                        id={`status-${row.id}-${s.id}`}
-                                        value={status}
-                                        onChange={(e) =>
-                                          setStatus(
-                                            row.id,
-                                            s.id,
-                                            e.target.value as DeliverableStatus,
-                                          )
-                                        }
-                                        className="min-h-11 w-full border-[1.5px] border-edge bg-white px-2 text-sm"
-                                      >
-                                        {deliverableStatuses.map((o) => (
-                                          <option key={o.value} value={o.value}>
-                                            {o.label}
-                                          </option>
-                                        ))}
-                                      </select>
-                                    </div>
-                                  </li>
-                                );
-                              })}
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </Fragment>
-            );
-          })}
-        </tbody>
-      </table>
+function Participant({ entry }: { entry: RosterEntry }) {
+  const [pending, startTransition] = useTransition();
+  const [error, setError] = useState("");
+  const waiting = entry.deliverables.filter((d) => d.status === "submitted").length;
+  return <details className="group border border-line bg-white open:border-navy-900">
+    <summary className="flex min-h-16 cursor-pointer list-none flex-wrap items-center gap-4 p-5 [&::-webkit-details-marker]:hidden">
+      <span className="min-w-0 flex-1"><span className="block font-display text-2xl">{entry.name}</span>
+        <span className="block break-words text-sm text-muted">{entry.organization || entry.email}</span></span>
+      {waiting > 0 && <Tag tone="amber">{waiting} to review</Tag>}
+      <span className="text-sm text-muted">{entry.capstoneDone}/{entry.capstoneTotal} capstone steps</span>
+      <ChevronDown aria-hidden="true" className="size-5 group-open:rotate-180" />
+    </summary>
+    <div className="space-y-8 border-t border-line p-4 sm:p-6">
+      <p className="break-words text-sm text-muted">{entry.email}</p>
+      <fieldset disabled={pending}>
+        <legend className="label mb-3">Attendance · {entry.attended.length}/{sessions.length}</legend>
+        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">{sessions.map((s) => <label key={s.id} className="flex min-h-11 items-center gap-2 border border-line px-3 text-sm">
+          <input type="checkbox" className="size-4 accent-navy-900" checked={entry.attended.includes(s.id)} onChange={(e) => {
+            const present = e.target.checked;
+            startTransition(async () => {
+              setError("");
+              try { await setAttendanceAction(entry.id, s.id, present); }
+              catch { setError("Attendance could not be saved. Try again."); }
+            });
+          }} />Session {s.number} · {s.shortDate}
+        </label>)}</div>
+        <FormMessage message={error} />
+      </fieldset>
+      <div className="space-y-4">{deliverableSessions.map((s) => {
+        const d = entry.deliverables.find((item) => item.sessionId === s.id);
+        return <section key={s.id} aria-labelledby={`review-${entry.id}-${s.id}`} className="border border-line bg-paper p-4 sm:p-5">
+          <h3 id={`review-${entry.id}-${s.id}`} className="font-semibold">Session {s.number} · {s.deliverable.title}</h3>
+          <p className="mt-1 text-sm text-muted">{deliverableStatuses.find((status) => status.value === (d?.status ?? "not_started"))?.label}
+            {d && ` · Revision ${d.revision}`}</p>
+          {d?.notes && <p className="mt-3 whitespace-pre-wrap break-words text-sm">Participant notes: {d.notes}</p>}
+          <div className="mt-3 flex flex-wrap gap-4 text-sm font-semibold">
+            {d?.linkUrl && <a href={d.linkUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-2 underline underline-offset-4"><ExternalLink className="size-4" aria-hidden="true" />Open work<span className="sr-only"> (new tab)</span></a>}
+            {d?.fileId && <a href={`/api/files/${d.fileId}`} className="inline-flex min-h-11 items-center gap-2 underline underline-offset-4"><Download className="size-4" aria-hidden="true" />Download work</a>}
+          </div>
+          {d && (d.linkUrl || d.fileId) ? <ReviewForm userId={entry.id} deliverable={d} /> : <p className="mt-2 text-sm text-muted">A link or file is needed before this work can be reviewed.</p>}
+        </section>;
+      })}</div>
     </div>
-  );
+  </details>;
+}
+
+function ReviewForm({ userId, deliverable: d }: { userId: string; deliverable: RosterDeliverable }) {
+  const [state, action] = useActionState(reviewDeliverableAction, {});
+  const id = `feedback-${userId}-${d.sessionId}`;
+  return <form action={action} noValidate className="mt-4 space-y-4">
+    <input type="hidden" name="userId" value={userId} />
+    <input type="hidden" name="sessionId" value={d.sessionId} />
+    <input type="hidden" name="version" value={d.version} />
+    <details className="border border-line bg-white p-3">
+      <summary className="cursor-pointer text-sm font-semibold">Review criteria</summary>
+      <ul className="mt-3 list-disc space-y-2 pl-5 text-sm">{learningGuides[d.sessionId]?.criteria.map((criterion) => <li key={criterion}>{criterion}</li>)}</ul>
+    </details>
+    {d.feedback && d.feedbackRevision !== d.revision && <p className="text-sm text-amber-deep">Previous feedback was for revision {d.feedbackRevision}. Check the new work before saving a decision.</p>}
+    <TextAreaField id={id} name="feedback" label="Feedback for this revision" hint="Name a strength, explain what to improve, and give one concrete next step. Visible to the participant."
+      maxLength={4000} required defaultValue={state.values?.feedback ?? d.feedback} errors={state.errors?.feedback} />
+    <SelectField id={`${id}-decision`} name="status" label="Review decision" options={[
+      { value: "needs_revision", label: "Needs revision — give a next step" },
+      { value: "reviewed", label: "Reviewed — meets the criteria" },
+    ]} defaultValue={state.values?.status ?? (d.status === "reviewed" ? "reviewed" : "needs_revision")} errors={state.errors?.status} />
+    <SubmitButton variant="secondary" pendingLabel="Saving feedback…">Save feedback</SubmitButton>
+    <FormMessage ok={state.ok} message={state.message ?? (state.errors ? "Check the feedback fields above." : undefined)} />
+  </form>;
 }

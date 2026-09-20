@@ -2,9 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { deliverableStatuses, sessionById } from "@/data/cohortData";
+import { sessionById } from "@/data/cohortData";
 import { requireAdmin } from "@/lib/auth/session";
 import { getStore } from "@/lib/store";
+import { DeliverableError } from "@/lib/store/deliverable-state";
 import { removeFile, saveUpload, UploadError } from "@/lib/uploads";
 import {
   fieldErrors,
@@ -29,20 +30,32 @@ export async function setAttendanceAction(userId: string, sessionId: string, pre
   revalidatePath("/admin");
 }
 
-export async function setDeliverableStatusAction(
-  userId: string,
-  sessionId: string,
-  status: string,
-): Promise<void> {
+export async function reviewDeliverableAction(_prev: FormState, formData: FormData): Promise<FormState> {
   await requireAdmin("/admin");
-  const parsedStatus = z.enum(deliverableStatuses.map((s) => s.value) as [string, ...string[]]).parse(status);
-  const parsedSession = sessionIdSchema.parse(sessionId);
-  if (!sessionById(parsedSession)?.deliverable) throw new Error("That session has no deliverable.");
-  await (await getStore()).upsertDeliverable(await participantId(userId), parsedSession, {
-    status: parsedStatus as (typeof deliverableStatuses)[number]["value"],
-  });
+  const values = textValues(formData);
+  const parsed = z.object({
+    userId: idSchema,
+    sessionId: sessionIdSchema,
+    status: z.enum(["reviewed", "needs_revision"]),
+    feedback: z.string().trim().min(10, "Describe a strength and the next step (at least 10 characters).").max(4000),
+    version: z.coerce.number().int().nonnegative(),
+  }).safeParse(values);
+  if (!parsed.success) return { errors: fieldErrors(parsed.error), values };
+  const { userId, sessionId, status, feedback, version } = parsed.data;
+  if (!sessionById(sessionId)?.deliverable) return { message: "That session has no deliverable.", values };
+  const store = await getStore();
+  const id = await participantId(userId);
+  const current = await store.getDeliverable(id, sessionId);
+  if (!current?.linkUrl && !current?.fileId) return { message: "Wait for a link or file before reviewing this work.", values };
+  try {
+    await store.upsertDeliverable(id, sessionId, { status, feedback, expectedVersion: version });
+  } catch (error) {
+    if (error instanceof DeliverableError) return { message: error.message, values };
+    throw error;
+  }
   revalidatePath("/admin");
   revalidatePath("/dashboard");
+  return { ok: true, message: "Feedback saved. The participant can see your decision and next step." };
 }
 
 export async function uploadResourceAction(_prev: FormState, formData: FormData): Promise<FormState> {

@@ -11,7 +11,7 @@ async function create(): Promise<Store> {
     if (process.env.NODE_ENV === "production" && process.env.ALLOW_FILE_BACKEND !== "true") {
       throw new Error('DATA_BACKEND="file" is for local development only. Use "mysql" in production.');
     }
-    return (await import("./file")).createFileStore();
+    return (await import("./file")).createFileStore(process.env.LOCAL_DATA_DIR);
   }
   if (backend === "mysql") {
     return (await import("./mysql")).createMysqlStore();

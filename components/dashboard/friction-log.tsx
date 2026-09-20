@@ -41,6 +41,7 @@ export function FrictionLog({ entries }: { entries: FrictionEntry[] }) {
     <div className="grid gap-8 lg:grid-cols-[minmax(0,22rem)_1fr]">
       <form action={action} noValidate className="h-fit space-y-4 border border-line bg-white p-5 sm:p-6">
         <h3 className="font-display text-xl text-navy-900">Log a friction point</h3>
+        <p className="text-sm text-muted">Visible to you and your instructors so they can plan the labs. Use a task description, not private customer or employee data.</p>
         <TextField
           id="friction-task"
           name="task"

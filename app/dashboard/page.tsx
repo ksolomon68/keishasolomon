@@ -3,10 +3,15 @@ import { NextSessionSummary } from "@/components/dashboard/countdown";
 import { DeliverableHub, type FileInfo } from "@/components/dashboard/deliverable-hub";
 import { FrictionLog } from "@/components/dashboard/friction-log";
 import { SessionGrid } from "@/components/dashboard/session-grid";
+import { NextStep } from "@/components/dashboard/next-step";
 import { capstoneSteps, deliverableSessions, sessions } from "@/data/cohortData";
 import { requireUser } from "@/lib/auth/session";
 import { getStore } from "@/lib/store";
 import { ACCEPT_ATTR } from "@/lib/uploads";
+import Link from "next/link";
+import { Award } from "lucide-react";
+import { buttonStyles } from "@/components/ui/button";
+import React from "react";
 
 const sections = [
   { id: "sessions", label: "Sessions" },
@@ -15,7 +20,10 @@ const sections = [
   { id: "capstone", label: "Capstone" },
 ];
 
-const formatBytes = (n: number) => (n < 1024 * 1024 ? `${Math.max(1, Math.round(n / 1024))} KB` : `${(n / 1024 / 1024).toFixed(1)} MB`);
+const formatBytes = (n: number) =>
+  n < 1024 * 1024
+    ? `${Math.max(1, Math.round(n / 1024))} KB`
+    : `${(n / 1024 / 1024).toFixed(1)} MB`;
 
 export default async function DashboardPage() {
   const user = await requireUser("/dashboard");
@@ -35,8 +43,12 @@ export default async function DashboardPage() {
     }),
   );
 
-  const submitted = deliverables.filter((d) => d.status === "submitted" || d.status === "reviewed").length;
-  const capstoneDone = capstone.filter((c) => capstoneSteps.some((s) => s.id === c.stepId)).length;
+  const submitted = deliverables.filter(
+    (d) => d.status === "submitted" || d.status === "reviewed",
+  ).length;
+  const capstoneDone = capstone.filter((c) =>
+    capstoneSteps.some((s) => s.id === c.stepId),
+  ).length;
   const openFriction = friction.filter((f) => !f.done).length;
   const firstName = user.name.split(" ")[0];
 
@@ -45,10 +57,12 @@ export default async function DashboardPage() {
       <section data-surface="dark" className="grid-backdrop bg-navy-900 pb-10 pt-12 text-white sm:pt-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <p className="label text-amber">Participant dashboard</p>
-          <h1 className="mt-3 font-display text-4xl font-light sm:text-5xl">Welcome back, {firstName}.</h1>
+          <h1 className="mt-3 font-display text-4xl font-light sm:text-5xl">
+            Welcome back, {firstName}.
+          </h1>
           <p className="mt-3 max-w-2xl text-on-navy">
-            Your workspace for the eight-month cohort: prep for the next session, log friction, submit deliverables and
-            keep your capstone on track.
+            Your workspace for the eight-month cohort: prep for the next session, log friction, submit
+            deliverables and keep your capstone on track.
           </p>
         </div>
       </section>
@@ -59,7 +73,13 @@ export default async function DashboardPage() {
             <dt className="label mb-3 text-amber-deep">Next session</dt>
             <dd>
               <NextSessionSummary
-                sessions={sessions.map(({ id, number, date, dateLabel, theme }) => ({ id, number, date, dateLabel, theme }))}
+                sessions={sessions.map(({ id, number, date, dateLabel, theme }) => ({
+                  id,
+                  number,
+                  date,
+                  dateLabel,
+                  theme,
+                }))}
               />
             </dd>
           </div>
@@ -67,6 +87,7 @@ export default async function DashboardPage() {
           <Stat label="Capstone steps done" value={`${capstoneDone}/${capstoneSteps.length}`} />
           <Stat label="Open friction tasks" value={String(openFriction)} />
         </dl>
+        <NextStep deliverables={deliverables} hasFriction={friction.length > 0} />
       </div>
 
       <nav
@@ -98,8 +119,8 @@ export default async function DashboardPage() {
 
         <DashSection id="deliverables" eyebrow="Monthly assets" title="Deliverable submission hub">
           <p className="mb-6 max-w-3xl text-muted">
-            Mark each deliverable as you go and attach a link or file when it&rsquo;s ready. Sanitize anything sensitive
-            first, per the Safe Harbor pledge.
+            Mark each deliverable as you go and attach a link or file when it&rsquo;s ready.
+            Sanitize anything sensitive first, per the Safe Harbor pledge.
           </p>
           <DeliverableHub deliverables={deliverables} files={files} accept={ACCEPT_ATTR} />
         </DashSection>
@@ -107,6 +128,38 @@ export default async function DashboardPage() {
         <DashSection id="capstone" eyebrow="Toward the showcase" title="Capstone tracker">
           <CapstoneTracker doneIds={capstone.map((c) => c.stepId)} />
         </DashSection>
+
+        {/* Certificate download */}
+        <section
+          id="certificate"
+          aria-labelledby="certificate-title"
+          className="scroll-mt-32 rounded-sm border border-amber/40 bg-amber/5 p-8 sm:p-10"
+        >
+          <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="label text-amber-deep">Programme credential</p>
+              <h2
+                id="certificate-title"
+                className="mt-2 font-display text-3xl text-navy-900 sm:text-4xl"
+              >
+                Certificate of Completion
+              </h2>
+              <p className="mt-2 max-w-lg text-muted">
+                Upon completing the eight-month cohort, download your personalised EVOBRAND
+                Concepts certificate — ready to share on LinkedIn, with your team, or for
+                your records.
+              </p>
+            </div>
+            <Link
+              href="/certificate"
+              id="download-certificate-link"
+              className={buttonStyles({ variant: "primary" })}
+            >
+              <Award className="size-4" />
+              View Certificate
+            </Link>
+          </div>
+        </section>
       </div>
     </>
   );

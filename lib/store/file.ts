@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { mergeDeliverable, normalizeDeliverable } from "./deliverable-state";
 import {
   EmailTakenError,
   type Attendance,
@@ -45,7 +46,9 @@ export function createFileStore(dir = path.join(process.cwd(), ".data")): Store 
 
   async function load(): Promise<Db> {
     try {
-      return { ...empty(), ...(JSON.parse(await readFile(file, "utf8")) as Partial<Db>) };
+      const db = { ...empty(), ...(JSON.parse(await readFile(file, "utf8")) as Partial<Db>) };
+      db.deliverables = db.deliverables.map(normalizeDeliverable);
+      return db;
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === "ENOENT") return empty();
       throw error;
@@ -137,10 +140,14 @@ export function createFileStore(dir = path.join(process.cwd(), ".data")): Store 
             notes: "",
             fileId: null,
             updatedAt: now(),
+            version: 0,
+            revision: 1,
+            feedback: "",
+            feedbackRevision: null,
           };
           db.deliverables.push(row);
         }
-        Object.assign(row, patch, { updatedAt: now() });
+        Object.assign(row, mergeDeliverable(row, patch));
         return { ...row };
       }),
 
