@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    # All logic lives in the script so it can be read, tested and changed without touching YAML.
+    - /bin/bash scripts/cpanel-deploy.sh
