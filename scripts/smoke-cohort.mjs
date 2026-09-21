@@ -129,6 +129,17 @@ assert.ok(!adminB.includes("Alex Example") && !adminB.includes("Turn fictional m
 assert.ok(adminA.includes("TEST-COHORT-A") && !adminA.includes("TEST-COHORT-B"), "only the selected cohort's access code is shown");
 console.log("PASS: dashboards use each cohort's calendar; instructor roster, friction and codes are scoped per cohort");
 
+// The printable instructor guide is instructor-only and reflects the selected cohort's calendar and headcount.
+assert.equal((await page("/admin/guide")).response.status, 307, "signed-out visitors are sent to sign in");
+assert.equal((await page("/admin/guide", participant)).response.status, 307, "participants are sent back to their dashboard");
+const guideB = await page(`/admin/guide?cohort=${cohortB.id}`, instructor);
+assert.equal(guideB.response.status, 200);
+assert.ok(guideB.text.includes("Test cohort B") && guideB.text.includes("March 5, 2027"), "guide uses the selected cohort's name and dates");
+assert.ok(guideB.text.includes("The Prompt Duel") && guideB.text.includes("Final Showcase"), "guide covers the sessions");
+assert.ok(guideB.text.includes("March 5, 2027 to"), "cover calendar starts at cohort B's first session");
+assert.ok(!guideB.text.includes("October 16, 2026"), "guide for cohort B must not use the default session 1 date");
+console.log("PASS: instructor guide is instructor-only and scoped to the selected cohort");
+
 // Registration is routed by access code (case-insensitive) and wrong codes are refused.
 await page("/register");
 const register = (accessCode, email) => action("registerAction", "/register", [{}, form({

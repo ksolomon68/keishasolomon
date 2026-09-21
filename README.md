@@ -23,6 +23,16 @@ register participants at `/register` with that cohort's access code:
 ADMIN_PASSWORD='choose-a-long-password' npm run admin:create -- "Keisha Solomon" you@yourdomain.com
 ```
 
+## Instructor guide
+
+`/admin/guide` (button on the command center) is a printable facilitation booklet: the 90-minute run of show, how to review
+work, and a chapter per session with prep, hook and lab steps, coaching notes, peer stress-test prompts, the discussion case,
+review criteria and a capstone checkpoint. It is generated from the same data as the participant dashboard
+(`data/cohortData.ts`, `data/learning-guides.ts`, `data/cohort-practice.ts`) plus instructor-only notes in
+[`data/instructor-guide.ts`](data/instructor-guide.ts), and uses the selected cohort's dates and headcount (the showcase
+chapter sizes the demo block from it). Use **Print / Save as PDF** with Letter, portrait and *Background graphics* on.
+Edit the facilitation wording in `data/instructor-guide.ts`; everything else follows the curriculum.
+
 ## Running several cohorts at once
 
 The curriculum (sessions, deliverables, capstone) is shared. A **cohort** is one run of it, and each cohort keeps its own:
