@@ -138,7 +138,16 @@ function Cover({ cohort, schedule }: { cohort: Cohort | null; schedule: Session[
       <div data-surface="dark" className="grid-backdrop flex min-h-[9.4in] flex-col justify-between p-10 sm:p-14">
         <div className="flex items-center gap-4">
           <Image src="/favicon-source.png" alt="" width={56} height={56} className="size-14" priority />
-          <p className="label text-on-navy">{instructor.company}</p>
+          <p className="label text-on-navy">
+            <a
+              href={instructor.companyUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-amber hover:underline"
+            >
+              {instructor.company}
+            </a>
+          </p>
         </div>
         <div>
           <p className="label text-amber">Instructor guide</p>

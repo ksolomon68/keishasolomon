@@ -18,7 +18,16 @@ export function InstructorBlock() {
           <h2 id="instructor-title" className="mt-2 font-display text-4xl font-light text-navy-900">
             {instructor.name}
           </h2>
-          <p className="mt-1 font-medium text-cyan-deep">{instructor.company}</p>
+          <p className="mt-1 font-medium text-cyan-deep">
+            <a
+              href={instructor.companyUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline"
+            >
+              {instructor.company}
+            </a>
+          </p>
           <p className="mt-5 text-lg leading-relaxed text-muted">{instructor.summary}</p>
         </div>
       </div>

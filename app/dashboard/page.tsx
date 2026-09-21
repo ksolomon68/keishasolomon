@@ -172,9 +172,33 @@ export default async function DashboardPage() {
                 Certificate of Completion
               </h2>
               <p className="mt-2 max-w-lg text-muted">
-                {isCertUnlocked
-                  ? "Congratulations! Your official EVOBRAND Concepts certificate is ready for download — share on LinkedIn or save for your records."
-                  : `Complete all ${totalCapstoneSteps} capstone steps to unlock your official EVOBRAND Concepts certificate of completion.`}
+                {isCertUnlocked ? (
+                  <>
+                    Congratulations! Your official{" "}
+                    <a
+                      href="https://evobrand.net"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium text-navy-900 underline underline-offset-2 hover:text-amber-deep"
+                    >
+                      EVOBRAND Concepts
+                    </a>{" "}
+                    certificate is ready for download — share on LinkedIn or save for your records.
+                  </>
+                ) : (
+                  <>
+                    Complete all {totalCapstoneSteps} capstone steps to unlock your official{" "}
+                    <a
+                      href="https://evobrand.net"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium text-navy-900 underline underline-offset-2 hover:text-amber-deep"
+                    >
+                      EVOBRAND Concepts
+                    </a>{" "}
+                    certificate of completion.
+                  </>
+                )}
               </p>
             </div>
             {isCertUnlocked ? (

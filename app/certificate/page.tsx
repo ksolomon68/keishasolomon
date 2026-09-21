@@ -41,8 +41,16 @@ export default async function CertificatePage() {
           </h1>
 
           <p className="mt-3 text-lg leading-relaxed text-muted">
-            The official <span className="font-semibold text-navy-900">EVOBRAND Concepts</span> Certificate
-            of Completion is awarded upon finishing all milestones in your capstone project.
+            The official{" "}
+            <a
+              href="https://evobrand.net"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-navy-900 underline underline-offset-2 hover:text-amber-deep"
+            >
+              EVOBRAND Concepts
+            </a>{" "}
+            Certificate of Completion is awarded upon finishing all milestones in your capstone project.
           </p>
 
           {/* Progress Box */}

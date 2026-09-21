@@ -54,7 +54,15 @@ export function Hero() {
             <figcaption>
               <p className="font-display text-xl">{instructor.name}</p>
               <p className="text-sm text-on-navy">
-                {instructor.role} · {instructor.company}
+                {instructor.role} ·{" "}
+                <a
+                  href={instructor.companyUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline underline-offset-2 hover:text-amber"
+                >
+                  {instructor.company}
+                </a>
               </p>
             </figcaption>
           </figure>

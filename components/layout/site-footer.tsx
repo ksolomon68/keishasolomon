@@ -9,7 +9,16 @@ export function SiteFooter() {
           <p className="font-display text-2xl text-white">{site.name}</p>
           <p className="mt-1 text-on-navy">{site.tagline}</p>
           <p className="mt-5 max-w-sm text-sm leading-relaxed">
-            An {site.format.toLowerCase()} led by {instructor.name} of {instructor.company}.
+            An {site.format.toLowerCase()} led by {instructor.name} of{" "}
+            <a
+              href={instructor.companyUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white underline underline-offset-4 hover:text-amber"
+            >
+              {instructor.company}
+            </a>
+            .
           </p>
         </div>
 
@@ -36,7 +45,16 @@ export function SiteFooter() {
           <h2 className="label text-amber">Contact</h2>
           <address className="mt-4 space-y-2.5 text-[0.9375rem] not-italic">
             <p className="text-white">{instructor.name}</p>
-            <p>{instructor.company}</p>
+            <p>
+              <a
+                href={instructor.companyUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white underline underline-offset-4 hover:text-amber"
+              >
+                {instructor.company}
+              </a>
+            </p>
             <p>
               <a href={site.url} className="text-white underline underline-offset-4 hover:text-amber">
                 keishasolomon.com
@@ -58,7 +76,16 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-white/10">
         <p className="mx-auto max-w-7xl px-4 py-5 text-sm sm:px-6 lg:px-8">
-          © {new Date().getFullYear()} {instructor.company}. All rights reserved.
+          © {new Date().getFullYear()}{" "}
+          <a
+            href={instructor.companyUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline underline-offset-4 hover:text-amber"
+          >
+            {instructor.company}
+          </a>
+          . All rights reserved.
         </p>
       </div>
     </footer>

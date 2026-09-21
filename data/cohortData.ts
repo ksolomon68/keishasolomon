@@ -16,6 +16,7 @@ export const site = {
 export const instructor = {
   name: "Keisha Solomon",
   company: "EVOBRAND Concepts",
+  companyUrl: "https://evobrand.net",
   role: "Lead Instructor",
   summary:
     "Keisha Solomon leads a practical, ethical and accessible approach to AI for local leaders, entrepreneurs and organizational teams: tools that save time and improve operations, taught through live builds instead of lectures.",

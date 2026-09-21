@@ -127,14 +127,21 @@ export function CertificateSheet({
           <Corner className="cert-corner-br" />
 
           <div className="cert-body">
-            <Image
-              src="/evobrand-logo.png"
-              alt="EVOBRAND Concepts"
-              width={1024}
-              height={175}
-              className="cert-logo"
-              priority
-            />
+            <a
+              href={instructor.companyUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block transition-opacity hover:opacity-85"
+            >
+              <Image
+                src="/evobrand-logo.png"
+                alt="EVOBRAND Concepts"
+                width={1024}
+                height={175}
+                className="cert-logo"
+                priority
+              />
+            </a>
 
             <h1 className="cert-title">Certificate</h1>
             <p className="cert-subtitle">of Completion</p>
@@ -174,7 +181,15 @@ export function CertificateSheet({
                 <span className="cert-sign-rule" aria-hidden="true" />
                 <p className="cert-sign-name">{instructor.name}</p>
                 <p className="cert-sign-role">
-                  {instructor.role}, {instructor.company}
+                  {instructor.role},{" "}
+                  <a
+                    href={instructor.companyUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline"
+                  >
+                    {instructor.company}
+                  </a>
                 </p>
               </div>
 

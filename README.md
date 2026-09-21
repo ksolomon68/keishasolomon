@@ -1,6 +1,6 @@
 # The AI Executive Sandbox — keishasolomon.com
 
-Cohort platform for **The AI Executive Sandbox: Applied Leadership & Innovation**, taught by Keisha Solomon (EVOBRAND Concepts).
+Cohort platform for **The AI Executive Sandbox: Applied Leadership & Innovation**, taught by Keisha Solomon ([EVOBRAND Concepts](https://evobrand.net)).
 
 - **Public site** (`/`, `/onboarding`): landing page, filterable syllabus timeline, onboarding checklist, Safe Harbor pledge.
 - **Participant portal** (`/dashboard`): session modules with countdowns and materials, Workplace Friction log, deliverable submission hub, capstone tracker.
