@@ -105,7 +105,7 @@ self.__SERVER_FILES_MANIFEST={
         "transform": "lodash/{{member}}"
       }
     },
-    "outputFileTracingRoot": "C:\\dev\\keishasolomon",
+    "outputFileTracingRoot": "C:\\Users\\KSOLO\\OneDrive\\Documents\\keishasolomon",
     "enablePrerenderSourceMaps": true,
     "cacheComponents": false,
     "cacheLife": {
@@ -323,14 +323,14 @@ self.__SERVER_FILES_MANIFEST={
     "htmlLimitedBots": "[\\w-]+-Google|Google-[\\w-]+|Chrome-Lighthouse|Slurp|DuckDuckBot|baiduspider|yandex|sogou|bitlybot|tumblr|vkShare|quora link preview|redditbot|ia_archiver|Bingbot|BingPreview|applebot|facebookexternalhit|facebookcatalog|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|SkypeUriPreview|Yeti|googleweblight",
     "bundlePagesRouterDependencies": false,
     "configFileName": "next.config.ts",
-    "repoRoot": "C:\\dev\\keishasolomon",
+    "repoRoot": "C:\\Users\\KSOLO\\OneDrive\\Documents\\keishasolomon",
     "turbopack": {
-      "root": "C:\\dev\\keishasolomon"
+      "root": "C:\\Users\\KSOLO\\OneDrive\\Documents\\keishasolomon"
     },
     "distDirRoot": ".next",
     "supportsImmutableAssets": false
   },
-  "appDir": "C:\\dev\\keishasolomon",
+  "appDir": "C:\\Users\\KSOLO\\OneDrive\\Documents\\keishasolomon",
   "relativeAppDir": "",
   "files": [
     ".next\\package.json",

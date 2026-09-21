@@ -9,5 +9,6 @@
   "/certificate/page": "/certificate",
   "/onboarding/page": "/onboarding",
   "/admin/page": "/admin",
+  "/admin/guide/page": "/admin/guide",
   "/dashboard/page": "/dashboard"
 }

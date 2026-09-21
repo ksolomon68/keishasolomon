@@ -9,5 +9,6 @@
   "/certificate/page": "app/certificate/page.js",
   "/onboarding/page": "app/onboarding/page.js",
   "/admin/page": "app/admin/page.js",
+  "/admin/guide/page": "app/admin/guide/page.js",
   "/dashboard/page": "app/dashboard/page.js"
 }
