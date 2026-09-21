@@ -15,16 +15,16 @@ const isoToUtc = (iso: string) => {
 
 export const formatLongDate = (iso: string): string => long.format(isoToUtc(iso));
 
-/** The programme's default calendar, used to prefill a new cohort. */
+/** The program's default calendar, used to prefill a new cohort. */
 export function defaultSessionDates(): SessionDates {
   return Object.fromEntries(sessions.map((s) => [s.id, s.date]));
 }
 
 /**
  * The curriculum with one cohort's dates applied. A session the cohort doesn't mention keeps the
- * programme default (including its own "March 2027 (Date TBA)" wording), so old cohorts stay valid if a
+ * program default (including its own "March 2027 (Date TBA)" wording), so old cohorts stay valid if a
  * session is ever added. A date the cohort sets explicitly to null is plainly "to be announced": the
- * programme's month hint belongs to the default calendar, not to every cohort.
+ * program's month hint belongs to the default calendar, not to every cohort.
  */
 export function cohortSchedule(dates?: SessionDates | null): Session[] {
   return sessions.map((session) => {

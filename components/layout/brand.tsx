@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 
-/** Official site logo: EVOBRAND sphere + programme name. */
+/** Official site logo: EVOBRAND sphere + program name. */
 export function Brand({ className = "" }: { className?: string }) {
   return (
     <Link href="/" className={`group inline-flex items-center gap-2.5 ${className}`} aria-label="The AI Executive Sandbox, home">

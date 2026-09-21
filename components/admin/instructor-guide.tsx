@@ -154,7 +154,7 @@ function Cover({ cohort, schedule }: { cohort: Cohort | null; schedule: Session[
         <dl className="grid gap-4 border-t border-white/20 pt-6 text-sm sm:grid-cols-3">
           <div>
             <dt className="label text-amber">Cohort</dt>
-            <dd className="mt-1 text-base">{cohort?.name ?? "Programme default"}</dd>
+            <dd className="mt-1 text-base">{cohort?.name ?? "Program default"}</dd>
           </div>
           <div>
             <dt className="label text-amber">Calendar</dt>
@@ -205,7 +205,7 @@ function Contents({ schedule }: { schedule: Session[] }) {
       <Callout label="Suggestions, not scripts">
         The timings, prompts and warnings here are starting points built from each session&rsquo;s own hook, lab and
         review criteria. Adapt them to the room. Where this guide says something must happen (approval, invented
-        data, human review), that comes straight from the programme&rsquo;s Safe Harbor commitments.
+        data, human review), that comes straight from the program&rsquo;s Safe Harbor commitments.
       </Callout>
     </Sheet>
   );
@@ -270,7 +270,7 @@ function HowToUse({
         ))}
       </div>
       <p className="mt-3 text-sm text-muted">
-        The programme promises participants: {valueMatrix.pillars.map((p) => p.title.toLowerCase()).join("; ")}.
+        The program promises participants: {valueMatrix.pillars.map((p) => p.title.toLowerCase()).join("; ")}.
       </p>
 
       <H2>Room and technology</H2>
@@ -656,7 +656,7 @@ function Appendix({ schedule, deliverables }: { schedule: Session[]; deliverable
       <Sheet>
         <H2 eyebrow="Appendix">The capstone path</H2>
         <p className="mt-3 text-[0.9375rem] leading-relaxed text-muted">
-          Each participant works toward one capstone problem across the programme. Use this to check progress at every
+          Each participant works toward one capstone problem across the program. Use this to check progress at every
           session.
         </p>
         <div className="mt-4 overflow-x-auto">

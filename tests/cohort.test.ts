@@ -70,7 +70,7 @@ test("file store persists feedback, isolates users, rejects concurrent saves, an
 test("a cohort's calendar overrides the default dates without touching other cohorts or the curriculum", () => {
   assert.deepEqual(cohortSchedule(undefined), sessions);
   assert.deepEqual(cohortSchedule({}), sessions);
-  // A new cohort starts from the default dates; an explicit "TBA" drops the programme's "March 2027" hint.
+  // A new cohort starts from the default dates; an explicit "TBA" drops the program's "March 2027" hint.
   const seeded = cohortSchedule(defaultSessionDates());
   assert.deepEqual(seeded.map((s) => s.date), sessions.map((s) => s.date));
   assert.deepEqual(seeded.filter((s) => s.date), sessions.filter((s) => s.date), "confirmed dates are untouched");

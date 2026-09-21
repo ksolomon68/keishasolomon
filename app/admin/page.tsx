@@ -129,7 +129,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
           />
           <details className="mt-8 border border-line bg-paper-deep p-4 sm:p-5">
             <summary className="min-h-11 cursor-pointer font-semibold text-navy-900">
-              Run another programme: create a new cohort
+              Run another program: create a new cohort
             </summary>
             <div className="mt-4">
               <NewCohortForm />

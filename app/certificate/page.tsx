@@ -13,7 +13,7 @@ import { buttonStyles } from "@/components/ui/button";
 export const metadata: Metadata = {
   title: "Certificate of Completion – The AI Executive Sandbox",
   description:
-    "Certificate of Completion for the AI Executive Sandbox programme, issued by EVOBRAND Concepts.",
+    "Certificate of Completion for the AI Executive Sandbox program, issued by EVOBRAND Concepts.",
 };
 
 export default async function CertificatePage() {

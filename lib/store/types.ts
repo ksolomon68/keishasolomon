@@ -13,7 +13,7 @@ export type Role = "participant" | "admin";
 export const DEFAULT_COHORT_ID = "00000000-0000-4000-8000-000000000001";
 
 /**
- * One run of the programme. Each cohort has its own roster, access code, calendar and resources;
+ * One run of the program. Each cohort has its own roster, access code, calendar and resources;
  * the curriculum itself (sessions, deliverables, capstone) is shared and lives in `data/cohortData.ts`.
  */
 export interface Cohort {
@@ -21,7 +21,7 @@ export interface Cohort {
   name: string;
   /** Participants enter this on /register to join the cohort. Unique across cohorts, case-insensitive. */
   accessCode: string;
-  /** Session id -> ISO date (YYYY-MM-DD) or null for "to be announced". Missing ids use the programme default. */
+  /** Session id -> ISO date (YYYY-MM-DD) or null for "to be announced". Missing ids use the program default. */
   sessionDates: Record<string, string | null>;
   /** Date printed on certificates (ISO). Falls back to the cohort's last session date. */
   completionDate: string | null;

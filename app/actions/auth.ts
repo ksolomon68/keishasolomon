@@ -16,7 +16,7 @@ const safeValues = (formData: FormData) => {
   return values;
 };
 
-/** Only same-site relative paths are honoured after login (prevents open redirects). */
+/** Only same-site relative paths are honored after login (prevents open redirects). */
 function safeNext(value: FormDataEntryValue | null): string | null {
   return typeof value === "string" && /^\/(?![/\\])/.test(value) ? value : null;
 }

@@ -47,7 +47,7 @@ The curriculum (sessions, deliverables, capstone) is shared. A **cohort** is one
 - **Certificate**: shows the cohort name and its own completion date (defaults to the cohort's last session date).
 
 The instructor account sits above all cohorts. `/admin?cohort=<id>` scopes every stat, roster and review to one cohort.
-The public landing page still shows the programme's default schedule from `data/cohortData.ts`.
+The public landing page still shows the program's default schedule from `data/cohortData.ts`.
 
 ## Switching to MySQL
 
@@ -102,7 +102,7 @@ Behind a reverse proxy, forward the public host in `X-Forwarded-Host` (Server Ac
 
 All curriculum content lives in [`data/cohortData.ts`](data/cohortData.ts): session themes, hooks, labs, deliverables,
 the 90-minute agenda, onboarding checklist, Safe Harbor copy and the capstone steps. The landing page, dashboard,
-roster and tracker all read from it. The `date`, `dateLabel` and `shortDate` values there are the programme's *default*
+roster and tracker all read from it. The `date`, `dateLabel` and `shortDate` values there are the program's *default*
 calendar (public site, and the starting dates for a new cohort); each cohort's real dates are edited in `/admin`.
 When the **March 2027** date is announced for the founding cohort, set it under that cohort's *Session 6* date.
 

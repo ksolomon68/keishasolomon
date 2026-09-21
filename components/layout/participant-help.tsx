@@ -12,7 +12,7 @@ export function ParticipantHelp() {
 export function SessionLogistics() {
   return <aside className="border-l-4 border-cyan-deep bg-white p-5 sm:p-6" aria-label="Session logistics">
     <p className="font-semibold text-ink">Before you travel</p>
-    <p className="mt-2 text-sm text-muted">Session dates are listed below. Start time, time zone, and venue are awaiting confirmation on this site. Check your welcome message or contact your instructor for confirmed details before travelling.</p>
+    <p className="mt-2 text-sm text-muted">Session dates are listed below. Start time, time zone, and venue are awaiting confirmation on this site. Check your welcome message or contact your instructor for confirmed details before traveling.</p>
     <ParticipantHelp />
   </aside>;
 }

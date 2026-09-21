@@ -58,7 +58,7 @@ export function NextStep({ deliverables, hasFriction, schedule }: { deliverables
       {!now ? <p className="mt-4 text-muted">Checking the schedule…</p> : next ? <>
         <p className="mt-4 font-display text-2xl">{next.dateLabel}</p><p className="mt-2 text-sm text-muted">{next.theme}</p>
       </> : <p className="mt-4 text-muted">No upcoming confirmed dates. Check the pending notice below.</p>}
-      <p className="mt-4 text-sm text-muted">Time and venue are awaiting confirmation. Check your welcome message or contact your instructor before travelling.</p>
+      <p className="mt-4 text-sm text-muted">Time and venue are awaiting confirmation. Check your welcome message or contact your instructor before traveling.</p>
       {schedule.filter((s) => !s.date).map((s) => <p key={s.id} className="mt-4 border-t border-line pt-4 text-sm"><strong>Pending:</strong> Session {s.number} · {s.dateLabel}. This does not change the other confirmed dates.</p>)}
     </aside>
   </section>;

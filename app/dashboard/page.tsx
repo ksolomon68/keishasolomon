@@ -154,7 +154,7 @@ export default async function DashboardPage() {
           <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <div className="flex items-center gap-2">
-                <p className="label text-amber-deep">Programme credential</p>
+                <p className="label text-amber-deep">Program credential</p>
                 {isCertUnlocked ? (
                   <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800">
                     <CheckCircle2 className="size-3" /> Unlocked & Ready

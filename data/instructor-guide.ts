@@ -47,7 +47,7 @@ export const sessionFacilitation: Record<string, SessionFacilitation> = {
   },
   s2: {
     prep: [
-      "Write five or six invented “employee prompts”, each hiding at least one problem: client data pasted in, a proprietary formula, copyrighted text, a biased screening instruction, an output that only works if you can see colour. Keep an answer key.",
+      "Write five or six invented “employee prompts”, each hiding at least one problem: client data pasted in, a proprietary formula, copyrighted text, a biased screening instruction, an output that only works if you can see color. Keep an answer key.",
       "Remind yourself this session produces a draft policy. Participants still need their own organization's approval, and nothing here replaces legal or compliance review. Say so out loud.",
       "Have a one-page policy skeleton ready to project: scope and owner, allowed, prohibited, ask-first, required human checks, approval status and review date.",
     ],
@@ -203,7 +203,7 @@ export const showcaseFacilitation = {
     "Confirm the running order and timing with participants a week ahead, and ask whether they are comfortable being photographed or recorded before you do either.",
     "Put a visible timer on screen and agree a hard stop for each demo. Decide who signals time, and how.",
     "Check who has finished every capstone step in the instructor view so certificates are ready for the people who have earned them (see the readiness count in this chapter).",
-    "Set up the peer awards: nominations open during the demos, a short ballot afterwards. Categories from the programme: Biggest Time Saver, Most Creative Automation, Best Governance Champion. Add your own if the cohort suggests them.",
+    "Set up the peer awards: nominations open during the demos, a short ballot afterward. Categories from the program: Biggest Time Saver, Most Creative Automation, Best Governance Champion. Add your own if the cohort suggests them.",
   ],
   opening: [
     "Welcome people and name what the room has done: eight months, working assets, real measurements.",
@@ -255,7 +255,7 @@ export const blockPlaybook: Record<string, { move: string; watch: string }> = {
     watch: "Vague homework. Name the exact deliverable and the date.",
   },
   "Welcome & Opening Remarks": {
-    move: "Reflect on the programme and introduce the format and the feedback themes for the demos.",
+    move: "Reflect on the program and introduce the format and the feedback themes for the demos.",
     watch: "Running long. The demos are the main event.",
   },
   "Capstone Lightning Demos": {
@@ -272,7 +272,7 @@ export const blockPlaybook: Record<string, { move: string; watch: string }> = {
   },
 };
 
-/** Principles for the front matter, tied to the programme's own pillars. */
+/** Principles for the front matter, tied to the program's own pillars. */
 export const facilitationPrinciples = [
   {
     title: "Do, then explain",
