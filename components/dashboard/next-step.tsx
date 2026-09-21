@@ -1,18 +1,19 @@
 "use client";
 
 import { ArrowRight, CalendarDays } from "lucide-react";
-import { deliverableSessions, sessions } from "@/data/cohortData";
+import type { Session } from "@/data/cohortData";
 import { learningGuides } from "@/data/learning-guides";
+import { withDeliverables } from "@/lib/cohort-schedule";
 import type { Deliverable } from "@/lib/store";
 import { nextSessionId, sessionStatus } from "@/lib/dates";
 import { useMinuteClock } from "./countdown";
 import { buttonStyles } from "@/components/ui/button";
 
-export function NextStep({ deliverables, hasFriction }: { deliverables: Deliverable[]; hasFriction: boolean }) {
+export function NextStep({ deliverables, hasFriction, schedule }: { deliverables: Deliverable[]; hasFriction: boolean; schedule: Session[] }) {
   const now = useMinuteClock();
-  const next = now ? sessions.find((s) => s.id === nextSessionId(sessions, now)) : undefined;
+  const next = now ? schedule.find((s) => s.id === nextSessionId(schedule, now)) : undefined;
   const revision = deliverables.find((d) => d.status === "needs_revision");
-  const outstanding = deliverableSessions.find((s) => {
+  const outstanding = withDeliverables(schedule).find((s) => {
     const d = deliverables.find((item) => item.sessionId === s.id);
     return d?.status !== "submitted" && d?.status !== "reviewed" &&
       (d?.status === "in_progress" || (now && sessionStatus(s, now) === "past"));
@@ -58,7 +59,7 @@ export function NextStep({ deliverables, hasFriction }: { deliverables: Delivera
         <p className="mt-4 font-display text-2xl">{next.dateLabel}</p><p className="mt-2 text-sm text-muted">{next.theme}</p>
       </> : <p className="mt-4 text-muted">No upcoming confirmed dates. Check the pending notice below.</p>}
       <p className="mt-4 text-sm text-muted">Time and venue are awaiting confirmation. Check your welcome message or contact your instructor before travelling.</p>
-      {sessions.filter((s) => !s.date).map((s) => <p key={s.id} className="mt-4 border-t border-line pt-4 text-sm"><strong>Pending:</strong> Session {s.number} · {s.dateLabel}. This does not change the other confirmed dates.</p>)}
+      {schedule.filter((s) => !s.date).map((s) => <p key={s.id} className="mt-4 border-t border-line pt-4 text-sm"><strong>Pending:</strong> Session {s.number} · {s.dateLabel}. This does not change the other confirmed dates.</p>)}
     </aside>
   </section>;
 }

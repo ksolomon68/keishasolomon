@@ -6,7 +6,7 @@ import { addFrictionAction, deleteFrictionAction, setFrictionDoneAction } from "
 import { FormMessage, SelectField, TextField } from "@/components/ui/fields";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { Tag } from "@/components/ui/tag";
-import { frictionFrequencies, sessionById, sessions } from "@/data/cohortData";
+import { frictionFrequencies, sessionById, type Session } from "@/data/cohortData";
 import type { FrictionEntry } from "@/lib/store";
 import type { FormState } from "@/lib/validation";
 
@@ -14,16 +14,15 @@ const occurrencesPerWeek = { daily: 5, weekly: 1, monthly: 12 / 52 } as const;
 
 type Update = { type: "done"; id: string; done: boolean } | { type: "remove"; id: string };
 
-const targetOptions = [
-  { value: "", label: "No specific session" },
-  ...sessions
-    .filter((s) => s.deliverable)
-    .map((s) => ({ value: s.id, label: `Session ${s.number} · ${s.shortDate}: ${s.lab.name}` })),
-];
-
 const initial: FormState = {};
 
-export function FrictionLog({ entries }: { entries: FrictionEntry[] }) {
+export function FrictionLog({ entries, schedule }: { entries: FrictionEntry[]; schedule: Session[] }) {
+  const targetOptions = [
+    { value: "", label: "No specific session" },
+    ...schedule
+      .filter((s) => s.deliverable)
+      .map((s) => ({ value: s.id, label: `Session ${s.number} · ${s.shortDate}: ${s.lab.name}` })),
+  ];
   const [state, action] = useActionState(addFrictionAction, initial);
   const [, startTransition] = useTransition();
   const [items, apply] = useOptimistic(entries, (current, update: Update) =>

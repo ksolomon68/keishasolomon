@@ -1,16 +1,36 @@
 -- The AI Executive Sandbox: MySQL 5.7+/8.x and MariaDB 10.3+ compatible.
 -- Apply with: npm run db:migrate   (idempotent; safe to re-run)
 
+-- One row per run of the programme. The curriculum is shared; each cohort owns its roster, access
+-- code, calendar and resources. Archived cohorts stay readable but stop accepting registrations.
+CREATE TABLE IF NOT EXISTS cohorts (
+  id              CHAR(36)     NOT NULL,
+  name            VARCHAR(120) NOT NULL,
+  access_code     VARCHAR(64)  NOT NULL,
+  session_dates   TEXT         NOT NULL,           -- JSON: {"s1": "2026-10-16", "s6": null, ...}
+  completion_date DATE         NULL,
+  archived        TINYINT(1)   NOT NULL DEFAULT 0,
+  created_at      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_cohorts_access_code (access_code)  -- utf8mb4_unicode_ci: codes are case-insensitive
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- users.cohort_id and resources.cohort_id are added to pre-existing databases by scripts/migrate.ts
+-- (MySQL has no ADD COLUMN IF NOT EXISTS). Instructors have a NULL cohort; a NULL resource cohort
+-- means "shared with every cohort".
 CREATE TABLE IF NOT EXISTS users (
   id            CHAR(36)     NOT NULL,
   email         VARCHAR(190) NOT NULL,
   name          VARCHAR(120) NOT NULL,
   organization  VARCHAR(160) NOT NULL DEFAULT '',
   role          VARCHAR(16)  NOT NULL DEFAULT 'participant',
+  cohort_id     CHAR(36)     NULL,
   password_hash VARCHAR(100) NOT NULL,
   created_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
-  UNIQUE KEY uq_users_email (email)
+  UNIQUE KEY uq_users_email (email),
+  KEY idx_users_cohort (cohort_id),
+  CONSTRAINT fk_users_cohort FOREIGN KEY (cohort_id) REFERENCES cohorts (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS files (
@@ -74,6 +94,7 @@ CREATE TABLE IF NOT EXISTS attendance (
 
 CREATE TABLE IF NOT EXISTS resources (
   id          CHAR(36)     NOT NULL,
+  cohort_id   CHAR(36)     NULL,
   session_id  VARCHAR(8)   NOT NULL,
   title       VARCHAR(160) NOT NULL,
   kind        VARCHAR(24)  NOT NULL,
@@ -83,5 +104,7 @@ CREATE TABLE IF NOT EXISTS resources (
   created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   KEY idx_resources_session (session_id),
+  KEY idx_resources_cohort (cohort_id),
+  CONSTRAINT fk_resources_cohort FOREIGN KEY (cohort_id) REFERENCES cohorts (id),
   CONSTRAINT fk_resources_file FOREIGN KEY (file_id) REFERENCES files (id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -3,15 +3,24 @@ import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
 import { OnboardingChecklist } from "@/components/onboarding/checklist";
 import { buttonStyles } from "@/components/ui/button";
-import { safeHarbor, sessions } from "@/data/cohortData";
+import { safeHarbor } from "@/data/cohortData";
 import { SessionLogistics } from "@/components/layout/participant-help";
+import { getCurrentUser } from "@/lib/auth/session";
+import { cohortOf } from "@/lib/cohort";
+import { cohortSchedule } from "@/lib/cohort-schedule";
+import { getStore } from "@/lib/store";
 
 export const metadata: Metadata = {
   title: "Before Day 1: Participant Onboarding",
-  description: "What to bring and which accounts to set up before the first session on October 16, 2026.",
+  description: "What to bring and which accounts to set up before your first session.",
 };
 
-export default function OnboardingPage() {
+export default async function OnboardingPage() {
+  // Public page, but a signed-in participant sees their own cohort's calendar.
+  const user = await getCurrentUser();
+  const cohort = user ? await cohortOf(await getStore(), user) : null;
+  const sessions = cohortSchedule(cohort?.sessionDates);
+
   return (
     <>
       <section data-surface="dark" className="grid-backdrop bg-navy-900 py-14 text-white sm:py-20">

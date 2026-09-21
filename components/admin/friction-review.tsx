@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { sessions } from "@/data/cohortData";
+import type { Session } from "@/data/cohortData";
 import type { FrictionEntry } from "@/lib/store";
 import { Tag } from "@/components/ui/tag";
 
-export function FrictionReview({ entries }: { entries: (FrictionEntry & { participant: string })[] }) {
+export function FrictionReview({ entries, schedule: sessions }: { entries: (FrictionEntry & { participant: string })[]; schedule: Session[] }) {
   const [session, setSession] = useState("all");
   const [openOnly, setOpenOnly] = useState(true);
   const visible = entries.filter((e) => (!openOnly || !e.done) && (session === "all" || (e.sessionId ?? "none") === session));

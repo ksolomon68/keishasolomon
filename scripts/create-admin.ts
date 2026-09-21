@@ -28,6 +28,7 @@ async function main() {
     name: parsed.data.name,
     organization: parsed.data.organization,
     role: "admin",
+    cohortId: null,
     passwordHash: await hashPassword(parsed.data.password),
   });
   console.log(`Created instructor ${user.name} <${user.email}>.`);

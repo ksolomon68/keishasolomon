@@ -1,5 +1,5 @@
 import { ChevronDown, Download, ExternalLink, FileText } from "lucide-react";
-import { resourceKinds, sessions, type Session } from "@/data/cohortData";
+import { resourceKinds, type Session } from "@/data/cohortData";
 import { Tag } from "@/components/ui/tag";
 import type { Resource } from "@/lib/store";
 import { Countdown } from "./countdown";
@@ -7,10 +7,10 @@ import { LearningGuide } from "./learning-guide";
 
 const kindLabel = Object.fromEntries(resourceKinds.map((k) => [k.value, k.label]));
 
-export function SessionGrid({ resources }: { resources: Resource[] }) {
+export function SessionGrid({ resources, schedule }: { resources: Resource[]; schedule: Session[] }) {
   return (
     <ol className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-      {sessions.map((session) => (
+      {schedule.map((session) => (
         <SessionCard key={session.id} session={session} resources={resources.filter((r) => r.sessionId === session.id)} />
       ))}
     </ol>

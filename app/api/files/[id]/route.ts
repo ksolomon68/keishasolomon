@@ -1,11 +1,13 @@
 import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth/session";
+import { resourcesFor } from "@/lib/cohort";
 import { getStore } from "@/lib/store";
 import { readUpload } from "@/lib/uploads";
 
 /**
  * Authenticated file download.
- * Allowed: the uploader, any instructor, or any signed-in participant when the file is a shared cohort resource.
+ * Allowed: the uploader, any instructor, or a participant when the file is a resource published to
+ * their own cohort (or shared with every cohort). Other cohorts' materials look like they don't exist.
  */
 export async function GET(_request: Request, ctx: { params: Promise<{ id: string }> }) {
   const user = await getCurrentUser();
@@ -21,7 +23,7 @@ export async function GET(_request: Request, ctx: { params: Promise<{ id: string
   const allowed =
     user.role === "admin" ||
     file.ownerId === user.id ||
-    (await store.listResources()).some((r) => r.fileId === file.id);
+    (await resourcesFor(store, user)).some((r) => r.fileId === file.id);
   if (!allowed) return new Response("Not found.", { status: 404 });
 
   let body: Buffer;

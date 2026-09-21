@@ -66,7 +66,50 @@ export const resourceSchema = z.object({
   title: z.string().trim().min(2, "Give the resource a title.").max(160),
   kind: z.enum(tuple(resourceKinds.map((k) => k.value))),
   linkUrl: optionalUrl,
+  cohortId: z.uuid(),
+  /** Checkbox: publish to every cohort instead of just `cohortId`. */
+  shared: z.literal("on").optional(),
 });
+
+/** A real calendar day as YYYY-MM-DD (rejects 2026-02-31). */
+const isoDate = z
+  .string()
+  .trim()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Enter a valid date.")
+  .refine((value) => {
+    const [y, m, d] = value.split("-").map(Number);
+    const date = new Date(Date.UTC(y, m - 1, d));
+    return date.getUTCFullYear() === y && date.getUTCMonth() === m - 1 && date.getUTCDate() === d;
+  }, "Enter a valid date.");
+
+const optionalDate = z.union([z.literal(""), isoDate]).transform((v) => (v === "" ? null : v));
+
+/** Participants type this from an email, so keep it to characters that survive copy/paste. */
+export const accessCodeSchema = z
+  .string()
+  .trim()
+  .min(6, "Use at least 6 characters.")
+  .max(64, "Use 64 characters or fewer.")
+  .regex(/^[A-Za-z0-9_-]+$/, "Use only letters, numbers, hyphens and underscores.");
+
+/** Form fields `date-s1` … `date-s8`, one per session; blank means "to be announced". */
+const sessionDateFields = Object.fromEntries(sessions.map((s) => [`date-${s.id}`, optionalDate]));
+
+export const cohortSchema = z.object({
+  name: z.string().trim().min(2, "Give the cohort a name.").max(120, "Use 120 characters or fewer."),
+  /** Blank on create means "generate one for me". */
+  accessCode: z.union([z.literal(""), accessCodeSchema]),
+  completionDate: optionalDate,
+  ...sessionDateFields,
+});
+
+/** Creating a cohort only needs a name and (optionally) a code; dates are edited afterwards. */
+export const newCohortSchema = cohortSchema.pick({ name: true, accessCode: true });
+
+/** Pull the per-session dates out of a parsed cohort form. */
+export function sessionDatesFrom(parsed: Record<string, unknown>): Record<string, string | null> {
+  return Object.fromEntries(sessions.map((s) => [s.id, (parsed[`date-${s.id}`] as string | null) ?? null]));
+}
 
 export type FieldErrors = Record<string, string[] | undefined>;
 

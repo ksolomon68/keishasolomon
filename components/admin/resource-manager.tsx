@@ -6,28 +6,41 @@ import { deleteResourceAction, uploadResourceAction } from "@/app/actions/admin"
 import { FormMessage, SelectField, TextField } from "@/components/ui/fields";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { Tag } from "@/components/ui/tag";
-import { resourceKinds, sessions } from "@/data/cohortData";
+import { resourceKinds, type Session } from "@/data/cohortData";
 import type { Resource } from "@/lib/store";
 import type { FormState } from "@/lib/validation";
 
 const kindLabel = Object.fromEntries(resourceKinds.map((k) => [k.value, k.label]));
-const sessionOptions = sessions.map((s) => ({ value: s.id, label: `Session ${s.number} · ${s.dateLabel}` }));
 
-export function ResourceManager({ resources, accept }: { resources: Resource[]; accept: string }) {
+export function ResourceManager({
+  resources,
+  accept,
+  cohortId,
+  cohortName,
+  schedule,
+}: {
+  resources: Resource[];
+  accept: string;
+  cohortId: string;
+  cohortName: string;
+  schedule: Session[];
+}) {
   const [state, action] = useActionState<FormState, FormData>(uploadResourceAction, {});
   const [pending, startTransition] = useTransition();
   const v = state.values ?? {};
+  const sessionOptions = schedule.map((s) => ({ value: s.id, label: `Session ${s.number} · ${s.dateLabel}` }));
 
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,24rem)_1fr]">
       <form action={action} noValidate className="h-fit space-y-4 border border-line bg-white p-5 sm:p-6">
         <h3 className="font-display text-xl text-navy-900">Add a resource</h3>
+        <input type="hidden" name="cohortId" value={cohortId} />
         <SelectField
           id="res-session"
           name="sessionId"
           label="Session"
           options={sessionOptions}
-          defaultValue={v.sessionId ?? sessions[0].id}
+          defaultValue={v.sessionId ?? schedule[0].id}
           errors={state.errors?.sessionId}
         />
         <TextField
@@ -76,14 +89,23 @@ export function ResourceManager({ resources, accept }: { resources: Resource[]; 
           errors={state.errors?.linkUrl}
           optional
         />
+        <label className="flex items-start gap-3 text-sm">
+          <input type="checkbox" name="shared" defaultChecked={v.shared === "on"} className="mt-0.5 size-5 shrink-0 accent-navy-900" />
+          <span>
+            <span className="font-semibold text-ink">Share with every cohort</span>
+            <span className="block text-muted">
+              Leave unchecked to publish only to {cohortName}.
+            </span>
+          </span>
+        </label>
         <SubmitButton variant="secondary" className="w-full" pendingLabel="Uploading…">
-          Publish to participants
+          Publish to {cohortName}
         </SubmitButton>
         <FormMessage ok={state.ok} message={state.message} />
       </form>
 
       <div className="space-y-6">
-        {sessions.map((session) => {
+        {schedule.map((session) => {
           const list = resources.filter((r) => r.sessionId === session.id);
           return (
             <section key={session.id} aria-labelledby={`res-${session.id}`}>
@@ -108,6 +130,7 @@ export function ResourceManager({ resources, accept }: { resources: Resource[]; 
                       >
                         {r.title}
                       </a>
+                      {r.cohortId === null && <Tag tone="cyan">All cohorts</Tag>}
                       <Tag>{kindLabel[r.kind]}</Tag>
                       <button
                         type="button"

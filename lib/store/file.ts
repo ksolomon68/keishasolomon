@@ -3,9 +3,12 @@ import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { mergeDeliverable, normalizeDeliverable } from "./deliverable-state";
 import {
+  AccessCodeTakenError,
+  DEFAULT_COHORT_ID,
   EmailTakenError,
   type Attendance,
   type CapstoneProgress,
+  type Cohort,
   type Deliverable,
   type FrictionEntry,
   type Resource,
@@ -21,6 +24,7 @@ import {
  */
 
 interface Db {
+  cohorts: Cohort[];
   users: UserWithHash[];
   friction: FrictionEntry[];
   deliverables: Deliverable[];
@@ -31,6 +35,7 @@ interface Db {
 }
 
 const empty = (): Db => ({
+  cohorts: [],
   users: [],
   friction: [],
   deliverables: [],
@@ -44,10 +49,36 @@ export function createFileStore(dir = path.join(process.cwd(), ".data")): Store 
   const file = path.join(dir, "db.json");
   let queue: Promise<unknown> = Promise.resolve();
 
+  /**
+   * Upgrade a single-cohort database: participants and resources written before cohorts existed move
+   * into one "Founding cohort". Deterministic (fixed id, derived date) so it is safe to redo on every read.
+   */
+  function upgradeLegacy(db: Db): void {
+    const legacyUsers = db.users.filter((u) => u.cohortId === undefined);
+    const legacyResources = db.resources.filter((r) => r.cohortId === undefined);
+    const needsDefault =
+      !db.cohorts.some((c) => c.id === DEFAULT_COHORT_ID) &&
+      (legacyUsers.some((u) => u.role === "participant") || legacyResources.length > 0);
+    if (needsDefault) {
+      db.cohorts.push({
+        id: DEFAULT_COHORT_ID,
+        name: "Founding cohort",
+        accessCode: process.env.COHORT_ACCESS_CODE?.trim() || "founding-cohort",
+        sessionDates: {},
+        completionDate: null,
+        archived: false,
+        createdAt: db.users.map((u) => u.createdAt).sort()[0] ?? new Date(0).toISOString(),
+      });
+    }
+    for (const u of legacyUsers) u.cohortId = u.role === "participant" ? DEFAULT_COHORT_ID : null;
+    for (const r of legacyResources) r.cohortId = DEFAULT_COHORT_ID;
+  }
+
   async function load(): Promise<Db> {
     try {
       const db = { ...empty(), ...(JSON.parse(await readFile(file, "utf8")) as Partial<Db>) };
       db.deliverables = db.deliverables.map(normalizeDeliverable);
+      upgradeLegacy(db);
       return db;
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === "ENOENT") return empty();
@@ -80,10 +111,46 @@ export function createFileStore(dir = path.join(process.cwd(), ".data")): Store 
     name: u.name,
     organization: u.organization,
     role: u.role,
+    cohortId: u.cohortId,
     createdAt: u.createdAt,
   });
 
+  const codeKey = (code: string) => code.trim().toLowerCase();
+
   return {
+    listCohorts: () => run(false, (db) => [...db.cohorts].sort((a, b) => b.createdAt.localeCompare(a.createdAt))),
+    getCohort: (id) => run(false, (db) => db.cohorts.find((c) => c.id === id) ?? null),
+    findCohortByAccessCode: (code) =>
+      run(false, (db) => db.cohorts.find((c) => codeKey(c.accessCode) === codeKey(code)) ?? null),
+    createCohort: (input) =>
+      run(true, (db) => {
+        if (db.cohorts.some((c) => codeKey(c.accessCode) === codeKey(input.accessCode))) throw new AccessCodeTakenError();
+        const cohort: Cohort = {
+          id: randomUUID(),
+          name: input.name,
+          accessCode: input.accessCode.trim(),
+          sessionDates: input.sessionDates ?? {},
+          completionDate: input.completionDate ?? null,
+          archived: false,
+          createdAt: now(),
+        };
+        db.cohorts.push(cohort);
+        return cohort;
+      }),
+    updateCohort: (id, patch) =>
+      run(true, (db) => {
+        const cohort = db.cohorts.find((c) => c.id === id);
+        if (!cohort) return null;
+        if (
+          patch.accessCode !== undefined &&
+          db.cohorts.some((c) => c.id !== id && codeKey(c.accessCode) === codeKey(patch.accessCode!))
+        ) {
+          throw new AccessCodeTakenError();
+        }
+        Object.assign(cohort, { ...patch, ...(patch.accessCode !== undefined && { accessCode: patch.accessCode.trim() }) });
+        return { ...cohort };
+      }),
+
     createUser: (input) =>
       run(true, (db) => {
         if (db.users.some((u) => u.email === input.email)) throw new EmailTakenError();
@@ -97,7 +164,8 @@ export function createFileStore(dir = path.join(process.cwd(), ".data")): Store 
         const user = db.users.find((u) => u.id === id);
         return user ? publicUser(user) : null;
       }),
-    listUsers: () => run(false, (db) => db.users.map(publicUser)),
+    listUsers: (cohortId) =>
+      run(false, (db) => db.users.filter((u) => !cohortId || u.cohortId === cohortId).map(publicUser)),
 
     listFriction: (userId) =>
       run(false, (db) =>
@@ -166,8 +234,12 @@ export function createFileStore(dir = path.join(process.cwd(), ".data")): Store 
         if (present) db.attendance.push({ userId, sessionId });
       }),
 
-    listResources: () =>
-      run(false, (db) => [...db.resources].sort((a, b) => a.createdAt.localeCompare(b.createdAt))),
+    listResources: (cohortId) =>
+      run(false, (db) =>
+        db.resources
+          .filter((r) => !cohortId || r.cohortId === null || r.cohortId === cohortId)
+          .sort((a, b) => a.createdAt.localeCompare(b.createdAt)),
+      ),
     createResource: (input) =>
       run(true, (db) => {
         const resource: Resource = { id: randomUUID(), createdAt: now(), ...input };

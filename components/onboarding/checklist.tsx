@@ -39,7 +39,7 @@ function parse(raw: string): string[] {
 
 const groups: { key: ChecklistItem["group"]; title: string; note: string }[] = [
   { key: "bring", title: "Bring to every session", note: "Laptops are required. No coding background needed." },
-  { key: "accounts", title: "Set up before October 16", note: "Have these ready on your laptop before Day 1." },
+  { key: "accounts", title: "Set up before your first session", note: "Have these ready on your laptop before Day 1." },
 ];
 
 export function OnboardingChecklist() {

@@ -9,6 +9,9 @@ import { learningGuides } from "../data/learning-guides";
 import { buildPracticePrompt, exampleBrief, decisionPractice } from "../data/cohort-practice";
 import { createFileStore } from "../lib/store/file";
 import { mergeDeliverable, normalizeDeliverable } from "../lib/store/deliverable-state";
+import { AccessCodeTakenError, DEFAULT_COHORT_ID } from "../lib/store/types";
+import { certificateDate, cohortSchedule, defaultSessionDates } from "../lib/cohort-schedule";
+import { cohortSchema, newCohortSchema, sessionDatesFrom } from "../lib/validation";
 
 test("pending dates do not hide confirmed sessions or end of schedule", () => {
   assert.equal(nextSessionId(sessions, new Date(2027, 3, 1)), "s7");
@@ -62,6 +65,121 @@ test("file store persists feedback, isolates users, rejects concurrent saves, an
   await writeFile(path.join(dir, "db.json"), JSON.stringify(db));
   assert.equal((await store.getDeliverable("participant-a", "s1"))?.version, 0);
   assert.equal((await store.getDeliverable("participant-a", "s1"))?.feedback, "");
+});
+
+test("a cohort's calendar overrides the default dates without touching other cohorts or the curriculum", () => {
+  assert.deepEqual(cohortSchedule(undefined), sessions);
+  assert.deepEqual(cohortSchedule({}), sessions);
+  // A new cohort starts from the default dates; an explicit "TBA" drops the programme's "March 2027" hint.
+  const seeded = cohortSchedule(defaultSessionDates());
+  assert.deepEqual(seeded.map((s) => s.date), sessions.map((s) => s.date));
+  assert.deepEqual(seeded.filter((s) => s.date), sessions.filter((s) => s.date), "confirmed dates are untouched");
+  assert.equal(seeded[5].dateLabel, "Date to be announced");
+  assert.equal(sessions[5].dateLabel, "March 2027 (Date TBA)");
+
+  const shifted = cohortSchedule({ s1: "2027-01-15", s6: "2027-06-04", s8: null });
+  assert.equal(shifted[0].date, "2027-01-15");
+  assert.equal(shifted[0].dateLabel, "January 15, 2027");
+  assert.equal(shifted[0].shortDate, "Jan 15");
+  assert.equal(shifted[5].date, "2027-06-04", "a TBA session in the default calendar can be given a date");
+  assert.equal(shifted[7].date, null);
+  assert.equal(shifted[7].dateLabel, "Date to be announced");
+  assert.equal(shifted[1].date, sessions[1].date, "sessions the cohort doesn't mention keep the default");
+  assert.equal(shifted[0].theme, sessions[0].theme, "only dates change");
+  assert.equal(sessions[0].date, "2026-10-16", "the shared curriculum is never mutated");
+  assert.equal(nextSessionId(shifted, new Date(2027, 0, 1)), "s1");
+});
+
+test("certificate date: explicit choice, else the cohort's last confirmed session", () => {
+  assert.equal(certificateDate({ completionDate: "2027-09-30", sessionDates: {} }), "September 30, 2027");
+  assert.equal(certificateDate({ completionDate: null, sessionDates: {} }), "May 11, 2027");
+  assert.equal(certificateDate({ completionDate: null, sessionDates: { s8: "2028-02-01" } }), "February 1, 2028");
+  assert.equal(certificateDate({ completionDate: null, sessionDates: { s8: null } }), "April 16, 2027", "TBA sessions are skipped");
+  assert.equal(certificateDate(null), "May 11, 2027");
+});
+
+test("cohort forms accept blank dates, reject impossible ones, and constrain access codes", () => {
+  const blankDates = Object.fromEntries(sessions.map((s) => [`date-${s.id}`, ""]));
+  const ok = cohortSchema.parse({ name: "  Chamber 2027 ", accessCode: "", completionDate: "", ...blankDates, "date-s1": "2027-01-15" });
+  assert.equal(ok.name, "Chamber 2027");
+  assert.equal(sessionDatesFrom(ok).s1, "2027-01-15");
+  assert.equal(sessionDatesFrom(ok).s2, null);
+  assert.ok(!cohortSchema.safeParse({ name: "X", accessCode: "", completionDate: "", ...blankDates }).success, "name needs 2+ characters");
+  assert.ok(!cohortSchema.safeParse({ name: "Chamber", accessCode: "", completionDate: "2027-02-31", ...blankDates }).success);
+  assert.ok(!newCohortSchema.safeParse({ name: "Chamber", accessCode: "has space" }).success);
+  assert.ok(!newCohortSchema.safeParse({ name: "Chamber", accessCode: "short" }).success);
+  assert.ok(newCohortSchema.safeParse({ name: "Chamber", accessCode: "" }).success, "blank means generate one");
+});
+
+test("file store keeps cohorts separate: roster, resources, and unique case-insensitive access codes", async () => {
+  const store = createFileStore(await mkdtemp(path.join(tmpdir(), "cohort-multi-")));
+  const a = await store.createCohort({ name: "Cohort A", accessCode: "ALPHA-2026" });
+  const b = await store.createCohort({ name: "Cohort B", accessCode: "BRAVO-2026", sessionDates: { s1: "2027-01-15" } });
+
+  assert.equal((await store.findCohortByAccessCode("alpha-2026"))?.id, a.id);
+  assert.equal((await store.findCohortByAccessCode("  BRAVO-2026 "))?.id, b.id);
+  assert.equal(await store.findCohortByAccessCode("CHARLIE-2026"), null);
+  await assert.rejects(store.createCohort({ name: "Dup", accessCode: "alpha-2026" }), AccessCodeTakenError);
+  await assert.rejects(store.updateCohort(b.id, { accessCode: "Alpha-2026" }), AccessCodeTakenError);
+  assert.equal((await store.updateCohort(b.id, { accessCode: "bravo-2026" }))?.accessCode, "bravo-2026", "keeping your own code is not a clash");
+  assert.deepEqual((await store.listCohorts()).map((c) => c.id), [b.id, a.id], "newest first");
+
+  const mk = (email: string, cohortId: string | null, role: "participant" | "admin" = "participant") =>
+    store.createUser({ email, name: email, organization: "", role, cohortId, passwordHash: "x" });
+  const ann = await mk("ann@example.invalid", a.id);
+  const ben = await mk("ben@example.invalid", b.id);
+  await mk("teacher@example.invalid", null, "admin");
+  assert.deepEqual((await store.listUsers(a.id)).map((u) => u.id), [ann.id]);
+  assert.deepEqual((await store.listUsers(b.id)).map((u) => u.id), [ben.id]);
+  assert.equal((await store.listUsers()).length, 3);
+  assert.equal((await store.findUserById(ann.id))?.cohortId, a.id);
+
+  const res = (cohortId: string | null, title: string) =>
+    store.createResource({ cohortId, sessionId: "s1", title, kind: "prompt_sheet", linkUrl: "https://example.com", fileId: null, createdBy: "t" });
+  await res(a.id, "Only A");
+  await res(b.id, "Only B");
+  await res(null, "Everyone");
+  const titles = async (id?: string) => (await store.listResources(id)).map((r) => r.title).sort();
+  assert.deepEqual(await titles(a.id), ["Everyone", "Only A"]);
+  assert.deepEqual(await titles(b.id), ["Everyone", "Only B"]);
+  assert.deepEqual(await titles(), ["Everyone", "Only A", "Only B"]);
+
+  const archived = await store.updateCohort(a.id, { archived: true, completionDate: "2027-05-11", name: "Renamed" });
+  assert.equal(archived?.archived, true);
+  assert.equal(archived?.completionDate, "2027-05-11");
+  assert.equal((await store.getCohort(a.id))?.name, "Renamed");
+  assert.equal(await store.updateCohort("00000000-0000-4000-8000-0000000000ff", { name: "Nope" }), null);
+});
+
+test("a single-cohort database upgrades into a Founding cohort on read, and stays put", async () => {
+  const dir = await mkdtemp(path.join(tmpdir(), "cohort-legacy-"));
+  const legacyUser = (id: string, role: string) => ({ id, email: `${id}@example.invalid`, name: id, organization: "", role, passwordHash: "x", createdAt: "2026-09-01T00:00:00.000Z" });
+  await writeFile(path.join(dir, "db.json"), JSON.stringify({
+    users: [legacyUser("p1", "participant"), legacyUser("p2", "participant"), legacyUser("admin", "admin")],
+    resources: [{ id: "r1", sessionId: "s1", title: "Old sheet", kind: "prompt_sheet", linkUrl: "https://example.com", fileId: null, createdBy: "admin", createdAt: "2026-09-02T00:00:00.000Z" }],
+  }));
+  const store = createFileStore(dir);
+
+  const cohorts = await store.listCohorts();
+  assert.equal(cohorts.length, 1);
+  assert.equal(cohorts[0].id, DEFAULT_COHORT_ID);
+  assert.deepEqual((await store.listUsers(DEFAULT_COHORT_ID)).map((u) => u.id).sort(), ["p1", "p2"]);
+  assert.equal((await store.findUserById("admin"))?.cohortId, null, "instructors stay above every cohort");
+  assert.deepEqual((await store.listResources(DEFAULT_COHORT_ID)).map((r) => r.id), ["r1"]);
+
+  // Persisting (any write) must not duplicate the founding cohort or reshuffle anyone.
+  const next = await store.createCohort({ name: "Second", accessCode: "SECOND-2026" });
+  await store.createUser({ email: "new@example.invalid", name: "New", organization: "", role: "participant", cohortId: next.id, passwordHash: "x" });
+  const reopened = createFileStore(dir);
+  assert.equal((await reopened.listCohorts()).filter((c) => c.id === DEFAULT_COHORT_ID).length, 1);
+  assert.equal((await reopened.listCohorts()).length, 2);
+  assert.deepEqual((await reopened.listUsers(DEFAULT_COHORT_ID)).map((u) => u.id).sort(), ["p1", "p2"]);
+  assert.deepEqual((await reopened.listUsers(next.id)).length, 1);
+  assert.equal((await reopened.listResources(next.id)).length, 0, "the old resource stays with the founding cohort only");
+
+  // An empty legacy database gets no phantom cohort.
+  const fresh = createFileStore(await mkdtemp(path.join(tmpdir(), "cohort-fresh-")));
+  assert.equal((await fresh.listCohorts()).length, 0);
 });
 
 test("all deliverables have preparation, a starter, a worked example, and review criteria", () => {

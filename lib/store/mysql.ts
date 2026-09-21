@@ -3,7 +3,9 @@ import mysql, { type Pool, type ResultSetHeader, type RowDataPacket } from "mysq
 import { mergeDeliverable } from "./deliverable-state";
 import type { DeliverableStatus, FrictionFrequency, ResourceKind } from "@/data/cohortData";
 import {
+  AccessCodeTakenError,
   EmailTakenError,
+  type Cohort,
   type Deliverable,
   type FrictionEntry,
   type Resource,
@@ -44,6 +46,26 @@ const toUser = (r: Row): User => ({
   name: r.name,
   organization: r.organization,
   role: r.role as Role,
+  cohortId: nullable(r.cohort_id),
+  createdAt: iso(r.created_at),
+});
+
+function parseSessionDates(json: string): Cohort["sessionDates"] {
+  try {
+    const parsed: unknown = JSON.parse(json);
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? (parsed as Cohort["sessionDates"]) : {};
+  } catch {
+    return {};
+  }
+}
+
+const toCohort = (r: Row): Cohort => ({
+  id: r.id,
+  name: r.name,
+  accessCode: r.access_code,
+  sessionDates: parseSessionDates(r.session_dates),
+  completionDate: nullable(r.completion_date),
+  archived: r.archived === 1,
   createdAt: iso(r.created_at),
 });
 
@@ -74,6 +96,7 @@ const toDeliverable = (r: Row): Deliverable => ({
 
 const toResource = (r: Row): Resource => ({
   id: r.id,
+  cohortId: nullable(r.cohort_id),
   sessionId: r.session_id,
   title: r.title,
   kind: r.kind as ResourceKind,
@@ -120,12 +143,56 @@ export function createMysqlStore(pool: Pool = createPool()): Store {
   };
 
   return {
+    async listCohorts() {
+      return (await rows("SELECT * FROM cohorts ORDER BY created_at DESC, id")).map(toCohort);
+    },
+    async getCohort(id) {
+      const row = await one("SELECT * FROM cohorts WHERE id = ?", [id]);
+      return row ? toCohort(row) : null;
+    },
+    async findCohortByAccessCode(code) {
+      const row = await one("SELECT * FROM cohorts WHERE access_code = ?", [code.trim()]);
+      return row ? toCohort(row) : null;
+    },
+    async createCohort(input) {
+      const id = randomUUID();
+      try {
+        await exec(
+          "INSERT INTO cohorts (id, name, access_code, session_dates, completion_date) VALUES (?, ?, ?, ?, ?)",
+          [id, input.name, input.accessCode.trim(), JSON.stringify(input.sessionDates ?? {}), input.completionDate ?? null],
+        );
+      } catch (error) {
+        if ((error as { code?: string }).code === "ER_DUP_ENTRY") throw new AccessCodeTakenError();
+        throw error;
+      }
+      return toCohort((await one("SELECT * FROM cohorts WHERE id = ?", [id]))!);
+    },
+    async updateCohort(id, patch) {
+      const sets: string[] = [];
+      const params: unknown[] = [];
+      if (patch.name !== undefined) { sets.push("name = ?"); params.push(patch.name); }
+      if (patch.accessCode !== undefined) { sets.push("access_code = ?"); params.push(patch.accessCode.trim()); }
+      if (patch.sessionDates !== undefined) { sets.push("session_dates = ?"); params.push(JSON.stringify(patch.sessionDates)); }
+      if (patch.completionDate !== undefined) { sets.push("completion_date = ?"); params.push(patch.completionDate); }
+      if (patch.archived !== undefined) { sets.push("archived = ?"); params.push(patch.archived ? 1 : 0); }
+      if (sets.length) {
+        try {
+          await exec(`UPDATE cohorts SET ${sets.join(", ")} WHERE id = ?`, [...params, id]);
+        } catch (error) {
+          if ((error as { code?: string }).code === "ER_DUP_ENTRY") throw new AccessCodeTakenError();
+          throw error;
+        }
+      }
+      const row = await one("SELECT * FROM cohorts WHERE id = ?", [id]);
+      return row ? toCohort(row) : null;
+    },
+
     async createUser(input) {
       const id = randomUUID();
       try {
         await exec(
-          "INSERT INTO users (id, email, name, organization, role, password_hash) VALUES (?, ?, ?, ?, ?, ?)",
-          [id, input.email, input.name, input.organization, input.role, input.passwordHash],
+          "INSERT INTO users (id, email, name, organization, role, cohort_id, password_hash) VALUES (?, ?, ?, ?, ?, ?, ?)",
+          [id, input.email, input.name, input.organization, input.role, input.cohortId, input.passwordHash],
         );
       } catch (error) {
         if ((error as { code?: string }).code === "ER_DUP_ENTRY") throw new EmailTakenError();
@@ -141,8 +208,11 @@ export function createMysqlStore(pool: Pool = createPool()): Store {
       const row = await one("SELECT * FROM users WHERE id = ?", [id]);
       return row ? toUser(row) : null;
     },
-    async listUsers() {
-      return (await rows("SELECT * FROM users ORDER BY created_at")).map(toUser);
+    async listUsers(cohortId) {
+      const result = cohortId
+        ? await rows("SELECT * FROM users WHERE cohort_id = ? ORDER BY created_at", [cohortId])
+        : await rows("SELECT * FROM users ORDER BY created_at");
+      return result.map(toUser);
     },
 
     async listFriction(userId) {
@@ -227,14 +297,17 @@ export function createMysqlStore(pool: Pool = createPool()): Store {
       }
     },
 
-    async listResources() {
-      return (await rows("SELECT * FROM resources ORDER BY created_at")).map(toResource);
+    async listResources(cohortId) {
+      const result = cohortId
+        ? await rows("SELECT * FROM resources WHERE cohort_id IS NULL OR cohort_id = ? ORDER BY created_at", [cohortId])
+        : await rows("SELECT * FROM resources ORDER BY created_at");
+      return result.map(toResource);
     },
     async createResource(input) {
       const id = randomUUID();
       await exec(
-        "INSERT INTO resources (id, session_id, title, kind, link_url, file_id, created_by) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        [id, input.sessionId, input.title, input.kind, input.linkUrl, input.fileId, input.createdBy],
+        "INSERT INTO resources (id, cohort_id, session_id, title, kind, link_url, file_id, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        [id, input.cohortId, input.sessionId, input.title, input.kind, input.linkUrl, input.fileId, input.createdBy],
       );
       return toResource((await one("SELECT * FROM resources WHERE id = ?", [id]))!);
     },

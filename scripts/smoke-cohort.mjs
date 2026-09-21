@@ -12,6 +12,9 @@ const db = () => readFile(fixturePath, "utf8").then(JSON.parse);
 const initial = await db();
 assert.ok(initial.users.every((user) => user.email.endsWith("@example.invalid")), "Only synthetic fixtures are allowed");
 const participantId = initial.users.find((user) => user.email === "participant@example.invalid").id;
+const cohortA = initial.cohorts.find((c) => c.accessCode === "TEST-COHORT-A");
+const cohortB = initial.cohorts.find((c) => c.accessCode === "TEST-COHORT-B");
+assert.ok(cohortA && cohortB, "Fixture must contain the two test cohorts; re-run seed-cohort-test.ts");
 
 async function page(path, cookie = "") {
   const response = await fetch(origin + path, { headers: { cookie }, redirect: "manual" });
@@ -63,7 +66,7 @@ assert.equal((await page("/admin", participant)).response.status, 307);
 const other = await login("other@example.invalid");
 assert.ok(!(await page("/dashboard", other)).text.includes("Turn fictional meeting notes"));
 const instructor = await login("instructor@example.invalid");
-const admin = await page("/admin", instructor);
+const admin = await page(`/admin?cohort=${cohortA.id}`, instructor);
 assert.equal(admin.response.status, 200);
 assert.ok(admin.text.includes("Turn fictional meeting notes"));
 assert.ok(admin.text.includes("Feedback for this revision"));
@@ -102,3 +105,91 @@ const conflict = await save(participant, reviewed, { notes: "Stale tab must not 
 assert.ok(conflict.text.includes("another window") || conflict.text.includes("Only your instructor"));
 assert.equal((await current()).version, row.version);
 console.log("PASS: feedback → revision → resubmission → review → unchanged save → edited work returns to review; stale save rejected");
+
+/* ---------- Multiple cohorts stay separate ---------- */
+const stamp = Date.now();
+const cohortBParticipant = await login("cohort-b@example.invalid");
+
+// Each participant sees their own cohort's name and calendar.
+const dashA = await page("/dashboard", participant);
+const dashB = await page("/dashboard", cohortBParticipant);
+assert.ok(dashA.text.includes("Test cohort A") && dashA.text.includes("October 16, 2026"));
+assert.ok(!dashA.text.includes("March 5, 2027"), "cohort A must not get cohort B's session 1 date");
+assert.ok(dashB.text.includes("Test cohort B") && dashB.text.includes("March 5, 2027"));
+assert.ok(!dashB.text.includes("October 16, 2026"), "cohort B must not get the default session 1 date");
+assert.ok(!dashB.text.includes("Turn fictional meeting notes"));
+
+// The instructor's view is scoped to the selected cohort.
+const adminA = (await page(`/admin?cohort=${cohortA.id}`, instructor)).text;
+const adminB = (await page(`/admin?cohort=${cohortB.id}`, instructor)).text;
+assert.ok(adminA.includes("Alex Example") && adminA.includes("Turn fictional meeting notes"));
+assert.ok(!adminA.includes("Other Cohort Example"));
+assert.ok(adminB.includes("Other Cohort Example"));
+assert.ok(!adminB.includes("Alex Example") && !adminB.includes("Turn fictional meeting notes"), "cohort B's roster must not include cohort A");
+assert.ok(adminA.includes("TEST-COHORT-A") && !adminA.includes("TEST-COHORT-B"), "only the selected cohort's access code is shown");
+console.log("PASS: dashboards use each cohort's calendar; instructor roster, friction and codes are scoped per cohort");
+
+// Registration is routed by access code (case-insensitive) and wrong codes are refused.
+await page("/register");
+const register = (accessCode, email) => action("registerAction", "/register", [{}, form({
+  name: "Smoke Registrant", email, organization: "", password: "Cohort-demo-only-2026!", accessCode,
+})]);
+const wrongCode = await register("NOT-A-REAL-CODE", `wrong-${stamp}@example.invalid`);
+assert.ok(wrongCode.text.includes("isn't valid"));
+assert.ok(!(await db()).users.some((u) => u.email === `wrong-${stamp}@example.invalid`), "no account for a bad code");
+const registered = await register("test-cohort-b", `joined-b-${stamp}@example.invalid`);
+assert.ok(registered.response.headers.get("x-action-redirect")?.includes("/onboarding"));
+assert.equal((await db()).users.find((u) => u.email === `joined-b-${stamp}@example.invalid`)?.cohortId, cohortB.id);
+const duplicate = await register("TEST-COHORT-A", `joined-b-${stamp}@example.invalid`);
+assert.ok(duplicate.text.includes("already exists"), "a taken email is a friendly error, not a crash");
+assert.equal((await db()).users.filter((u) => u.email === `joined-b-${stamp}@example.invalid`).length, 1);
+console.log("PASS: access code decides the cohort; invalid codes create nothing");
+
+// Resources are published per cohort, or shared with everyone.
+const publish = (cohortId, title, extra = {}) => {
+  const data = form({ cohortId, sessionId: "s1", title, kind: "prompt_sheet", linkUrl: "https://example.com/r", ...extra });
+  return action("uploadResourceAction", "/admin", [{}, data], instructor);
+};
+await publish(cohortA.id, `Only-A-${stamp}`);
+await publish(cohortB.id, `Only-B-${stamp}`);
+await publish(cohortA.id, `Everyone-${stamp}`, { shared: "on" });
+const [resA, resB] = [(await page("/dashboard", participant)).text, (await page("/dashboard", cohortBParticipant)).text];
+assert.ok(resA.includes(`Only-A-${stamp}`) && resA.includes(`Everyone-${stamp}`) && !resA.includes(`Only-B-${stamp}`));
+assert.ok(resB.includes(`Only-B-${stamp}`) && resB.includes(`Everyone-${stamp}`) && !resB.includes(`Only-A-${stamp}`));
+console.log("PASS: resources reach only their own cohort unless shared");
+
+// File downloads follow the same boundary.
+const upload = form({ cohortId: cohortA.id, sessionId: "s1", title: `File-A-${stamp}`, kind: "prompt_sheet", linkUrl: "" });
+upload.set("file", new File(["cohort A only"], `a-only-${stamp}.txt`, { type: "text/plain" }));
+const uploaded = await action("uploadResourceAction", "/admin", [{}, upload], instructor);
+assert.ok(uploaded.text.includes("Added"), `upload should succeed: ${uploaded.text.slice(0, 300)}`);
+const fileId = (await db()).resources.find((r) => r.title === `File-A-${stamp}`)?.fileId;
+assert.ok(fileId, "the file resource should have been stored");
+const download = (cookie) => fetch(`${origin}/api/files/${fileId}`, { headers: { cookie } }).then((r) => r.status);
+assert.equal(await download(participant), 200, "cohort A participant can download its own cohort's file");
+assert.equal(await download(cohortBParticipant), 404, "cohort B participant must not reach cohort A's file");
+assert.equal(await download(instructor), 200);
+assert.equal(await download(""), 401);
+console.log("PASS: file downloads are limited to the resource's own cohort");
+
+// Instructor cohort management: create, edit dates, rotate code, archive (which closes registration).
+await page("/admin", instructor);
+const codeNew = `SMOKE-${stamp}`;
+const created = await action("createCohortAction", "/admin", [{}, form({ name: `Smoke ${stamp}`, accessCode: codeNew })], instructor);
+assert.ok(created.response.headers.get("x-action-redirect")?.includes("/admin?cohort="));
+const cohortC = (await db()).cohorts.find((c) => c.accessCode === codeNew);
+assert.ok(cohortC, "cohort should be created");
+const dup = await action("createCohortAction", "/admin", [{}, form({ name: "Clash", accessCode: codeNew.toLowerCase() })], instructor);
+assert.ok(dup.text.includes("already uses that access code"));
+const dates = Object.fromEntries(Array.from({ length: 8 }, (_, i) => [`date-s${i + 1}`, ""]));
+await action("updateCohortAction", "/admin", [{}, form({ cohortId: cohortC.id, name: `Smoke ${stamp}`, accessCode: codeNew, completionDate: "2028-06-01", ...dates, "date-s1": "2028-01-10" })], instructor);
+const savedC = (await db()).cohorts.find((c) => c.id === cohortC.id);
+assert.equal(savedC.completionDate, "2028-06-01");
+assert.equal(savedC.sessionDates.s1, "2028-01-10");
+assert.equal(savedC.sessionDates.s2, null);
+await action("setCohortArchivedAction", "/admin", [cohortC.id, true], instructor);
+const closed = await register(codeNew, `closed-${stamp}@example.invalid`);
+assert.ok(closed.text.includes("has closed"));
+assert.ok(!(await db()).users.some((u) => u.email === `closed-${stamp}@example.invalid`));
+assert.equal((await action("createCohortAction", "/admin", [{}, form({ name: "By participant", accessCode: "" })], participant)).response.headers.get("x-action-redirect")?.includes("/dashboard"), true, "participants cannot manage cohorts");
+console.log("PASS: instructor can create, edit, rotate and archive cohorts; archived cohorts refuse registration; participants cannot manage cohorts");

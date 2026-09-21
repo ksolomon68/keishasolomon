@@ -1,0 +1,14 @@
+﻿<!doctype html><html><body style="margin:0;background:#888">
+<div id="root" style="display:flex;flex-wrap:wrap;gap:8px;padding:8px"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+const pages = (params.get('p')||'1').split(',').map(Number);
+const scale = Number(params.get('s')||0.7);
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+pdfjsLib.getDocument('/tmp-guide.pdf').promise.then(async pdf=>{
+  document.title='pages:'+pdf.numPages;
+  for (const n of pages){ const page=await pdf.getPage(n); const vp=page.getViewport({scale}); const c=document.createElement('canvas'); c.width=vp.width; c.height=vp.height; document.getElementById('root').appendChild(c); await page.render({canvasContext:c.getContext('2d'),viewport:vp}).promise; }
+  document.body.dataset.done='1';
+}).catch(e=>{document.title='ERR '+e.message});
+</script></body></html>

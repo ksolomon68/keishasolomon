@@ -4,13 +4,12 @@ import { useOptimistic, useTransition } from "react";
 import { Check } from "lucide-react";
 import { setCapstoneStepAction } from "@/app/actions/dashboard";
 import { Tag } from "@/components/ui/tag";
-import { capstoneSteps, sessionById } from "@/data/cohortData";
+import { capstoneSteps, type Session } from "@/data/cohortData";
 import { Countdown } from "./countdown";
 
-const showcase = sessionById("s8")!;
-
-export function CapstoneTracker({ doneIds }: { doneIds: string[] }) {
+export function CapstoneTracker({ doneIds, schedule }: { doneIds: string[]; schedule: Session[] }) {
   const [, startTransition] = useTransition();
+  const showcase = schedule.find((s) => s.id === "s8")!;
   const [done, apply] = useOptimistic(doneIds, (current, update: { id: string; done: boolean }) =>
     update.done ? [...new Set([...current, update.id])] : current.filter((id) => id !== update.id),
   );
@@ -44,7 +43,7 @@ export function CapstoneTracker({ doneIds }: { doneIds: string[] }) {
       <ol className="space-y-3">
         {capstoneSteps.map((step, i) => {
           const isDone = done.includes(step.id);
-          const session = sessionById(step.bySessionId);
+          const session = schedule.find((s) => s.id === step.bySessionId);
           return (
             <li key={step.id}>
               <label

@@ -38,19 +38,19 @@ export function SyllabusTimeline() {
           intro="Each session pairs a hook, a strategy framework and a live build lab. Filter by focus area and open a session to see what you'll build."
         />
 
-        <div className="mt-10 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div className="mt-10 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
           <div role="group" aria-labelledby={groupId}>
             <p id={groupId} className="label mb-3 text-muted">
               Filter by focus
             </p>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 lg:flex-nowrap">
               {options.map((o) => (
                 <button
                   key={o.value}
                   type="button"
                   aria-pressed={filter === o.value}
                   onClick={() => setFilter(o.value)}
-                  className={`min-h-11 rounded-sm border px-4 text-[0.9375rem] font-medium transition-colors ${
+                  className={`min-h-11 whitespace-nowrap rounded-sm border px-4 text-[0.9375rem] font-medium transition-colors ${
                     filter === o.value
                       ? "border-navy-900 bg-navy-900 text-white"
                       : "border-edge bg-white text-ink hover:border-navy-900"

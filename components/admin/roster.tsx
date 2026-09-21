@@ -6,7 +6,7 @@ import { reviewDeliverableAction, setAttendanceAction } from "@/app/actions/admi
 import { FormMessage, SelectField, TextAreaField } from "@/components/ui/fields";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { Tag } from "@/components/ui/tag";
-import { deliverableSessions, deliverableStatuses, sessions } from "@/data/cohortData";
+import { deliverableSessions, deliverableStatuses, type Session } from "@/data/cohortData";
 import { learningGuides } from "@/data/learning-guides";
 import type { Deliverable } from "@/lib/store";
 
@@ -22,7 +22,7 @@ export interface RosterEntry {
   capstoneTotal: number;
 }
 
-export function Roster({ entries }: { entries: RosterEntry[] }) {
+export function Roster({ entries, schedule }: { entries: RosterEntry[]; schedule: Session[] }) {
   const [reviewOnly, setReviewOnly] = useState(false);
   const visible = entries.filter((entry) => !reviewOnly || entry.deliverables.some((d) => d.status === "submitted"));
   return <div className="space-y-4">
@@ -33,11 +33,11 @@ export function Roster({ entries }: { entries: RosterEntry[] }) {
     {!visible.length && <p role="status" className="border border-dashed border-edge p-6 text-muted">
       {entries.length ? "No participants are awaiting review." : "No participants have activated their accounts yet."}
     </p>}
-    {visible.map((entry) => <Participant key={entry.id} entry={entry} />)}
+    {visible.map((entry) => <Participant key={entry.id} entry={entry} schedule={schedule} />)}
   </div>;
 }
 
-function Participant({ entry }: { entry: RosterEntry }) {
+function Participant({ entry, schedule }: { entry: RosterEntry; schedule: Session[] }) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState("");
   const waiting = entry.deliverables.filter((d) => d.status === "submitted").length;
@@ -52,8 +52,8 @@ function Participant({ entry }: { entry: RosterEntry }) {
     <div className="space-y-8 border-t border-line p-4 sm:p-6">
       <p className="break-words text-sm text-muted">{entry.email}</p>
       <fieldset disabled={pending}>
-        <legend className="label mb-3">Attendance · {entry.attended.length}/{sessions.length}</legend>
-        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">{sessions.map((s) => <label key={s.id} className="flex min-h-11 items-center gap-2 border border-line px-3 text-sm">
+        <legend className="label mb-3">Attendance · {entry.attended.length}/{schedule.length}</legend>
+        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">{schedule.map((s) => <label key={s.id} className="flex min-h-11 items-center gap-2 border border-line px-3 text-sm">
           <input type="checkbox" className="size-4 accent-navy-900" checked={entry.attended.includes(s.id)} onChange={(e) => {
             const present = e.target.checked;
             startTransition(async () => {

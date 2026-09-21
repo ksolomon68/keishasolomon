@@ -6,8 +6,10 @@ import { SessionGrid } from "@/components/dashboard/session-grid";
 import { NextStep } from "@/components/dashboard/next-step";
 import { PromptWorkshop } from "@/components/dashboard/prompt-workshop";
 import { SessionRoadmap } from "@/components/dashboard/session-roadmap";
-import { capstoneSteps, deliverableSessions, sessions } from "@/data/cohortData";
+import { capstoneSteps } from "@/data/cohortData";
 import { requireUser } from "@/lib/auth/session";
+import { cohortOf, resourcesFor } from "@/lib/cohort";
+import { cohortSchedule, withDeliverables } from "@/lib/cohort-schedule";
 import { getStore } from "@/lib/store";
 import { ACCEPT_ATTR } from "@/lib/uploads";
 import Link from "next/link";
@@ -31,12 +33,15 @@ const formatBytes = (n: number) =>
 export default async function DashboardPage() {
   const user = await requireUser("/dashboard");
   const store = await getStore();
-  const [friction, deliverables, capstone, resources] = await Promise.all([
+  const [friction, deliverables, capstone, resources, cohort] = await Promise.all([
     store.listFriction(user.id),
     store.listDeliverables(user.id),
     store.listCapstone(user.id),
-    store.listResources(),
+    resourcesFor(store, user),
+    cohortOf(store, user),
   ]);
+  const schedule = cohortSchedule(cohort?.sessionDates);
+  const deliverableSessions = withDeliverables(schedule);
 
   const files: Record<string, FileInfo> = {};
   await Promise.all(
@@ -61,7 +66,9 @@ export default async function DashboardPage() {
     <>
       <section data-surface="dark" className="grid-backdrop bg-navy-900 pb-10 pt-12 text-white sm:pt-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <p className="label text-amber">Participant dashboard</p>
+          <p className="label text-amber">
+            Participant dashboard{cohort ? ` · ${cohort.name}` : ""}
+          </p>
           <h1 className="mt-3 font-display text-4xl font-light sm:text-5xl">
             Welcome back, {firstName}.
           </h1>
@@ -78,7 +85,7 @@ export default async function DashboardPage() {
             <dt className="label mb-3 text-amber-deep">Next session</dt>
             <dd>
               <NextSessionSummary
-                sessions={sessions.map(({ id, number, date, dateLabel, theme }) => ({
+                sessions={schedule.map(({ id, number, date, dateLabel, theme }) => ({
                   id,
                   number,
                   date,
@@ -92,7 +99,7 @@ export default async function DashboardPage() {
           <Stat label="Capstone steps done" value={`${capstoneDone}/${totalCapstoneSteps}`} />
           <Stat label="Open friction tasks" value={String(openFriction)} />
         </dl>
-        <NextStep deliverables={deliverables} hasFriction={friction.length > 0} />
+        <NextStep deliverables={deliverables} hasFriction={friction.length > 0} schedule={schedule} />
       </div>
 
       <nav
@@ -115,7 +122,7 @@ export default async function DashboardPage() {
 
       <div className="mx-auto max-w-7xl space-y-20 px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
         <DashSection id="sessions" eyebrow="The roadmap" title="Session modules">
-          <SessionRoadmap><SessionGrid resources={resources} /></SessionRoadmap>
+          <SessionRoadmap><SessionGrid resources={resources} schedule={schedule} /></SessionRoadmap>
         </DashSection>
 
         <DashSection id="practice" eyebrow="Build your own playbook" title="Better briefs. Better decisions.">
@@ -123,7 +130,7 @@ export default async function DashboardPage() {
         </DashSection>
 
         <DashSection id="friction" eyebrow="Steer the labs" title="Workplace Friction log">
-          <FrictionLog entries={friction} />
+          <FrictionLog entries={friction} schedule={schedule} />
         </DashSection>
 
         <DashSection id="deliverables" eyebrow="Monthly assets" title="Deliverable submission hub">
@@ -135,7 +142,7 @@ export default async function DashboardPage() {
         </DashSection>
 
         <DashSection id="capstone" eyebrow="Toward the showcase" title="Capstone tracker">
-          <CapstoneTracker doneIds={capstone.map((c) => c.stepId)} />
+          <CapstoneTracker doneIds={capstone.map((c) => c.stepId)} schedule={schedule} />
         </DashSection>
 
         {/* Certificate download */}
