@@ -182,6 +182,71 @@ test("a single-cohort database upgrades into a Founding cohort on read, and stay
   assert.equal((await fresh.listCohorts()).length, 0);
 });
 
+/** A tiny stand-in for a mysql2 connection that tracks which cohort columns exist and records every statement. */
+function fakeDb({ hasColumns, participants, resources }: { hasColumns: boolean; participants: number; resources: number }) {
+  const state = { users: hasColumns, resources: hasColumns, statements: [] as string[], params: [] as unknown[][] };
+  const connection = {
+    async query(sql: string, params: unknown[] = []) {
+      const text = sql.replace(/\s+/g, " ").trim();
+      if (text.startsWith("SELECT 1 FROM information_schema.columns")) {
+        const present = params[0] === "users" ? state.users : state.resources;
+        return [present ? [{ 1: 1 }] : []];
+      }
+      state.statements.push(text);
+      state.params.push(params);
+      if (text.startsWith("ALTER TABLE users")) state.users = true;
+      if (text.startsWith("ALTER TABLE resources")) state.resources = true;
+      if (text.includes("FROM users WHERE role = 'participant'")) return [[{ n: participants }]];
+      if (text.includes("FROM resources")) return [[{ n: resources }]];
+      return [[]];
+    },
+  };
+  return { state, connection };
+}
+
+test("db:migrate's cohort upgrade moves existing people into a Founding cohort once, and is safe to re-run", async () => {
+  const { createRequire } = await import("node:module");
+  const { upgradeToCohorts, DEFAULT_COHORT_ID: jsId } = createRequire(import.meta.url)("../scripts/cohort-upgrade.js");
+  assert.equal(jsId, DEFAULT_COHORT_ID, "the plain-JS migrate script and the app must agree on the founding cohort id");
+
+  // Legacy database: no cohort columns yet, 3 participants and 2 resources.
+  const legacy = fakeDb({ hasColumns: false, participants: 3, resources: 2 });
+  const notes: string[] = await upgradeToCohorts(legacy.connection, { COHORT_ACCESS_CODE: "  spring-2026 " });
+  const sqlOf = (prefix: string) => legacy.state.statements.filter((s) => s.startsWith(prefix));
+  assert.equal(sqlOf("ALTER TABLE users").length, 1);
+  assert.equal(sqlOf("ALTER TABLE resources").length, 1);
+  assert.match(sqlOf("ALTER TABLE users")[0], /ADD COLUMN cohort_id CHAR\(36\) NULL/);
+  assert.match(sqlOf("ALTER TABLE users")[0], /FOREIGN KEY \(cohort_id\) REFERENCES cohorts \(id\)/);
+  const insertAt = legacy.state.statements.findIndex((s) => s.startsWith("INSERT IGNORE INTO cohorts"));
+  assert.deepEqual(legacy.state.params[insertAt], [DEFAULT_COHORT_ID, "spring-2026"], "keeps the existing code, trimmed");
+  assert.deepEqual(legacy.state.params[legacy.state.statements.findIndex((s) => s.startsWith("UPDATE users"))], [DEFAULT_COHORT_ID]);
+  assert.ok(legacy.state.statements.find((s) => s.startsWith("UPDATE users"))!.includes("role = 'participant'"), "instructors are not moved");
+  assert.ok(insertAt < legacy.state.statements.findIndex((s) => s.startsWith("UPDATE users")), "cohort exists before anyone is pointed at it");
+  assert.ok(notes.some((n) => n.includes("3 participant(s)")) && notes.some((n) => n.includes("2 resource(s)")));
+
+  // Running again on the upgraded database changes nothing.
+  legacy.state.statements.length = 0;
+  assert.deepEqual(await upgradeToCohorts(legacy.connection, {}), []);
+  assert.deepEqual(legacy.state.statements, [], "no ALTER, INSERT or UPDATE on a second run");
+
+  // A fresh install already has the columns (from schema.sql): nothing to do.
+  const fresh = fakeDb({ hasColumns: true, participants: 0, resources: 0 });
+  assert.deepEqual(await upgradeToCohorts(fresh.connection, {}), []);
+  assert.deepEqual(fresh.state.statements, []);
+
+  // Legacy but empty (only an instructor): columns are added, no phantom cohort is created.
+  const empty = fakeDb({ hasColumns: false, participants: 0, resources: 0 });
+  assert.deepEqual(await upgradeToCohorts(empty.connection, {}), []);
+  assert.ok(empty.state.statements.every((s) => !s.startsWith("INSERT") && !s.startsWith("UPDATE")));
+
+  // No COHORT_ACCESS_CODE: a fresh code is generated and reported so it isn't lost.
+  const noEnv = fakeDb({ hasColumns: false, participants: 1, resources: 0 });
+  const generated: string[] = await upgradeToCohorts(noEnv.connection, {});
+  const code = noEnv.state.params[noEnv.state.statements.findIndex((s) => s.startsWith("INSERT IGNORE INTO cohorts"))][1] as string;
+  assert.match(code, /^cohort-[0-9a-f]{8}$/);
+  assert.ok(generated.some((n) => n.includes(code)));
+});
+
 test("all deliverables have preparation, a starter, a worked example, and review criteria", () => {
   for (const session of deliverableSessions) {
     const guide = learningGuides[session.id];
