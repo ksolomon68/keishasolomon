@@ -53,7 +53,8 @@ else
   echo "(no cPanel Node virtualenv found for $APP_NAME; using node from PATH)"
 fi
 
-echo "==> node $(node -v), npm $(npm -v)"
+# npm can crash on some shared hosts (see step 3), so never let a version probe abort the deploy.
+echo "==> node $(node -v), npm $(npm -v 2>/dev/null || echo 'unavailable')"
 node -e 'const [a,b]=process.versions.node.split(".").map(Number); process.exit(a>20||(a===20&&b>=9)?0:1)' || {
   echo "ERROR: Node >= 20.9 is required. Select it under cPanel > Setup Node.js App." >&2
   exit 1
@@ -67,8 +68,25 @@ fi
 # 3) Install (devDependencies are needed for the build) and build. Shared hosts have tight memory limits.
 export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=1536}"
 export NEXT_CPU_COUNT=1
-echo "==> Installing dependencies"
-npm install --no-audit --no-fund --omit=dev
+
+# npm aborts (core dump) on this shared host under its process/memory limits, and most deploys don't change
+# dependencies anyway. So only run `npm install` when package.json or the lockfile actually changed, and
+# remember what was installed in a stamp file. node_modules is never touched by the sync above.
+# One-time bootstrap when node_modules is known-good but has no stamp yet:
+#   SKIP_NPM_INSTALL=1 bash scripts/cpanel-deploy.sh
+DEPS_STAMP="node_modules/.deps-hash"
+DEPS_HASH="$(cat package.json package-lock.json 2>/dev/null | sha256sum | cut -d' ' -f1)"
+if [ "${SKIP_NPM_INSTALL:-}" = "1" ]; then
+  [ -d node_modules ] || { echo "ERROR: SKIP_NPM_INSTALL=1 but node_modules is missing." >&2; exit 1; }
+  echo "==> SKIP_NPM_INSTALL=1: keeping the existing node_modules."
+  echo "$DEPS_HASH" > "$DEPS_STAMP"
+elif [ -d node_modules ] && [ -f "$DEPS_STAMP" ] && [ "$(cat "$DEPS_STAMP")" = "$DEPS_HASH" ]; then
+  echo "==> Dependencies unchanged; skipping npm install."
+else
+  echo "==> Installing dependencies"
+  npm install --no-audit --no-fund --omit=dev
+  echo "$DEPS_HASH" > "$DEPS_STAMP"
+fi
 echo "==> Build output shipped from git (.next). Skipping npm run build."
 
 # 4) Passenger restarts the app when this file's timestamp changes.
