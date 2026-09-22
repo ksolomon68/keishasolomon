@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, ClipboardCheck } from "lucide-react";
 import { buttonStyles } from "@/components/ui/button";
 import { cohortStats, instructor, sessions, site } from "@/data/cohortData";
+import { VideoCta } from "@/components/landing/video-cta";
 
 const first = sessions[0];
 const blockTones = ["bg-navy-700", "bg-cyan", "bg-amber", "bg-cyan", "bg-navy-700"];
@@ -42,6 +43,7 @@ export function Hero() {
               <ClipboardCheck className="size-4" aria-hidden="true" />
               Before Day 1 checklist
             </Link>
+            <VideoCta />
           </div>
 
           <figure className="mt-12 flex max-w-xl items-center gap-4 border-l-2 border-amber pl-5">
