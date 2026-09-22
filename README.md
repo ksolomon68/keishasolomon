@@ -75,8 +75,9 @@ Never commit `.env.local` (it is git-ignored). Copy `.env.example` when configur
 ## Deploying (cPanel Git deployment)
 
 The repo includes `.cpanel.yml`, which runs [`scripts/cpanel-deploy.sh`](scripts/cpanel-deploy.sh). On each deploy it copies the
-code to `~/sandbox-app`, keeps the server's `.env.local`, `storage/` and `node_modules/`, runs `npm install` and
-`npm run build`, then restarts the app.
+code to `~/sandbox-app`, keeps the server's `.env.local`, `storage/` and `node_modules/`, and installs dependencies only
+when the lockfile changes. The committed `.next` build is staged in a versioned release directory, validated, and switched
+atomically before Passenger restarts. Older hashed browser assets are retained so tabs opened before a deploy still load.
 
 **One-time setup**
 
@@ -94,7 +95,8 @@ code to `~/sandbox-app`, keeps the server's `.env.local`, `storage/` and `node_m
 **If cPanel says "uncommitted changes"**: the server's clone has edited or untracked files. Never edit files inside the Git Version Control
 clone (the app lives in `~/sandbox-app`, not there). Over SSH, in the clone: `git status`, then `git restore .` (and `git clean -fd` for untracked files), then pull again.
 
-**Troubleshooting**: the build needs roughly 1.5 GB of memory; if the host kills it, build locally with `npm run build` instead and ask your host to raise the limit.
+**Troubleshooting**: run `npm run build` locally and commit the complete `.next` change before deploying. The deployment
+stops before changing the live release if the committed build is incomplete or `rsync` is unavailable.
 Deploy output is shown in the Git Version Control deployment log. Serve the site over **HTTPS** (session cookies are `Secure` in production).
 Behind a reverse proxy, forward the public host in `X-Forwarded-Host` (Server Actions check origin).
 

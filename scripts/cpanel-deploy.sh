@@ -22,38 +22,25 @@ REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 echo "==> Deploying $REPO_DIR -> $APP_DIR"
 mkdir -p "$APP_DIR"
 
-# 1) Sync tracked source. Server-only state (secrets, uploads, deps, build output) is never touched.
-#    Two-pass strategy to eliminate ChunkLoadError on rolling Passenger restarts:
-#      Pass A – sync everything EXCEPT .next/static with --delete (removes stale server files safely).
-#      Pass B – sync .next/static WITHOUT --delete (only adds/updates hashed assets; old ones remain
-#               available to any in-flight worker still serving the previous build's HTML).
-#    Old static files accumulate but are small; prune manually if disk space is a concern.
-if command -v rsync >/dev/null 2>&1; then
-  # Pass A: all source files (safe to delete stale ones)
-  rsync -a --delete \
-    --exclude='.git' \
-    --exclude='node_modules' \
-    --exclude='.next' \
-    --exclude='.env.local' --exclude='.env.production' --exclude='.env.production.local' \
-    --exclude='storage' \
-    --exclude='.data' \
-    --exclude='tmp' \
-    --exclude='.htaccess' \
-    "$REPO_DIR"/ "$APP_DIR"/
-
-  # Pass B: .next server/config files (safe to delete – server only reads them after restart)
-  rsync -a --delete \
-    --exclude='.next/static' \
-    --exclude='.next/cache' \
-    "$REPO_DIR"/.next/ "$APP_DIR"/.next/
-
-  # Pass C: .next/static hashed assets – additive only, never delete
-  rsync -a \
-    "$REPO_DIR"/.next/static/ "$APP_DIR"/.next/static/
-else
-  echo "(rsync not found; falling back to git archive, removed files will not be deleted)"
-  git -C "$REPO_DIR" archive HEAD | tar -x -C "$APP_DIR"
-fi
+# 1) Sync tracked source. Server-only state (secrets, uploads and dependencies) is never touched.
+#    Never update .next in place: its manifests, server files and browser chunks are one release and
+#    mixing files from two builds causes ChunkLoadError / blank-page failures during a deploy.
+command -v rsync >/dev/null 2>&1 || {
+  echo "ERROR: rsync is required for atomic deployment." >&2
+  exit 1
+}
+# Source files are not read by the production server; compiled output is switched separately below.
+rsync -a --delete \
+  --exclude='.git' \
+  --exclude='node_modules' \
+  --exclude='.next' \
+  --exclude='.next-releases' \
+  --exclude='.env.local' --exclude='.env.production' --exclude='.env.production.local' \
+  --exclude='storage' \
+  --exclude='.data' \
+  --exclude='tmp' \
+  --exclude='.htaccess' \
+  "$REPO_DIR"/ "$APP_DIR"/
 
 cd "$APP_DIR"
 
@@ -105,7 +92,56 @@ else
 fi
 echo "==> Build output shipped from git (.next). Skipping npm run build."
 
-# 4) Passenger restarts the app when this file's timestamp changes.
+# 4) Assemble and validate the entire Next.js release before making it live.
+#    Previous static chunks are carried forward so open browser tabs can finish loading the old build.
+[ -f "$REPO_DIR/.next/BUILD_ID" ] || { echo "ERROR: committed .next/BUILD_ID is missing." >&2; exit 1; }
+BUILD_ID="$(tr -d '\r\n' < "$REPO_DIR/.next/BUILD_ID")"
+[ -n "$BUILD_ID" ] || { echo "ERROR: committed .next/BUILD_ID is empty." >&2; exit 1; }
+case "$BUILD_ID" in
+  *[!A-Za-z0-9_-]*) echo "ERROR: committed .next/BUILD_ID contains unsafe characters." >&2; exit 1 ;;
+esac
+[ -f "$REPO_DIR/.next/required-server-files.json" ] || {
+  echo "ERROR: committed .next build is incomplete (required-server-files.json missing)." >&2
+  exit 1
+}
+[ -d "$REPO_DIR/.next/static" ] || { echo "ERROR: committed .next/static is missing." >&2; exit 1; }
+
+RELEASES_DIR="$APP_DIR/.next-releases"
+RELEASE_NAME="$BUILD_ID-$(date -u +%Y%m%dT%H%M%SZ)-$$"
+RELEASE_DIR="$RELEASES_DIR/$RELEASE_NAME"
+RELEASE_TMP="$RELEASES_DIR/.staging-$RELEASE_NAME"
+mkdir -p "$RELEASES_DIR"
+rm -rf "$RELEASE_TMP"
+mkdir -p "$RELEASE_TMP"
+
+rsync -a --delete --exclude='cache' "$REPO_DIR/.next/" "$RELEASE_TMP/"
+# Preserve immutable, hashed assets from earlier deployments without replacing files from the new build.
+if [ -d "$APP_DIR/.next/static" ]; then
+  rsync -a --ignore-existing "$APP_DIR/.next/static/" "$RELEASE_TMP/static/"
+fi
+
+[ "$(tr -d '\r\n' < "$RELEASE_TMP/BUILD_ID")" = "$BUILD_ID" ] || {
+  echo "ERROR: staged build ID does not match $BUILD_ID." >&2
+  exit 1
+}
+[ -f "$RELEASE_TMP/server/pages-manifest.json" ] || {
+  echo "ERROR: staged Next.js server manifest is missing." >&2
+  exit 1
+}
+
+# Publish the staged directory, then atomically replace the .next symlink. The first deployment
+# migrates the legacy real .next directory out of the way; later deployments are a single rename.
+mv "$RELEASE_TMP" "$RELEASE_DIR"
+if [ -e "$APP_DIR/.next" ] && [ ! -L "$APP_DIR/.next" ]; then
+  LEGACY_DIR="$RELEASES_DIR/legacy-$(date -u +%Y%m%dT%H%M%SZ)"
+  mv "$APP_DIR/.next" "$LEGACY_DIR"
+fi
+NEXT_LINK="$APP_DIR/.next.new-$$"
+ln -s ".next-releases/$RELEASE_NAME" "$NEXT_LINK"
+mv -Tf "$NEXT_LINK" "$APP_DIR/.next"
+echo "==> Activated Next.js build $BUILD_ID"
+
+# 5) Passenger restarts the app when this file's timestamp changes.
 mkdir -p tmp
 touch tmp/restart.txt
 echo "==> Done. App restarted."
