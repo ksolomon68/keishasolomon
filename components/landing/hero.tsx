@@ -1,13 +1,7 @@
-"use client";
-
-import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, ClipboardCheck, Play } from "lucide-react";
+import { ArrowRight, ClipboardCheck } from "lucide-react";
 import { buttonStyles } from "@/components/ui/button";
 import { cohortStats, instructor, sessions, site } from "@/data/cohortData";
-import { VideoModal } from "@/components/landing/video-modal";
-
-const INTRO_VIDEO_ID = "rgoP3fIWIpc";
 
 const first = sessions[0];
 const blockTones = ["bg-navy-700", "bg-cyan", "bg-amber", "bg-cyan", "bg-navy-700"];
@@ -15,7 +9,6 @@ const blockText = ["text-white", "text-navy-950", "text-navy-950", "text-navy-95
 
 export function Hero() {
   const agenda = first.agenda;
-  const [videoOpen, setVideoOpen] = useState(false);
   return (
     <section data-surface="dark" className="grid-backdrop relative isolate overflow-hidden bg-navy-900 text-white">
       <div
@@ -49,16 +42,6 @@ export function Hero() {
               <ClipboardCheck className="size-4" aria-hidden="true" />
               Before Day 1 checklist
             </Link>
-            <button
-              onClick={() => setVideoOpen(true)}
-              className={buttonStyles({ variant: "ghost" }) + " text-white"}
-              id="hero-watch-intro"
-            >
-              <span className="grid size-7 place-items-center rounded-full border border-amber/60 text-amber">
-                <Play className="size-3.5 fill-current" aria-hidden="true" />
-              </span>
-              Watch the intro
-            </button>
           </div>
 
           <figure className="mt-12 flex max-w-xl items-center gap-4 border-l-2 border-amber pl-5">
@@ -135,12 +118,6 @@ export function Hero() {
           </div>
         ))}
       </dl>
-
-      <VideoModal
-        isOpen={videoOpen}
-        onClose={() => setVideoOpen(false)}
-        videoId={INTRO_VIDEO_ID}
-      />
     </section>
   );
 }
