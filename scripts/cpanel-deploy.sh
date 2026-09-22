@@ -23,17 +23,33 @@ echo "==> Deploying $REPO_DIR -> $APP_DIR"
 mkdir -p "$APP_DIR"
 
 # 1) Sync tracked source. Server-only state (secrets, uploads, deps, build output) is never touched.
+#    Two-pass strategy to eliminate ChunkLoadError on rolling Passenger restarts:
+#      Pass A – sync everything EXCEPT .next/static with --delete (removes stale server files safely).
+#      Pass B – sync .next/static WITHOUT --delete (only adds/updates hashed assets; old ones remain
+#               available to any in-flight worker still serving the previous build's HTML).
+#    Old static files accumulate but are small; prune manually if disk space is a concern.
 if command -v rsync >/dev/null 2>&1; then
+  # Pass A: all source files (safe to delete stale ones)
   rsync -a --delete \
     --exclude='.git' \
     --exclude='node_modules' \
-    --exclude='.next/cache' \
+    --exclude='.next' \
     --exclude='.env.local' --exclude='.env.production' --exclude='.env.production.local' \
     --exclude='storage' \
     --exclude='.data' \
     --exclude='tmp' \
     --exclude='.htaccess' \
     "$REPO_DIR"/ "$APP_DIR"/
+
+  # Pass B: .next server/config files (safe to delete – server only reads them after restart)
+  rsync -a --delete \
+    --exclude='.next/static' \
+    --exclude='.next/cache' \
+    "$REPO_DIR"/.next/ "$APP_DIR"/.next/
+
+  # Pass C: .next/static hashed assets – additive only, never delete
+  rsync -a \
+    "$REPO_DIR"/.next/static/ "$APP_DIR"/.next/static/
 else
   echo "(rsync not found; falling back to git archive, removed files will not be deleted)"
   git -C "$REPO_DIR" archive HEAD | tar -x -C "$APP_DIR"
