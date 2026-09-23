@@ -7,7 +7,7 @@ export function InstructorBlock() {
       <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 sm:px-6 md:grid-cols-[auto_1fr] lg:px-8">
         <div className="relative size-32 shrink-0 overflow-hidden border-2 border-navy-900 bg-navy-900 sm:size-40">
           <Image
-            src="/keisha.jpg"
+            src="/home.png"
             alt={instructor.name}
             fill
             className="object-cover object-center"
