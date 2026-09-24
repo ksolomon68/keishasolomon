@@ -57,7 +57,7 @@ export function SiteFooter() {
             </p>
             <p>
               <a href={site.url} className="text-white underline underline-offset-4 hover:text-amber">
-                keishasolomon.com
+                {site.url.replace(/^https?:\/\//, "")}
               </a>
             </p>
             {site.contactEmail ? (
