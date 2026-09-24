@@ -23,7 +23,7 @@ const inviteHref = (cohort: Cohort) => {
 };
 
 export default async function AdminPage({ searchParams }: { searchParams: Promise<{ cohort?: string | string[] }> }) {
-  await requireAdmin("/admin");
+  const admin = await requireAdmin("/admin");
   const store = await getStore();
   const [cohorts, users] = await Promise.all([store.listCohorts(), store.listUsers()]);
 
@@ -163,14 +163,19 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
         </section>
 
         <section aria-labelledby="user-management-title">
-          <p className="label text-amber-deep">Account provisioning</p>
+          <p className="label text-amber-deep">Account Management</p>
           <h2 id="user-management-title" className="mb-2 font-display text-3xl text-navy-900 sm:text-4xl">
-            Admins &amp; Participants
+            User Accounts &amp; Permissions
           </h2>
           <p className="mb-6 max-w-3xl text-muted">
-            Manually add participants directly to a cohort or provision administrator accounts with full management access.
+            Search, edit, reassign cohorts, reset passwords, or delete participant and administrator accounts.
           </p>
-          <UserManager admins={admins} cohorts={cohorts} currentCohortId={selected.id} />
+          <UserManager
+            users={users}
+            cohorts={cohorts}
+            currentCohortId={selected.id}
+            currentAdminId={admin.id}
+          />
         </section>
 
         <section aria-labelledby="resources-title">

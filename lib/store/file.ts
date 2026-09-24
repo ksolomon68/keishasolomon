@@ -169,6 +169,31 @@ export function createFileStore(dir = path.join(process.cwd(), ".data")): Store 
       }),
     listUsers: (cohortId) =>
       run(false, (db) => db.users.filter((u) => !cohortId || u.cohortId === cohortId).map(publicUser)),
+    updateUser: (id, patch) =>
+      run(true, (db) => {
+        const user = db.users.find((u) => u.id === id);
+        if (!user) return null;
+        if (
+          patch.email !== undefined &&
+          db.users.some((u) => u.id !== id && u.email.toLowerCase() === patch.email!.toLowerCase())
+        ) {
+          throw new EmailTakenError();
+        }
+        Object.assign(user, patch);
+        return publicUser(user);
+      }),
+    deleteUser: (id) =>
+      run(true, (db) => {
+        const index = db.users.findIndex((u) => u.id === id);
+        if (index === -1) return null;
+        const [removed] = db.users.splice(index, 1);
+        db.friction = db.friction.filter((f) => f.userId !== id);
+        db.coachingNotes = db.coachingNotes.filter((c) => c.userId !== id);
+        db.deliverables = db.deliverables.filter((d) => d.userId !== id);
+        db.capstone = db.capstone.filter((c) => c.userId !== id);
+        db.attendance = db.attendance.filter((a) => a.userId !== id);
+        return publicUser(removed);
+      }),
 
     listFriction: (userId) =>
       run(false, (db) =>

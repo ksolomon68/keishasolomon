@@ -62,6 +62,29 @@ export const createUserSchema = z
     path: ["cohortId"],
   });
 
+export const updateUserSchema = z
+  .object({
+    userId: z.uuid(),
+    name: z.string().trim().min(1, "Enter a full name.").max(120),
+    email: z.string().trim().toLowerCase().pipe(z.email("Enter a valid email address.").max(190)),
+    organization: z.string().trim().max(160).default(""),
+    role: z.enum(["participant", "admin"]),
+    cohortId: z.union([z.literal(""), z.uuid()]).transform((v) => (v === "" ? null : v)),
+    password: z
+      .union([
+        z.literal(""),
+        z
+          .string()
+          .min(10, "Use at least 10 characters.")
+          .refine((v) => new TextEncoder().encode(v).length <= 72, "Use 72 bytes or fewer."),
+      ])
+      .transform((v) => (v === "" ? null : v)),
+  })
+  .refine((data) => data.role !== "participant" || !!data.cohortId, {
+    message: "Select a cohort for the participant.",
+    path: ["cohortId"],
+  });
+
 export const frictionSchema = z.object({
   task: z.string().trim().min(3, "Describe the task in a few words.").max(500),
   frequency: z.enum(tuple(frictionFrequencies.map((f) => f.value))),

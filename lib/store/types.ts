@@ -50,6 +50,12 @@ export interface UserWithHash extends User {
   passwordHash: string;
 }
 
+export type UserPatch = Partial<
+  Pick<User, "name" | "email" | "organization" | "role" | "cohortId"> & {
+    passwordHash: string;
+  }
+>;
+
 export interface FrictionEntry {
   id: string;
   userId: string;
@@ -177,6 +183,8 @@ export interface Store {
   findUserById(id: string): Promise<User | null>;
   /** Omit `cohortId` for everyone (instructors included). */
   listUsers(cohortId?: string): Promise<User[]>;
+  updateUser(id: string, patch: UserPatch): Promise<User | null>;
+  deleteUser(id: string): Promise<User | null>;
 
   listFriction(userId: string): Promise<FrictionEntry[]>;
   addFriction(userId: string, input: NewFriction): Promise<FrictionEntry>;

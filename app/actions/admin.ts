@@ -15,6 +15,7 @@ import { removeFile, saveUpload, UploadError } from "@/lib/uploads";
 import {
   cohortSchema,
   createUserSchema,
+  updateUserSchema,
   fieldErrors,
   newCohortSchema,
   resourceSchema,
@@ -235,4 +236,71 @@ export async function createUserAction(_prev: FormState, formData: FormData): Pr
     message: `Successfully created ${role === "admin" ? "admin" : "participant"} account for ${name}.${note}`,
   };
 }
+
+export async function updateUserAction(_prev: FormState, formData: FormData): Promise<FormState> {
+  const currentAdmin = await requireAdmin("/admin");
+  const values = textValues(formData);
+  const parsed = updateUserSchema.safeParse(values);
+  if (!parsed.success) return { errors: fieldErrors(parsed.error), values };
+
+  const { userId, name, email, organization, role, cohortId, password } = parsed.data;
+  const store = await getStore();
+
+  const target = await store.findUserById(userId);
+  if (!target) return { message: "User not found.", values };
+
+  if (target.id === currentAdmin.id && role !== "admin") {
+    return { message: "You cannot change your own role away from admin.", values };
+  }
+
+  if (role === "participant" && cohortId) {
+    const cohort = await store.getCohort(cohortId);
+    if (!cohort) return { errors: { cohortId: ["Selected cohort does not exist."] }, values };
+  }
+
+  try {
+    const patch: Parameters<typeof store.updateUser>[1] = {
+      name,
+      email,
+      organization,
+      role,
+      cohortId: role === "admin" ? null : cohortId,
+    };
+
+    if (password) {
+      patch.passwordHash = await hashPassword(password);
+    }
+
+    await store.updateUser(userId, patch);
+  } catch (error) {
+    if (isEmailTaken(error)) {
+      return { errors: { email: ["An account with this email address already exists."] }, values };
+    }
+    throw error;
+  }
+
+  revalidatePath("/admin");
+  revalidatePath("/dashboard");
+  return {
+    ok: true,
+    message: `Successfully updated ${name}'s account details.`,
+  };
+}
+
+export async function deleteUserAction(userId: string): Promise<FormState> {
+  const currentAdmin = await requireAdmin("/admin");
+  if (currentAdmin.id === userId) {
+    return { ok: false, message: "You cannot delete your own admin account." };
+  }
+
+  const store = await getStore();
+  const user = await store.findUserById(idSchema.parse(userId));
+  if (!user) return { ok: false, message: "User not found." };
+
+  await store.deleteUser(user.id);
+  revalidatePath("/admin");
+  revalidatePath("/dashboard");
+  return { ok: true, message: `Successfully deleted account for ${user.name}.` };
+}
+
 

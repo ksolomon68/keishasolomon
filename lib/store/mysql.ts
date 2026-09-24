@@ -224,6 +224,32 @@ export function createMysqlStore(pool: Pool = createPool()): Store {
         : await rows("SELECT * FROM users ORDER BY created_at");
       return result.map(toUser);
     },
+    async updateUser(id, patch) {
+      const sets: string[] = [];
+      const params: unknown[] = [];
+      if (patch.name !== undefined) { sets.push("name = ?"); params.push(patch.name); }
+      if (patch.email !== undefined) { sets.push("email = ?"); params.push(patch.email); }
+      if (patch.organization !== undefined) { sets.push("organization = ?"); params.push(patch.organization); }
+      if (patch.role !== undefined) { sets.push("role = ?"); params.push(patch.role); }
+      if (patch.cohortId !== undefined) { sets.push("cohort_id = ?"); params.push(patch.cohortId); }
+      if (patch.passwordHash !== undefined) { sets.push("password_hash = ?"); params.push(patch.passwordHash); }
+      if (sets.length) {
+        try {
+          await exec(`UPDATE users SET ${sets.join(", ")} WHERE id = ?`, [...params, id]);
+        } catch (error) {
+          if ((error as { code?: string }).code === "ER_DUP_ENTRY") throw new EmailTakenError();
+          throw error;
+        }
+      }
+      const row = await one("SELECT * FROM users WHERE id = ?", [id]);
+      return row ? toUser(row) : null;
+    },
+    async deleteUser(id) {
+      const row = await one("SELECT * FROM users WHERE id = ?", [id]);
+      if (!row) return null;
+      await exec("DELETE FROM users WHERE id = ?", [id]);
+      return toUser(row);
+    },
 
     async listFriction(userId) {
       return (await rows("SELECT * FROM friction_entries WHERE user_id = ? ORDER BY created_at DESC", [userId])).map(
