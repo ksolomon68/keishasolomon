@@ -8,6 +8,7 @@ import { sessionById } from "@/data/cohortData";
 import { defaultSessionDates } from "@/lib/cohort-schedule";
 import { hashPassword } from "@/lib/auth/password";
 import { requireAdmin } from "@/lib/auth/session";
+import { sendWelcomeEmail } from "@/lib/email";
 import { getStore, isAccessCodeTaken, isEmailTaken } from "@/lib/store";
 import { DeliverableError } from "@/lib/store/deliverable-state";
 import { removeFile, saveUpload, UploadError } from "@/lib/uploads";
@@ -195,9 +196,11 @@ export async function createUserAction(_prev: FormState, formData: FormData): Pr
   const { name, email, organization, role, cohortId, password } = parsed.data;
   const store = await getStore();
 
+  let cohortName: string | undefined;
   if (role === "participant" && cohortId) {
     const cohort = await store.getCohort(cohortId);
     if (!cohort) return { errors: { cohortId: ["Selected cohort does not exist."] }, values };
+    cohortName = cohort.name;
   }
 
   try {
@@ -216,11 +219,20 @@ export async function createUserAction(_prev: FormState, formData: FormData): Pr
     throw error;
   }
 
+  const emailResult = await sendWelcomeEmail({
+    to: email,
+    name,
+    role,
+    cohortName,
+    password,
+  });
+
   revalidatePath("/admin");
   revalidatePath("/dashboard");
+  const note = emailResult.sent ? " A welcome email with login credentials was sent." : "";
   return {
     ok: true,
-    message: `Successfully created ${role === "admin" ? "admin" : "participant"} account for ${name}.`,
+    message: `Successfully created ${role === "admin" ? "admin" : "participant"} account for ${name}.${note}`,
   };
 }
 
