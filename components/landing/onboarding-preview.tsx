@@ -16,7 +16,7 @@ export function OnboardingPreview() {
             id="onboarding-title"
             eyebrow="Before Day 1"
             title="Arrive ready to build"
-            intro="Five things to bring and set up before October 16, so the first session is spent building, not signing up."
+            intro="Five things to bring and set up before Session 1, so the first session is spent building, not signing up."
           />
           <Link href="/onboarding" className={buttonStyles({ variant: "secondary" })}>
             Open the interactive checklist

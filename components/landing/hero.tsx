@@ -21,7 +21,7 @@ export function Hero() {
           <p className="label flex flex-wrap items-center gap-x-3 gap-y-1 text-amber">
             <span>Cohort 01</span>
             <span aria-hidden="true" className="h-px w-8 bg-amber/60" />
-            <span>Oct 2026 – May 2027</span>
+            <span>8-Month Executive Cohort</span>
           </p>
 
           <h1 className="mt-6 font-display text-[clamp(2.5rem,6.2vw,4.75rem)] font-light leading-[1.02] tracking-tight text-balance">

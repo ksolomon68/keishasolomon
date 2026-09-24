@@ -33,7 +33,7 @@ export function SyllabusTimeline() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           id="syllabus-title"
-          eyebrow="Oct 2026 → May 2027"
+          eyebrow="Curriculum & Roadmap"
           title="Eight sessions. Seven working assets. One showcase."
           intro="Each session pairs a hook, a strategy framework and a live build lab. Filter by focus area and open a session to see what you'll build."
         />
@@ -122,10 +122,8 @@ function SessionCard({ session, open, onToggle }: { session: Session; open: bool
             <span className="min-w-0 flex-1">
               <span className="flex flex-wrap items-center gap-2">
                 <span className="label text-ink">
-                  <span className="sr-only">Session {session.number}: </span>
-                  {session.dateLabel}
+                  Session {session.number} · Month {session.number}
                 </span>
-                {session.date === null && <Tag tone="amber">Date TBA</Tag>}
                 <Tag tone="cyan">{session.focus}</Tag>
               </span>
               <span className="mt-2.5 block font-display text-2xl leading-tight text-navy-900 sm:text-[1.75rem]">

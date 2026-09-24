@@ -11,7 +11,7 @@ export function ClosingCta() {
         </h2>
         <p className="mx-auto mt-5 max-w-2xl text-lg text-on-navy">
           Registered participants use the portal to log workplace friction, submit deliverables and track their path
-          to the May 11 showcase.
+          to the final showcase.
         </p>
         <div className="mt-9 flex flex-wrap justify-center gap-3">
           <Link href="/register" className={buttonStyles({ variant: "primary" })}>
