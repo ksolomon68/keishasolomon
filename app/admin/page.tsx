@@ -6,6 +6,7 @@ import { CohortSwitcher } from "@/components/admin/cohort-switcher";
 import { Roster, type RosterEntry } from "@/components/admin/roster";
 import { ResourceManager } from "@/components/admin/resource-manager";
 import { FrictionReview } from "@/components/admin/friction-review";
+import { CoachingReview } from "@/components/admin/coaching-review";
 import { capstoneSteps, site } from "@/data/cohortData";
 import { requireAdmin } from "@/lib/auth/session";
 import { cohortSchedule } from "@/lib/cohort-schedule";
@@ -81,6 +82,9 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   const friction = (await Promise.all(participants.map(async (u) =>
     (await store.listFriction(u.id)).map((entry) => ({ ...entry, participant: u.name })),
   ))).flat();
+  const coachingNotes = (await Promise.all(participants.map(async (u) =>
+    (await store.listCoachingNotes(u.id)).map((entry) => ({ ...entry, participant: u.name })),
+  ))).flat().sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   const avg = (total: number, denominator: number) => (n && denominator ? Math.round((total / (n * denominator)) * 100) : 0);
   const submittedTotal = entries.reduce(
     (sum, e) => sum + e.deliverables.filter((d) => d.status === "submitted" || d.status === "reviewed").length,
@@ -142,6 +146,12 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
           <h2 id="lab-needs-title" className="mb-3 mt-2 font-display text-3xl sm:text-4xl">What the cohort needs help with</h2>
           <p className="mb-6 max-w-3xl text-muted">Use participants&rsquo; workplace problems to choose examples, pair exercises, and follow-up support. Do not share their private entries with the group.</p>
           <FrictionReview entries={friction} schedule={schedule} />
+        </section>
+        <section aria-labelledby="coaching-notes-title">
+          <p className="label text-amber-deep">Continue the conversation</p>
+          <h2 id="coaching-notes-title" className="mb-3 mt-2 font-display text-3xl sm:text-4xl">Participant coaching log</h2>
+          <p className="mb-6 max-w-3xl text-muted">Review participant reflections and next steps before a remote 1:1. These notes are private to the participant and instructor team.</p>
+          <CoachingReview entries={coachingNotes} />
         </section>
         <section aria-labelledby="roster-title">
           <h2 id="roster-title" className="mb-6 font-display text-3xl text-navy-900 sm:text-4xl">

@@ -89,6 +89,15 @@ export interface Attendance {
   sessionId: string;
 }
 
+export interface CoachingNote {
+  id: string;
+  userId: string;
+  topic: string;
+  note: string;
+  nextStep: string;
+  createdAt: string;
+}
+
 export interface StoredFile {
   id: string;
   ownerId: string;
@@ -139,6 +148,7 @@ export type NewUser = Pick<User, "email" | "name" | "organization" | "role" | "c
 };
 
 export type NewFriction = Pick<FrictionEntry, "task" | "frequency" | "minutes" | "sessionId">;
+export type NewCoachingNote = Pick<CoachingNote, "topic" | "note" | "nextStep">;
 
 export type DeliverablePatch = Partial<Pick<Deliverable, "status" | "linkUrl" | "notes" | "fileId" | "feedback">> & {
   expectedVersion: number;
@@ -172,6 +182,11 @@ export interface Store {
   addFriction(userId: string, input: NewFriction): Promise<FrictionEntry>;
   setFrictionDone(userId: string, id: string, done: boolean): Promise<void>;
   deleteFriction(userId: string, id: string): Promise<void>;
+
+  /** With a user id, returns that participant's private notes; without one, returns all notes for instructors. */
+  listCoachingNotes(userId?: string): Promise<CoachingNote[]>;
+  addCoachingNote(userId: string, input: NewCoachingNote): Promise<CoachingNote>;
+  deleteCoachingNote(userId: string, id: string): Promise<void>;
 
   /** Omit `userId` to list every participant's deliverables (admin roster). */
   listDeliverables(userId?: string): Promise<Deliverable[]>;

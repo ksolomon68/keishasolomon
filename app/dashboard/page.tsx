@@ -2,6 +2,9 @@ import { CapstoneTracker } from "@/components/dashboard/capstone-tracker";
 import { NextSessionSummary } from "@/components/dashboard/countdown";
 import { DeliverableHub, type FileInfo } from "@/components/dashboard/deliverable-hub";
 import { FrictionLog } from "@/components/dashboard/friction-log";
+import { CoachingLog } from "@/components/dashboard/coaching-log";
+import { MarketingToolkit } from "@/components/dashboard/marketing-toolkit";
+import { RemoteCoaching } from "@/components/dashboard/remote-coaching";
 import { SessionGrid } from "@/components/dashboard/session-grid";
 import { NextStep } from "@/components/dashboard/next-step";
 import { PromptWorkshop } from "@/components/dashboard/prompt-workshop";
@@ -21,6 +24,8 @@ const sections = [
   { id: "sessions", label: "Sessions" },
   { id: "practice", label: "Practice" },
   { id: "friction", label: "Friction log" },
+  { id: "coaching", label: "1:1 coaching" },
+  { id: "marketing", label: "Marketing toolkit" },
   { id: "deliverables", label: "Deliverables" },
   { id: "capstone", label: "Capstone" },
 ];
@@ -33,8 +38,9 @@ const formatBytes = (n: number) =>
 export default async function DashboardPage() {
   const user = await requireUser("/dashboard");
   const store = await getStore();
-  const [friction, deliverables, capstone, resources, cohort] = await Promise.all([
+  const [friction, coachingNotes, deliverables, capstone, resources, cohort] = await Promise.all([
     store.listFriction(user.id),
+    store.listCoachingNotes(user.id),
     store.listDeliverables(user.id),
     store.listCapstone(user.id),
     resourcesFor(store, user),
@@ -131,6 +137,18 @@ export default async function DashboardPage() {
 
         <DashSection id="friction" eyebrow="Steer the labs" title="Workplace Friction log">
           <FrictionLog entries={friction} schedule={schedule} />
+        </DashSection>
+
+        <DashSection id="coaching" eyebrow="Private support" title="Remote 1:1 coaching">
+          <div className="space-y-10">
+            <RemoteCoaching participantName={user.name} />
+            <CoachingLog entries={coachingNotes} />
+          </div>
+        </DashSection>
+
+        <DashSection id="marketing" eyebrow="Say it clearly" title="Marketing & Communications Toolkit">
+          <p className="mb-6 max-w-3xl text-muted">Adapt these starting points to your voice, audience, and real results. Replace bracketed prompts with specifics before publishing.</p>
+          <MarketingToolkit />
         </DashSection>
 
         <DashSection id="deliverables" eyebrow="Monthly assets" title="Deliverable submission hub">

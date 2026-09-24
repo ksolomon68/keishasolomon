@@ -60,6 +60,18 @@ CREATE TABLE IF NOT EXISTS friction_entries (
   CONSTRAINT fk_friction_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS coaching_notes (
+  id          CHAR(36)     NOT NULL,
+  user_id     CHAR(36)     NOT NULL,
+  topic       VARCHAR(160) NOT NULL,
+  note        TEXT         NOT NULL,
+  next_step   VARCHAR(500) NOT NULL DEFAULT '',
+  created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_coaching_notes_user (user_id, created_at),
+  CONSTRAINT fk_coaching_notes_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS deliverables (
   user_id     CHAR(36)     NOT NULL,
   session_id  VARCHAR(8)   NOT NULL,

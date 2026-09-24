@@ -9,6 +9,7 @@ import {
   type Attendance,
   type CapstoneProgress,
   type Cohort,
+  type CoachingNote,
   type Deliverable,
   type FrictionEntry,
   type Resource,
@@ -27,6 +28,7 @@ interface Db {
   cohorts: Cohort[];
   users: UserWithHash[];
   friction: FrictionEntry[];
+  coachingNotes: CoachingNote[];
   deliverables: Deliverable[];
   capstone: CapstoneProgress[];
   attendance: Attendance[];
@@ -38,6 +40,7 @@ const empty = (): Db => ({
   cohorts: [],
   users: [],
   friction: [],
+  coachingNotes: [],
   deliverables: [],
   capstone: [],
   attendance: [],
@@ -187,6 +190,23 @@ export function createFileStore(dir = path.join(process.cwd(), ".data")): Store 
     deleteFriction: (userId, id) =>
       run(true, (db) => {
         db.friction = db.friction.filter((f) => !(f.id === id && f.userId === userId));
+      }),
+
+    listCoachingNotes: (userId) =>
+      run(false, (db) =>
+        db.coachingNotes
+          .filter((note) => !userId || note.userId === userId)
+          .sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
+      ),
+    addCoachingNote: (userId, input) =>
+      run(true, (db) => {
+        const note: CoachingNote = { id: randomUUID(), userId, createdAt: now(), ...input };
+        db.coachingNotes.push(note);
+        return note;
+      }),
+    deleteCoachingNote: (userId, id) =>
+      run(true, (db) => {
+        db.coachingNotes = db.coachingNotes.filter((note) => !(note.id === id && note.userId === userId));
       }),
 
     listDeliverables: (userId) =>

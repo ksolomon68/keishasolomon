@@ -54,6 +54,12 @@ export const frictionSchema = z.object({
     .transform((v) => (v === "" ? null : v)),
 });
 
+export const coachingNoteSchema = z.object({
+  topic: z.string().trim().min(2, "Name the focus of the session.").max(160),
+  note: z.string().trim().min(3, "Add a short coaching note.").max(3000),
+  nextStep: z.string().trim().max(500, "Keep the next step under 500 characters.").default(""),
+});
+
 export const deliverableSchema = z.object({
   sessionId: sessionIdSchema,
   status: z.enum(tuple(deliverableStatuses.map((s) => s.value))),

@@ -9,6 +9,7 @@ import { DeliverableError } from "@/lib/store/deliverable-state";
 import { removeFile, saveUpload, UploadError } from "@/lib/uploads";
 import {
   deliverableSchema,
+  coachingNoteSchema,
   fieldErrors,
   frictionSchema,
   textValues,
@@ -16,6 +17,27 @@ import {
 } from "@/lib/validation";
 
 const idSchema = z.uuid();
+
+/* ---------- Coaching log ---------- */
+
+export async function addCoachingNoteAction(_prev: FormState, formData: FormData): Promise<FormState> {
+  const user = await requireUser("/dashboard");
+  const values = textValues(formData);
+  const parsed = coachingNoteSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return { errors: fieldErrors(parsed.error), values };
+
+  await (await getStore()).addCoachingNote(user.id, parsed.data);
+  revalidatePath("/dashboard");
+  revalidatePath("/admin");
+  return { ok: true, message: "Added to your coaching log." };
+}
+
+export async function deleteCoachingNoteAction(id: string): Promise<void> {
+  const user = await requireUser("/dashboard");
+  await (await getStore()).deleteCoachingNote(user.id, idSchema.parse(id));
+  revalidatePath("/dashboard");
+  revalidatePath("/admin");
+}
 
 /* ---------- Workplace Friction log ---------- */
 

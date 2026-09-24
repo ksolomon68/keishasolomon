@@ -6,6 +6,7 @@ import {
   AccessCodeTakenError,
   EmailTakenError,
   type Cohort,
+  type CoachingNote,
   type Deliverable,
   type FrictionEntry,
   type Resource,
@@ -77,6 +78,15 @@ const toFriction = (r: Row): FrictionEntry => ({
   minutes: r.minutes,
   sessionId: nullable(r.session_id),
   done: r.done === 1,
+  createdAt: iso(r.created_at),
+});
+
+const toCoachingNote = (r: Row): CoachingNote => ({
+  id: r.id,
+  userId: r.user_id,
+  topic: r.topic,
+  note: r.note,
+  nextStep: r.next_step ?? "",
   createdAt: iso(r.created_at),
 });
 
@@ -233,6 +243,24 @@ export function createMysqlStore(pool: Pool = createPool()): Store {
     },
     async deleteFriction(userId, id) {
       await exec("DELETE FROM friction_entries WHERE id = ? AND user_id = ?", [id, userId]);
+    },
+
+    async listCoachingNotes(userId) {
+      const result = userId
+        ? await rows("SELECT * FROM coaching_notes WHERE user_id = ? ORDER BY created_at DESC", [userId])
+        : await rows("SELECT * FROM coaching_notes ORDER BY created_at DESC");
+      return result.map(toCoachingNote);
+    },
+    async addCoachingNote(userId, input) {
+      const id = randomUUID();
+      await exec(
+        "INSERT INTO coaching_notes (id, user_id, topic, note, next_step) VALUES (?, ?, ?, ?, ?)",
+        [id, userId, input.topic, input.note, input.nextStep],
+      );
+      return toCoachingNote((await one("SELECT * FROM coaching_notes WHERE id = ?", [id]))!);
+    },
+    async deleteCoachingNote(userId, id) {
+      await exec("DELETE FROM coaching_notes WHERE id = ? AND user_id = ?", [id, userId]);
     },
 
     async listDeliverables(userId) {
