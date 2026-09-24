@@ -307,10 +307,10 @@ function RunOfShow({ schedule }: { schedule: Session[] }) {
   const agenda = schedule[0].agenda;
   return (
     <Sheet id="run-of-show">
-      <H2 eyebrow="The standard format">The 90-minute run of show</H2>
+      <H2 eyebrow="Opening day">Session 1: the 90-minute run of show</H2>
       <p className="mt-3 text-[0.9375rem] leading-relaxed text-muted">
-        Sessions one to seven follow the same five blocks. Keeping the shape steady lets participants relax into the
-        routine and lets you spend your attention on the content.
+        Session 1 opens with the welcome and readiness baseline. Starting with Session 2, that first ten-minute block
+        becomes the Brag Board so participants can share wins and troubleshooting from work completed between sessions.
       </p>
       <ol className="mt-4 space-y-4">
         {agenda.map((block) => {
@@ -342,8 +342,8 @@ function RunOfShow({ schedule }: { schedule: Session[] }) {
         })}
       </ol>
       <Callout label="Time cues">
-        Use the clock to protect the build lab. If the Brag Board or the concept block runs long, shorten the framework,
-        not the lab or the peer review.
+        Use the clock to protect the build lab. If the welcome or concept block runs long, shorten the framework, not
+        the lab or peer review. From Session 2 onward, apply the same rule to the Brag Board.
       </Callout>
       <H2>Before every session</H2>
       <Checklist items={beforeSession} />

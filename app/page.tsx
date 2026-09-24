@@ -1,4 +1,5 @@
 import { ClosingCta } from "@/components/landing/closing-cta";
+import { CoachingSupport } from "@/components/landing/coaching";
 import { Hero } from "@/components/landing/hero";
 import { InstructorBlock } from "@/components/landing/instructor";
 import { OnboardingPreview } from "@/components/landing/onboarding-preview";
@@ -12,6 +13,7 @@ export default function HomePage() {
       <Hero />
       <ValueMatrix />
       <SyllabusTimeline />
+      <CoachingSupport />
       <InstructorBlock />
       <OnboardingPreview />
       <SafeHarborPledge />

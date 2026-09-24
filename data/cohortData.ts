@@ -10,7 +10,7 @@ export const site = {
   headline: "Applied AI for Leadership & Business Innovation",
   url: process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://evobrandacademy.com",
   contactEmail: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "",
-  format: "8-month cohort · 90-minute in-person sessions",
+  format: "8-month cohort · 90-minute in-person sessions · remote 1:1 coaching",
 } as const;
 
 export const instructor = {
@@ -107,6 +107,18 @@ const standardAgenda: AgendaBlock[] = [
   },
 ];
 
+/** Session 1 opens the cohort; there are no prior wins to share on a Brag Board yet. */
+const firstSessionAgenda: AgendaBlock[] = [
+  {
+    start: "00:00",
+    end: "00:10",
+    minutes: 10,
+    title: "Welcome & Readiness Baseline",
+    detail: "Meet the cohort, set working agreements and name the first workplace friction point to measure.",
+  },
+  ...standardAgenda.slice(1),
+];
+
 /** Final showcase, 90-minute window. */
 const showcaseAgenda: AgendaBlock[] = [
   {
@@ -169,7 +181,7 @@ export const sessions: Session[] = [
       description:
         "A personal AI Readiness & Opportunity Audit for your business or role, plus a Personal AI Assistant configured and tested for email drafting, meeting summaries and decision support, with human review.",
     },
-    agenda: standardAgenda,
+    agenda: firstSessionAgenda,
   },
   {
     id: "s2",
@@ -420,6 +432,11 @@ export const valueMatrix = {
       dimension: "Monthly outcome",
       passive: "Notes and a certificate",
       sandbox: "A working asset: policy, workflow, pipeline or prototype",
+    },
+    {
+      dimension: "Between-session support",
+      passive: "A general Q&A or office-hours link",
+      sandbox: "Remote 1:1 coaching with a private coaching log and clear next steps",
     },
     {
       dimension: "Risk",

@@ -10,7 +10,7 @@ const sans = Instrument_Sans({ subsets: ["latin"], variable: "--font-instrument"
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains" });
 
 const description =
-  "An 8-month hands-on cohort for leaders: build real AI workflows, policies and automations in 90-minute sessions. Taught by Keisha Solomon, EVOBRAND Concepts.";
+  "An 8-month hands-on cohort for leaders: build real AI workflows, policies and automations in 90-minute sessions, with remote 1:1 coaching. Taught by Keisha Solomon, EVOBRAND Concepts.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),

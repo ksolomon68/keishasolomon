@@ -29,9 +29,9 @@ export function Hero() {
           </h1>
 
           <p className="mt-7 max-w-2xl text-lg leading-relaxed text-on-navy sm:text-xl">
-            {site.name}: an eight-month, in-person cohort where leaders don&rsquo;t watch demos. They build. Every
-            90-minute session ends with a working asset (a policy, a workflow, a pipeline, a prototype) you can deploy
-            the next morning.
+            {site.name}: an eight-month cohort where leaders don&rsquo;t watch demos. They build. Every 90-minute,
+            in-person session ends with a working asset you can deploy the next morning, with remote 1:1 coaching to
+            help you work through decisions and keep moving between sessions.
           </p>
 
           <div className="mt-9 flex flex-wrap gap-3">
@@ -72,7 +72,7 @@ export function Hero() {
 
         <div className="animate-rise self-center [animation-delay:120ms]">
           <div className="border border-white/20 bg-navy-950/70 p-6 backdrop-blur-sm sm:p-8">
-            <p className="label text-amber">The 90-minute run of show</p>
+            <p className="label text-amber">Session 1 · The 90-minute run of show</p>
             <p className="mt-2 font-display text-2xl leading-snug">
               Twenty-five minutes of framework. Fifty of building and stress-testing.
             </p>

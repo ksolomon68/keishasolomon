@@ -234,6 +234,10 @@ export const showcaseFacilitation = {
 
 /** How to run each block of the 90-minute session, keyed by the block titles in `data/cohortData.ts`. */
 export const blockPlaybook: Record<string, { move: string; watch: string }> = {
+  "Welcome & Readiness Baseline": {
+    move: "Welcome the cohort, establish the Safe Harbor working agreements and have each participant name one repetitive task they want to improve. Capture the starting time or effort so later progress has a real baseline.",
+    watch: "Long introductions or solution-jumping. Keep the focus on the problem, the current process and what a useful improvement would look like.",
+  },
   "The Brag Board": {
     move: "Open with wins. Invite two or three people to share what they built or measured since last time, what broke and how they fixed it. About ninety seconds each. Normalize troubleshooting out loud.",
     watch: "Anyone who is stuck and quiet. Note them for the build lab. Keep it to ten minutes; the lab is where the value is.",
