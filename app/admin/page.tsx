@@ -7,6 +7,7 @@ import { Roster, type RosterEntry } from "@/components/admin/roster";
 import { ResourceManager } from "@/components/admin/resource-manager";
 import { FrictionReview } from "@/components/admin/friction-review";
 import { CoachingReview } from "@/components/admin/coaching-review";
+import { UserManager } from "@/components/admin/user-manager";
 import { capstoneSteps, site } from "@/data/cohortData";
 import { requireAdmin } from "@/lib/auth/session";
 import { cohortSchedule } from "@/lib/cohort-schedule";
@@ -46,6 +47,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     );
   }
 
+  const admins = users.filter((u) => u.role === "admin");
   const participants = users.filter((u) => u.role === "participant" && u.cohortId === selected.id);
   const ids = new Set(participants.map((u) => u.id));
   const counts: Record<string, number> = {};
@@ -158,6 +160,17 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             Cohort roster
           </h2>
           <Roster entries={entries} schedule={schedule} />
+        </section>
+
+        <section aria-labelledby="user-management-title">
+          <p className="label text-amber-deep">Account provisioning</p>
+          <h2 id="user-management-title" className="mb-2 font-display text-3xl text-navy-900 sm:text-4xl">
+            Admins &amp; Participants
+          </h2>
+          <p className="mb-6 max-w-3xl text-muted">
+            Manually add participants directly to a cohort or provision administrator accounts with full management access.
+          </p>
+          <UserManager admins={admins} cohorts={cohorts} currentCohortId={selected.id} />
         </section>
 
         <section aria-labelledby="resources-title">

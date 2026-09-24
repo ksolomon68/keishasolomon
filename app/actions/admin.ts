@@ -6,12 +6,14 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { sessionById } from "@/data/cohortData";
 import { defaultSessionDates } from "@/lib/cohort-schedule";
+import { hashPassword } from "@/lib/auth/password";
 import { requireAdmin } from "@/lib/auth/session";
-import { getStore, isAccessCodeTaken } from "@/lib/store";
+import { getStore, isAccessCodeTaken, isEmailTaken } from "@/lib/store";
 import { DeliverableError } from "@/lib/store/deliverable-state";
 import { removeFile, saveUpload, UploadError } from "@/lib/uploads";
 import {
   cohortSchema,
+  createUserSchema,
   fieldErrors,
   newCohortSchema,
   resourceSchema,
@@ -183,3 +185,42 @@ export async function deleteResourceAction(id: string): Promise<void> {
   revalidatePath("/admin");
   revalidatePath("/dashboard");
 }
+
+export async function createUserAction(_prev: FormState, formData: FormData): Promise<FormState> {
+  await requireAdmin("/admin");
+  const values = textValues(formData);
+  const parsed = createUserSchema.safeParse(values);
+  if (!parsed.success) return { errors: fieldErrors(parsed.error), values };
+
+  const { name, email, organization, role, cohortId, password } = parsed.data;
+  const store = await getStore();
+
+  if (role === "participant" && cohortId) {
+    const cohort = await store.getCohort(cohortId);
+    if (!cohort) return { errors: { cohortId: ["Selected cohort does not exist."] }, values };
+  }
+
+  try {
+    await store.createUser({
+      email,
+      name,
+      organization,
+      role,
+      cohortId: role === "admin" ? null : cohortId,
+      passwordHash: await hashPassword(password),
+    });
+  } catch (error) {
+    if (isEmailTaken(error)) {
+      return { errors: { email: ["An account with this email address already exists."] }, values };
+    }
+    throw error;
+  }
+
+  revalidatePath("/admin");
+  revalidatePath("/dashboard");
+  return {
+    ok: true,
+    message: `Successfully created ${role === "admin" ? "admin" : "participant"} account for ${name}.`,
+  };
+}
+
