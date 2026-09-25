@@ -33,18 +33,19 @@ export function NextStep({ deliverables, hasFriction, schedule }: { deliverables
   } : next ? {
     title: `Get ready for Session ${next.number}.`,
     body: learningGuides[next.id]?.prepare ?? "Prepare your five-minute demonstration: the problem, your working solution, the measured result, and what you learned.",
-    label: "Open session guide", target: `session-${next.id}`,
+    label: next.deliverable ? "Open preparation" : "Open session",
+    target: next.deliverable ? `deliverable-${next.id}` : `session-${next.id}`,
   } : {
     title: "Bring your evidence together.",
     body: "Review your capstone milestones and remaining feedback. Your saved work stays available after the last confirmed session.",
     label: "Review my capstone", target: "capstone",
   };
-  return <section aria-labelledby="next-step-title" className="-mt-6 grid border border-navy-900 bg-white lg:grid-cols-[1.5fr_1fr]">
-    <div className="p-6 sm:p-8">
+  return <section aria-labelledby="next-step-title" className="-mt-5 grid border border-navy-900 bg-white sm:-mt-6 lg:grid-cols-[1.5fr_1fr]">
+    <div className="p-5 sm:p-8">
       <p className="label text-amber-deep">Your next step</p>
-      <h2 id="next-step-title" className="mt-3 max-w-2xl font-display text-3xl leading-tight sm:text-4xl">{action.title}</h2>
-      <p className="mt-4 max-w-2xl whitespace-pre-wrap break-words text-muted">{action.body}</p>
-      <a href={`#${action.target}`} className={`${buttonStyles({ variant: "secondary" })} mt-6`} onClick={() => {
+      <h2 id="next-step-title" className="mt-2 max-w-2xl font-display text-3xl leading-tight sm:mt-3 sm:text-4xl">{action.title}</h2>
+      <p className="mt-3 max-w-2xl whitespace-pre-wrap break-words text-[0.9375rem] text-muted sm:mt-4 sm:text-base">{action.body}</p>
+      <a href={`#${action.target}`} className={`${buttonStyles({ variant: "secondary" })} mt-5 sm:mt-6`} onClick={() => {
         const target = document.getElementById(action.target);
         if (target instanceof HTMLDetailsElement) target.open = true;
         const roadmap = target?.closest("details");
@@ -53,14 +54,14 @@ export function NextStep({ deliverables, hasFriction, schedule }: { deliverables
         if (guide) guide.open = true;
       }}>{action.label}<ArrowRight className="size-4" aria-hidden="true" /></a>
     </div>
-    <aside className="border-t border-line bg-paper p-6 sm:p-8 lg:border-l lg:border-t-0">
+    <aside className="border-t border-line bg-paper p-5 sm:p-8 lg:border-l lg:border-t-0">
       <p className="label flex items-center gap-2 text-cyan-deep"><CalendarDays className="size-4" aria-hidden="true" />Next confirmed session</p>
       {!now ? <p className="mt-4 text-muted">Checking the schedule…</p> : next ? <>
-        <p className="mt-4 font-display text-2xl">Session {next.number} · {next.dateLabel}</p><p className="mt-2 text-sm text-muted">{next.theme}</p>
+        <p className="mt-3 font-display text-xl sm:mt-4 sm:text-2xl">Session {next.number} · {next.dateLabel}</p><p className="mt-1 hidden text-sm text-muted sm:block">{next.theme}</p>
         <div className="mt-3"><Countdown date={next.date} /></div>
       </> : <p className="mt-4 text-muted">No upcoming confirmed dates. Check the pending notice below.</p>}
-      <p className="mt-4 text-sm text-muted">Time and venue are awaiting confirmation. Check your welcome message or contact your instructor before traveling.</p>
-      {schedule.filter((s) => !s.date).map((s) => <p key={s.id} className="mt-4 border-t border-line pt-4 text-sm"><strong>Pending:</strong> Session {s.number} · {s.dateLabel}. This does not change the other confirmed dates.</p>)}
+      <p className="mt-3 text-sm text-muted sm:mt-4">Time and venue are awaiting confirmation. Check your welcome message before traveling.</p>
+      {schedule.filter((s) => !s.date).map((s) => <p key={s.id} className="mt-3 border-t border-line pt-3 text-sm sm:mt-4 sm:pt-4"><strong>Pending:</strong> Session {s.number} · {s.dateLabel}.</p>)}
     </aside>
   </section>;
 }

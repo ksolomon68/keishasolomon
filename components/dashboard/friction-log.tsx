@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useOptimistic, useTransition } from "react";
-import { Trash2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 import { addFrictionAction, deleteFrictionAction, setFrictionDoneAction } from "@/app/actions/dashboard";
 import { FormMessage, SelectField, TextField } from "@/components/ui/fields";
 import { SubmitButton } from "@/components/ui/submit-button";
@@ -24,7 +24,7 @@ export function FrictionLog({ entries, schedule }: { entries: FrictionEntry[]; s
       .map((s) => ({ value: s.id, label: `Session ${s.number} · ${s.shortDate}: ${s.lab.name}` })),
   ];
   const [state, action] = useActionState(addFrictionAction, initial);
-  const [, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
   const [items, apply] = useOptimistic(entries, (current, update: Update) =>
     update.type === "remove"
       ? current.filter((e) => e.id !== update.id)
@@ -87,7 +87,7 @@ export function FrictionLog({ entries, schedule }: { entries: FrictionEntry[]; s
         <FormMessage ok={state.ok} message={state.message} />
       </form>
 
-      <div>
+      <div aria-busy={isPending}>
         <div className="flex flex-wrap items-end justify-between gap-3 border-b-2 border-navy-900 pb-3">
           <p role="status" className="text-ink">
             <span className="font-display text-3xl text-navy-900">{open.length}</span> open{" "}
@@ -97,6 +97,9 @@ export function FrictionLog({ entries, schedule }: { entries: FrictionEntry[]; s
             ≈ <span className="font-semibold text-ink">{weeklyHours.toFixed(1)} hrs/week</span> to reclaim
           </p>
         </div>
+        <p aria-live="polite" className="min-h-6 pt-2 text-sm text-muted">
+          {isPending && <span className="inline-flex items-center gap-2"><Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />Saving changes…</span>}
+        </p>
 
         {items.length === 0 ? (
           <p className="mt-6 border border-dashed border-edge p-6 text-muted">

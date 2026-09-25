@@ -10,3 +10,9 @@
 - Preserve a useful no-subscription path: documents, fictional inputs, and manual simulations can teach the core method.
 - Mark source limits honestly. These content adaptations use the user's pasted notebook summary; the private notebook itself was not read.
 - Do not call a source review or HTTP integration test a browser accessibility audit. Record what was actually verified.
+- Sticky in-page navigation needs one authoritative scroll offset. Combining global scroll padding, large target margins, and `scrollIntoView()` can hide headings or leave the previous section active.
+- On narrow screens, status badges must move below the primary label instead of competing for the same flex row. Progressive disclosure should keep long milestone lists focused on the next useful steps.
+- Give each task one canonical workspace. Session cards should orient the participant, while preparation, evidence, submission, and feedback stay together in My work rather than duplicating the same guide.
+- A dashboard should prioritize unfinished or revision-requested work and disclose the archive on demand. Collapsing secondary support tools can shorten the page without making them harder to find.
+- Optimistic updates still need visible acknowledgement. Keep the interface responsive, but pair background mutations with a quiet live status and `aria-busy` on the changing region.
+- Native disclosures feel intentional when every summary uses the same chevron, open-state surface, border treatment, and minimum target height. Consistency is more valuable than decorative animation.

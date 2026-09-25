@@ -1,9 +1,8 @@
-import { ChevronDown, Download, ExternalLink, FileText } from "lucide-react";
+import { ArrowRight, ChevronDown, Download, ExternalLink, FileText } from "lucide-react";
 import { resourceKinds, type Session } from "@/data/cohortData";
 import { Tag } from "@/components/ui/tag";
 import type { Resource } from "@/lib/store";
 import { Countdown } from "./countdown";
-import { LearningGuide } from "./learning-guide";
 import { SessionRoadmap } from "./session-roadmap";
 import { nextSessionId } from "@/lib/dates";
 
@@ -45,11 +44,6 @@ function SessionCard({ session, resources }: { session: Session; resources: Reso
           </p>
         </div>
 
-        {session.deliverable && <details data-session-guide className="border border-line p-4">
-          <summary className="min-h-7 cursor-pointer text-sm font-semibold">Preparation, starter &amp; success checklist</summary>
-          <div className="mt-5"><LearningGuide sessionId={session.id} /></div>
-        </details>}
-
         <details className="group border border-line">
           <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-2 px-3 py-2 text-sm font-semibold text-ink marker:content-none hover:bg-paper [&::-webkit-details-marker]:hidden">
             90-minute run of show
@@ -90,10 +84,14 @@ function SessionCard({ session, resources }: { session: Session; resources: Reso
       </div>
 
       {session.deliverable && (
-        <div className="flex items-center gap-2 border-t border-line bg-paper px-5 py-3">
-          <Tag tone="amber">Deliverable</Tag>
-          <span className="text-sm font-semibold text-ink">{session.deliverable.title}</span>
-        </div>
+        <a
+          href={`#deliverable-${session.id}`}
+          className="group flex min-h-14 items-center gap-3 border-t border-line bg-paper px-5 py-3 hover:bg-paper-deep"
+        >
+          <Tag tone="amber">Build</Tag>
+          <span className="min-w-0 flex-1 text-sm font-semibold text-ink">Prepare &amp; submit {session.deliverable.title}</span>
+          <ArrowRight className="size-4 shrink-0 text-muted transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" aria-hidden="true" />
+        </a>
       )}
     </li>
   );

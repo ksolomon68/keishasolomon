@@ -1,0 +1,40 @@
+Dashboard UX refinement — September 25, 2026
+
+Phase 1 approved and implemented locally:
+- Replaced the overflowing mobile section rail with a compact, status-aware jump menu.
+- Made section navigation land below the sticky header, synchronize its active state, and skip long scroll animations.
+- Reworked mobile deliverable summaries so titles, dates, statuses, and chevrons retain readable space.
+- Reduced the capstone tracker to the next three milestones with the remaining eight behind a disclosure.
+- Compressed the mobile welcome/next-step area and replaced stacked progress cards with a compact three-item strip.
+- Added the Next.js 16 smooth-scroll declaration to the root layout.
+
+Verification:
+- Browser-reviewed with the isolated synthetic participant fixture at 390x844 and 1440x900.
+- Mobile dashboard height reduced from approximately 12,000px to 10,254px; the capstone section reduced from approximately 2,623px to 1,202px; the first session moved from approximately 1,595px to 1,097px.
+- Focused ESLint and TypeScript checks pass.
+- The cohort test process is currently blocked before test loading by Node/Windows `uv_os_get_passwd` ENOMEM; no test assertion ran.
+
+Phase 2 approved and implemented locally:
+- Reframed the primary flow as Prepare for sessions → My work & feedback → Friction log → Capstone progress → Support & resources.
+- Removed duplicate preparation guides from session cards; each session now links to its canonical preparation/submission workspace.
+- Prioritized revision-requested, in-progress, or next-not-started deliverables and moved the remaining work behind a disclosure.
+- Replaced passive deliverable labels with action-oriented states: Ready to start, Continue draft, Awaiting feedback, Reviewed, and Revision requested.
+- Consolidated coaching and toolkit content into two mutually exclusive support panels while preserving the legacy `#coaching` and `#toolkit` deep links.
+- Reduced mobile dashboard height from approximately 10,254px after Phase 1 to 6,439px with all content still available.
+
+Phase 2 verification:
+- Browser-reviewed the priority queue, hidden-deliverable deep link, mobile support panels, and desktop hierarchy using the synthetic participant fixture.
+- Focused ESLint and TypeScript checks pass.
+
+Phase 3 approved and implemented locally:
+- Standardized secondary disclosure rows with explicit chevrons, open borders, calm hover/open surfaces, and consistent 56px targets.
+- Added polite, visible save-state feedback for optimistic friction, coaching-history, and capstone mutations without interrupting the participant's workflow.
+- Added `aria-busy` to changing regions and kept motion respectful of the reduced-motion preference.
+- Preserved the existing design tokens and square-edged visual language; no new one-off colors, shadows, or spacing values were introduced.
+
+Phase 3 verification:
+- Browser-reviewed at 390x844 and 1440x900 using the synthetic participant fixture.
+- Confirmed disclosure state changes, touch-target sizing, zero desktop horizontal overflow, and an error-free browser console.
+- Focused ESLint and TypeScript checks pass.
+
+Remaining approved-but-not-implemented work: none. All three dashboard UX phases are complete.

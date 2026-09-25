@@ -8,6 +8,7 @@ import { SessionGrid } from "@/components/dashboard/session-grid";
 import { NextStep } from "@/components/dashboard/next-step";
 import { PromptWorkshop } from "@/components/dashboard/prompt-workshop";
 import { SectionNav } from "@/components/dashboard/section-nav";
+import { SupportResources } from "@/components/dashboard/support-resources";
 import { capstoneSteps } from "@/data/cohortData";
 import { requireUser } from "@/lib/auth/session";
 import { cohortOf, resourcesFor } from "@/lib/cohort";
@@ -59,15 +60,15 @@ export default async function DashboardPage() {
 
   return (
     <>
-      <section data-surface="dark" className="grid-backdrop bg-navy-900 pb-10 pt-12 text-white sm:pt-16">
+      <section data-surface="dark" className="grid-backdrop bg-navy-900 pb-8 pt-8 text-white sm:pb-10 sm:pt-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <p className="label text-amber">
             Participant dashboard{cohort ? ` · ${cohort.name}` : ""}
           </p>
-          <h1 className="mt-3 font-display text-4xl font-light sm:text-5xl">
+          <h1 className="mt-2 font-display text-4xl font-light sm:mt-3 sm:text-5xl">
             Welcome back, {firstName}.
           </h1>
-          <p className="mt-3 max-w-2xl text-on-navy">
+          <p className="mt-2 max-w-2xl text-[0.9375rem] text-on-navy sm:mt-3 sm:text-base">
             Your workspace for the eight-month cohort: prep for the next session, log friction, submit
             deliverables and keep your capstone on track.
           </p>
@@ -76,7 +77,12 @@ export default async function DashboardPage() {
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <NextStep deliverables={deliverables} hasFriction={friction.length > 0} schedule={schedule} />
-        <ul aria-label="Your progress" className="mt-4 grid gap-px border border-line bg-line sm:grid-cols-3">
+        <ul aria-label="Your progress" className="mt-3 grid grid-cols-3 gap-px border border-line bg-line sm:hidden">
+          <CompactProgressLink href="#deliverables" label="Submitted" value={`${submitted}/${deliverableSessions.length}`} />
+          <CompactProgressLink href="#capstone" label="Capstone" value={`${capstoneDone}/${totalCapstoneSteps}`} />
+          <CompactProgressLink href="#friction" label="Open tasks" value={String(openFriction)} />
+        </ul>
+        <ul aria-label="Your progress" className="mt-4 hidden gap-px border border-line bg-line sm:grid sm:grid-cols-3">
           <ProgressTile href="#deliverables" label="Deliverables submitted" value={submitted} total={deliverableSessions.length} />
           <ProgressTile href="#capstone" label="Capstone steps done" value={capstoneDone} total={totalCapstoneSteps} />
           <ProgressTile href="#friction" label="Open friction tasks" value={openFriction} />
@@ -86,24 +92,28 @@ export default async function DashboardPage() {
       <SectionNav
         sections={[
           { id: "sessions", label: "Sessions" },
-          { id: "deliverables", label: "Deliverables", badge: `${submitted}/${deliverableSessions.length}` },
+          { id: "deliverables", label: "My work", badge: `${submitted}/${deliverableSessions.length}` },
           { id: "friction", label: "Friction log", badge: openFriction ? `${openFriction} open` : undefined },
           { id: "capstone", label: "Capstone", badge: `${capstoneDone}/${totalCapstoneSteps}` },
-          { id: "coaching", label: "1:1 coaching" },
-          { id: "toolkit", label: "Toolkit" },
+          { id: "support", label: "Support & tools" },
         ]}
       />
 
-      <div className="mx-auto max-w-7xl space-y-16 px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
-        <DashSection id="sessions" eyebrow="The roadmap" title="Session modules">
+      <div className="mx-auto max-w-7xl space-y-10 px-4 py-10 sm:space-y-14 sm:px-6 sm:py-16 lg:px-8">
+        <DashSection
+          id="sessions"
+          eyebrow="Learn"
+          title="Prepare for sessions"
+          intro="See what is coming, review the agenda, and find materials. Preparation and submission live together in My work."
+        >
           <SessionGrid resources={resources} schedule={schedule} />
         </DashSection>
 
         <DashSection
           id="deliverables"
-          eyebrow="Monthly assets"
-          title="Deliverables"
-          intro="Open a deliverable to see its guide, attach a link or file, and send it for feedback. Sanitize anything sensitive first, per the Safe Harbor pledge."
+          eyebrow="Build"
+          title="My work & feedback"
+          intro="Start with the current assignment, use its preparation guide, then save a draft or send your evidence for feedback."
         >
           <DeliverableHub deliverables={deliverables} files={files} accept={ACCEPT_ATTR} />
         </DashSection>
@@ -112,35 +122,38 @@ export default async function DashboardPage() {
           <FrictionLog entries={friction} schedule={schedule} />
         </DashSection>
 
-        <DashSection id="capstone" eyebrow="Toward the showcase" title="Capstone tracker">
+        <DashSection id="capstone" eyebrow="Track" title="Capstone progress">
           <CapstoneTracker doneIds={capstone.map((c) => c.stepId)} schedule={schedule} />
           <CertificateBanner unlocked={isCertUnlocked} done={capstoneDone} total={totalCapstoneSteps} />
         </DashSection>
 
-        <DashSection id="coaching" eyebrow="Private support" title="Remote 1:1 coaching">
-          <div className="space-y-10">
-            <RemoteCoaching participantName={user.name} />
-            <CoachingLog entries={coachingNotes} />
-          </div>
-        </DashSection>
-
         <DashSection
-          id="toolkit"
-          eyebrow="Reusable tools"
-          title="Your toolkit"
-          intro="Build better briefs for your AI tools, then share what you learn. Nothing here is saved to your account, so copy or download what you want to keep."
+          id="support"
+          eyebrow="Use when needed"
+          title="Support & resources"
+          intro="Open one area when you need coaching, a stronger prompt, or communications support."
         >
-          <div className="space-y-12">
-            <div>
-              <h3 className="mb-4 font-display text-2xl text-navy-900">Better briefs. Better decisions.</h3>
-              <PromptWorkshop />
-            </div>
-            <div>
-              <h3 className="font-display text-2xl text-navy-900">Marketing &amp; communications starters</h3>
-              <p className="mb-5 mt-2 max-w-3xl text-muted">Adapt these to your voice, audience, and real results. Replace bracketed prompts with specifics before publishing.</p>
-              <MarketingToolkit />
-            </div>
-          </div>
+          <SupportResources
+            coaching={
+              <div className="space-y-10">
+                <RemoteCoaching participantName={user.name} />
+                <CoachingLog entries={coachingNotes} />
+              </div>
+            }
+            toolkit={
+              <div className="space-y-12">
+                <div>
+                  <h3 className="mb-4 font-display text-2xl text-navy-900">Better briefs. Better decisions.</h3>
+                  <PromptWorkshop />
+                </div>
+                <div>
+                  <h3 className="font-display text-2xl text-navy-900">Marketing &amp; communications starters</h3>
+                  <p className="mb-5 mt-2 max-w-3xl text-muted">Adapt these to your voice, audience, and real results. Replace bracketed prompts with specifics before publishing.</p>
+                  <MarketingToolkit />
+                </div>
+              </div>
+            }
+          />
         </DashSection>
       </div>
     </>
@@ -167,6 +180,17 @@ function ProgressTile({ href, label, value, total }: { href: string; label: stri
             aria-label={label}
           />
         )}
+      </a>
+    </li>
+  );
+}
+
+function CompactProgressLink({ href, label, value }: { href: string; label: string; value: string }) {
+  return (
+    <li className="min-w-0 bg-white">
+      <a href={href} className="flex min-h-20 flex-col justify-center px-3 py-2 hover:bg-paper">
+        <span className="font-display text-2xl leading-none text-navy-900">{value}</span>
+        <span className="mt-1 truncate text-xs font-semibold text-muted">{label}</span>
       </a>
     </li>
   );
@@ -223,7 +247,7 @@ function DashSection({
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} aria-labelledby={`${id}-title`} className="scroll-mt-32">
+    <section id={id} aria-labelledby={`${id}-title`} className="scroll-mt-10">
       <p className="label text-amber-deep">{eyebrow}</p>
       <h2 id={`${id}-title`} className="mt-2 font-display text-3xl text-navy-900 sm:text-4xl">
         {title}

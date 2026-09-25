@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useTransition } from "react";
-import { Trash2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 import { addCoachingNoteAction, deleteCoachingNoteAction } from "@/app/actions/dashboard";
 import { FormMessage, TextAreaField, TextField } from "@/components/ui/fields";
 import { SubmitButton } from "@/components/ui/submit-button";
@@ -10,7 +10,7 @@ import type { FormState } from "@/lib/validation";
 
 export function CoachingLog({ entries }: { entries: CoachingNote[] }) {
   const [state, action] = useActionState(addCoachingNoteAction, {} as FormState);
-  const [, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
   const values = state.values ?? {};
 
   return (
@@ -24,11 +24,14 @@ export function CoachingLog({ entries }: { entries: CoachingNote[] }) {
         <SubmitButton className="w-full" pendingLabel="Saving…">Save coaching note</SubmitButton>
         <FormMessage ok={state.ok} message={state.message} />
       </form>
-      <div>
+      <div aria-busy={isPending}>
         <div className="border-b-2 border-navy-900 pb-3">
           <p className="label text-amber-deep">Your history</p>
           <p className="mt-1 text-sm text-muted">{entries.length} {entries.length === 1 ? "reflection" : "reflections"} saved</p>
         </div>
+        <p aria-live="polite" className="min-h-6 pt-2 text-sm text-muted">
+          {isPending && <span className="inline-flex items-center gap-2"><Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />Updating history…</span>}
+        </p>
         {entries.length === 0 ? (
           <p className="mt-6 border border-dashed border-edge p-6 text-muted">No coaching notes yet. After your next 1:1, capture the decision and one concrete follow-through.</p>
         ) : (

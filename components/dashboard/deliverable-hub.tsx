@@ -24,10 +24,13 @@ const statusTone = {
   needs_revision: "cyan",
 } as const satisfies Record<DeliverableStatus, string>;
 
-const statusLabel = Object.fromEntries(deliverableStatuses.map((s) => [s.value, s.label])) as Record<
-  DeliverableStatus,
-  string
->;
+const actionStatusLabel: Record<DeliverableStatus, string> = {
+  not_started: "Ready to start",
+  in_progress: "Continue draft",
+  submitted: "Awaiting feedback",
+  reviewed: "Reviewed",
+  needs_revision: "Revision requested",
+};
 
 /** Reviewed is set by the instructor, so it only appears as a choice once it applies. */
 const participantStatuses = deliverableStatuses.filter((s) => s.value !== "reviewed" && s.value !== "needs_revision");
@@ -42,19 +45,58 @@ export function DeliverableHub({
   accept: string;
 }) {
   const bySession = new Map(deliverables.map((d) => [d.sessionId, d]));
+  const otherWork = useRef<HTMLDetailsElement>(null);
+  const statusFor = (sessionId: string): DeliverableStatus => bySession.get(sessionId)?.status ?? "not_started";
+  const priority = deliverableSessions.find((session) => statusFor(session.id) === "needs_revision")
+    ?? deliverableSessions.find((session) => statusFor(session.id) === "in_progress")
+    ?? deliverableSessions.find((session) => statusFor(session.id) === "not_started");
+  const start = priority
+    ? deliverableSessions.findIndex((session) => session.id === priority.id)
+    : Math.max(0, deliverableSessions.length - 2);
+  const featured = deliverableSessions.slice(start, start + 2);
+  const remaining = deliverableSessions.filter((session) => !featured.includes(session));
+
+  useEffect(() => {
+    const reveal = () => {
+      const target = window.location.hash.startsWith("#deliverable-")
+        ? document.getElementById(window.location.hash.slice(1))
+        : null;
+      if (!target || !otherWork.current?.contains(target)) return;
+      otherWork.current.open = true;
+      window.requestAnimationFrame(() => target.scrollIntoView({ block: "start" }));
+    };
+    reveal();
+    window.addEventListener("hashchange", reveal);
+    return () => window.removeEventListener("hashchange", reveal);
+  }, []);
+
+  const row = (session: (typeof deliverableSessions)[number]) => (
+    <DeliverableRow
+      key={session.id}
+      session={session}
+      deliverable={bySession.get(session.id)}
+      file={bySession.get(session.id)?.fileId ? files[bySession.get(session.id)!.fileId!] : undefined}
+      accept={accept}
+    />
+  );
 
   return (
-    <ol className="space-y-3">
-      {deliverableSessions.map((session) => (
-        <DeliverableRow
-          key={session.id}
-          session={session}
-          deliverable={bySession.get(session.id)}
-          file={bySession.get(session.id)?.fileId ? files[bySession.get(session.id)!.fileId!] : undefined}
-          accept={accept}
-        />
-      ))}
-    </ol>
+    <div>
+      <p className="label mb-3 text-cyan-deep">{priority ? "Current work" : "Latest work"}</p>
+      <ol className="space-y-3">{featured.map(row)}</ol>
+      {remaining.length > 0 && (
+        <details ref={otherWork} className="group mt-4 border border-line bg-white transition-colors open:border-navy-900">
+          <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 px-4 font-semibold text-navy-900 transition-colors hover:bg-paper marker:content-none sm:px-5 [&::-webkit-details-marker]:hidden">
+            <span>
+              <span className="group-open:hidden">Show {remaining.length} other deliverables</span>
+              <span className="hidden group-open:inline">Hide other deliverables</span>
+            </span>
+            <ChevronDown className="size-5 shrink-0 text-muted transition-transform group-open:rotate-180 motion-reduce:transition-none" aria-hidden="true" />
+          </summary>
+          <ol className="space-y-3 border-t border-line p-4 sm:p-5">{remaining.map(row)}</ol>
+        </details>
+      )}
+    </div>
   );
 }
 
@@ -90,7 +132,7 @@ function DeliverableRow({
   return (
     <li>
       <details ref={disclosure} name="deliverables" id={`deliverable-${session.id}`} className="group scroll-mt-10 border border-line bg-white open:border-navy-900">
-        <summary className="grid min-h-16 cursor-pointer list-none grid-cols-[2.5rem_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 p-4 marker:content-none hover:bg-paper sm:flex sm:flex-wrap sm:gap-3 sm:px-5 [&::-webkit-details-marker]:hidden">
+        <summary className="grid min-h-16 cursor-pointer list-none grid-cols-[2.5rem_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 p-4 marker:content-none transition-colors hover:bg-paper group-open:bg-paper sm:flex sm:flex-wrap sm:gap-3 sm:px-5 [&::-webkit-details-marker]:hidden">
           <span className="row-span-2 grid size-10 shrink-0 place-items-center border border-navy-900 font-display text-lg text-navy-900 sm:row-auto" aria-hidden="true">
             {session.number}
           </span>
@@ -105,7 +147,7 @@ function DeliverableRow({
             <span className="label text-muted sm:hidden">Session {session.number} · {session.shortDate}</span>
             <Tag tone={statusTone[status]}>
               {(status === "submitted" || isReviewed) && <CheckCircle2 className="size-3.5" aria-hidden="true" />}
-              {statusLabel[status]}
+              {actionStatusLabel[status]}
             </Tag>
           </span>
         </summary>

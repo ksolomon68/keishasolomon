@@ -19,7 +19,11 @@ export function SectionNav({ sections }: { sections: NavSection[] }) {
       .map((s) => document.getElementById(s.id))
       .filter((el): el is HTMLElement => el !== null);
     const updateActive = () => {
-      const stickyOffset = 132;
+      const navigationBottom = document
+        .querySelector<HTMLElement>('nav[aria-label="Dashboard sections"]')
+        ?.getBoundingClientRect().bottom ?? 64;
+      // Switch as the next heading enters the comfortable reading band beneath both sticky bars.
+      const stickyOffset = navigationBottom + 72;
       const current = [...targets].reverse().find((target) => target.getBoundingClientRect().top <= stickyOffset);
       setActive(current?.id ?? null);
     };
@@ -47,7 +51,21 @@ export function SectionNav({ sections }: { sections: NavSection[] }) {
     if (!target) return;
     setActive(id);
     window.history.pushState(null, "", `#${id}`);
-    target.scrollIntoView({ block: "start" });
+    const top = window.scrollY + target.getBoundingClientRect().top - 140;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const isLongJump = Math.abs(top - window.scrollY) > window.innerHeight * 1.5;
+    if (reduceMotion || isLongJump) {
+      const root = document.documentElement;
+      const previousBehavior = root.style.scrollBehavior;
+      root.style.scrollBehavior = "auto";
+      window.scrollTo({ top: Math.max(0, top) });
+      window.requestAnimationFrame(() => { root.style.scrollBehavior = previousBehavior; });
+      return;
+    }
+    window.scrollTo({
+      top: Math.max(0, top),
+      behavior: "smooth",
+    });
   };
 
   return (
