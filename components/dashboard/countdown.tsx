@@ -1,8 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import type { Session } from "@/data/cohortData";
-import { nextSessionId, sessionStart, sessionStatus } from "@/lib/dates";
+import { sessionStart, sessionStatus } from "@/lib/dates";
 
 /** Ticks once a minute. The server snapshot is null so the first paint never disagrees with hydration. */
 function subscribe(callback: () => void) {
@@ -43,28 +42,5 @@ export function Countdown({ date, onDark = false }: { date: string | null; onDar
     <p className={`text-sm font-semibold ${onDark ? "text-amber" : "text-amber-deep"}`}>
       {days === 1 ? "Tomorrow" : `In ${days} days`} · session date
     </p>
-  );
-}
-
-type NextInput = Pick<Session, "id" | "number" | "date" | "dateLabel" | "theme">;
-
-/** "Next up" block for the dashboard summary strip. */
-export function NextSessionSummary({ sessions }: { sessions: NextInput[] }) {
-  const now = useMinuteClock();
-  const next = now ? sessions.find((s) => s.id === nextSessionId(sessions, now)) : undefined;
-
-  if (!now) return <div className="h-20" aria-hidden="true" />;
-  if (!next) return <p className="text-sm">No upcoming confirmed dates.{sessions.some((s) => !s.date) ? " A session date is still awaiting confirmation." : " Your work and feedback remain available below."}</p>;
-
-  return (
-    <div>
-      <p className="font-display text-xl leading-snug">
-        Session {next.number}: {next.dateLabel}
-      </p>
-      <p className="mt-1 text-sm text-muted">{next.theme}</p>
-      <div className="mt-3">
-        <Countdown date={next.date} />
-      </div>
-    </div>
   );
 }

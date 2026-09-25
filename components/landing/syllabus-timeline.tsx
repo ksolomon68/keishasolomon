@@ -10,7 +10,7 @@ type Filter = "all" | Focus;
 
 export function SyllabusTimeline() {
   const [filter, setFilter] = useState<Filter>("all");
-  const [openIds, setOpenIds] = useState<string[]>(["s1"]);
+  const [openIds, setOpenIds] = useState<string[]>([]);
   const groupId = useId();
 
   const visible = sessions.filter((s) => filter === "all" || s.focus === filter);

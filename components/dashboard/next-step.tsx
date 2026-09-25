@@ -6,7 +6,7 @@ import { learningGuides } from "@/data/learning-guides";
 import { withDeliverables } from "@/lib/cohort-schedule";
 import type { Deliverable } from "@/lib/store";
 import { nextSessionId, sessionStatus } from "@/lib/dates";
-import { useMinuteClock } from "./countdown";
+import { Countdown, useMinuteClock } from "./countdown";
 import { buttonStyles } from "@/components/ui/button";
 
 export function NextStep({ deliverables, hasFriction, schedule }: { deliverables: Deliverable[]; hasFriction: boolean; schedule: Session[] }) {
@@ -39,7 +39,7 @@ export function NextStep({ deliverables, hasFriction, schedule }: { deliverables
     body: "Review your capstone milestones and remaining feedback. Your saved work stays available after the last confirmed session.",
     label: "Review my capstone", target: "capstone",
   };
-  return <section aria-labelledby="next-step-title" className="mt-8 grid border border-navy-900 bg-white lg:grid-cols-[1.5fr_1fr]">
+  return <section aria-labelledby="next-step-title" className="-mt-6 grid border border-navy-900 bg-white lg:grid-cols-[1.5fr_1fr]">
     <div className="p-6 sm:p-8">
       <p className="label text-amber-deep">Your next step</p>
       <h2 id="next-step-title" className="mt-3 max-w-2xl font-display text-3xl leading-tight sm:text-4xl">{action.title}</h2>
@@ -56,7 +56,8 @@ export function NextStep({ deliverables, hasFriction, schedule }: { deliverables
     <aside className="border-t border-line bg-paper p-6 sm:p-8 lg:border-l lg:border-t-0">
       <p className="label flex items-center gap-2 text-cyan-deep"><CalendarDays className="size-4" aria-hidden="true" />Next confirmed session</p>
       {!now ? <p className="mt-4 text-muted">Checking the schedule…</p> : next ? <>
-        <p className="mt-4 font-display text-2xl">{next.dateLabel}</p><p className="mt-2 text-sm text-muted">{next.theme}</p>
+        <p className="mt-4 font-display text-2xl">Session {next.number} · {next.dateLabel}</p><p className="mt-2 text-sm text-muted">{next.theme}</p>
+        <div className="mt-3"><Countdown date={next.date} /></div>
       </> : <p className="mt-4 text-muted">No upcoming confirmed dates. Check the pending notice below.</p>}
       <p className="mt-4 text-sm text-muted">Time and venue are awaiting confirmation. Check your welcome message or contact your instructor before traveling.</p>
       {schedule.filter((s) => !s.date).map((s) => <p key={s.id} className="mt-4 border-t border-line pt-4 text-sm"><strong>Pending:</strong> Session {s.number} · {s.dateLabel}. This does not change the other confirmed dates.</p>)}

@@ -4,22 +4,27 @@ import { Tag } from "@/components/ui/tag";
 import type { Resource } from "@/lib/store";
 import { Countdown } from "./countdown";
 import { LearningGuide } from "./learning-guide";
+import { SessionRoadmap } from "./session-roadmap";
+import { nextSessionId } from "@/lib/dates";
 
 const kindLabel = Object.fromEntries(resourceKinds.map((k) => [k.value, k.label]));
 
 export function SessionGrid({ resources, schedule }: { resources: Resource[]; schedule: Session[] }) {
   return (
-    <ol className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-      {schedule.map((session) => (
-        <SessionCard key={session.id} session={session} resources={resources.filter((r) => r.sessionId === session.id)} />
-      ))}
-    </ol>
+    <SessionRoadmap
+      initialNextId={nextSessionId(schedule, new Date())}
+      sessions={schedule.map((session) => ({
+        id: session.id,
+        date: session.date,
+        card: <SessionCard session={session} resources={resources.filter((r) => r.sessionId === session.id)} />,
+      }))}
+    />
   );
 }
 
 function SessionCard({ session, resources }: { session: Session; resources: Resource[] }) {
   return (
-    <li id={`session-${session.id}`} className="flex scroll-mt-36 flex-col border border-line bg-white">
+    <li id={`session-${session.id}`} className="flex scroll-mt-10 flex-col border border-line bg-white">
       <div className="flex flex-wrap items-start justify-between gap-3 border-b border-line p-5">
         <div>
           <p className="label text-amber-deep">Session {String(session.number).padStart(2, "0")}</p>

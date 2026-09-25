@@ -42,35 +42,19 @@ export function DeliverableHub({
   accept: string;
 }) {
   const bySession = new Map(deliverables.map((d) => [d.sessionId, d]));
-  const total = deliverableSessions.length;
-  const submitted = deliverables.filter((d) => d.status === "submitted" || d.status === "reviewed").length;
 
   return (
-    <div>
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-        <p role="status" className="text-ink">
-          <span className="font-display text-3xl text-navy-900">{submitted}</span> of {total} deliverables submitted
-        </p>
-        <progress
-          className="h-2 min-w-40 flex-1 overflow-hidden [&::-moz-progress-bar]:bg-navy-900 [&::-webkit-progress-bar]:bg-line [&::-webkit-progress-value]:bg-navy-900"
-          value={submitted}
-          max={total}
-          aria-label="Deliverables submitted"
+    <ol className="space-y-3">
+      {deliverableSessions.map((session) => (
+        <DeliverableRow
+          key={session.id}
+          session={session}
+          deliverable={bySession.get(session.id)}
+          file={bySession.get(session.id)?.fileId ? files[bySession.get(session.id)!.fileId!] : undefined}
+          accept={accept}
         />
-      </div>
-
-      <ol className="mt-6 space-y-3">
-        {deliverableSessions.map((session) => (
-          <DeliverableRow
-            key={session.id}
-            session={session}
-            deliverable={bySession.get(session.id)}
-            file={bySession.get(session.id)?.fileId ? files[bySession.get(session.id)!.fileId!] : undefined}
-            accept={accept}
-          />
-        ))}
-      </ol>
-    </div>
+      ))}
+    </ol>
   );
 }
 
@@ -105,22 +89,25 @@ function DeliverableRow({
 
   return (
     <li>
-      <details ref={disclosure} id={`deliverable-${session.id}`} className="group scroll-mt-36 border border-line bg-white open:border-navy-900">
-        <summary className="flex min-h-16 cursor-pointer list-none flex-wrap items-center gap-3 p-4 marker:content-none hover:bg-paper sm:px-5 [&::-webkit-details-marker]:hidden">
-          <span className="grid size-10 shrink-0 place-items-center border border-navy-900 font-display text-lg text-navy-900" aria-hidden="true">
+      <details ref={disclosure} name="deliverables" id={`deliverable-${session.id}`} className="group scroll-mt-10 border border-line bg-white open:border-navy-900">
+        <summary className="grid min-h-16 cursor-pointer list-none grid-cols-[2.5rem_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 p-4 marker:content-none hover:bg-paper sm:flex sm:flex-wrap sm:gap-3 sm:px-5 [&::-webkit-details-marker]:hidden">
+          <span className="row-span-2 grid size-10 shrink-0 place-items-center border border-navy-900 font-display text-lg text-navy-900 sm:row-auto" aria-hidden="true">
             {session.number}
           </span>
-          <span className="min-w-0 flex-1">
+          <span className="min-w-0 sm:flex-1">
             <span className="block font-semibold text-ink">{session.deliverable.title}</span>
-            <span className="label mt-0.5 block text-muted">
+            <span className="label mt-1 hidden text-muted sm:block">
               Session {session.number} · {session.shortDate}
             </span>
           </span>
-          <Tag tone={statusTone[status]}>
-            {(status === "submitted" || isReviewed) && <CheckCircle2 className="size-3.5" aria-hidden="true" />}
-            {statusLabel[status]}
-          </Tag>
-          <ChevronDown className="size-5 shrink-0 transition-transform group-open:rotate-180 motion-reduce:transition-none" aria-hidden="true" />
+          <ChevronDown className="col-start-3 row-span-2 row-start-1 size-5 shrink-0 transition-transform group-open:rotate-180 motion-reduce:transition-none sm:order-last sm:row-auto" aria-hidden="true" />
+          <span className="col-start-2 flex min-w-0 flex-wrap items-center gap-2 sm:contents">
+            <span className="label text-muted sm:hidden">Session {session.number} · {session.shortDate}</span>
+            <Tag tone={statusTone[status]}>
+              {(status === "submitted" || isReviewed) && <CheckCircle2 className="size-3.5" aria-hidden="true" />}
+              {statusLabel[status]}
+            </Tag>
+          </span>
         </summary>
 
         <div className="border-t border-line p-4 sm:p-5">
