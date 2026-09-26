@@ -3,33 +3,34 @@ import { ArrowRight, ClipboardCheck } from "lucide-react";
 import { buttonStyles } from "@/components/ui/button";
 import { cohortStats, instructor, site } from "@/data/cohortData";
 import { VideoCta } from "@/components/landing/video-cta";
+import { HeroRoadmap } from "@/components/landing/hero-roadmap";
 
 export function Hero() {
   return (
-    <section data-surface="dark" className="home-hero relative isolate overflow-hidden text-white">
+    <section data-surface="dark" className="relative isolate overflow-hidden bg-navy-950/45 backdrop-blur-[1px] text-white">
       <div
         className="pointer-events-none absolute -right-40 -top-40 -z-10 size-[34rem] rounded-full bg-amber/10 blur-3xl"
         aria-hidden="true"
       />
-      <div className="mx-auto flex min-h-[calc(100svh-4rem)] max-w-7xl items-end px-4 pb-8 pt-[34svh] sm:px-6 sm:pb-12 sm:pt-44 lg:items-center lg:px-8 lg:py-20">
-        <div className="home-hero__content animate-rise">
+      <div className="mx-auto grid max-w-7xl gap-12 px-4 pb-16 pt-12 sm:px-6 sm:pt-16 lg:grid-cols-[1.1fr_0.9fr] lg:gap-10 lg:px-8 lg:pb-20 lg:pt-20">
+        <div className="animate-rise">
           <p className="label flex flex-wrap items-center gap-x-3 gap-y-1 text-amber">
             <span>Cohort 01</span>
             <span aria-hidden="true" className="h-px w-8 bg-amber/60" />
             <span>8-Month Executive Cohort</span>
           </p>
 
-          <h1 className="mt-5 max-w-4xl font-display text-[clamp(2.45rem,5.8vw,5rem)] font-light leading-[0.98] tracking-[-0.025em] text-balance">
+          <h1 className="mt-5 font-display text-[clamp(2.35rem,5.5vw,4.5rem)] font-light leading-[1.02] tracking-tight text-balance">
             <span className="text-amber">Applied AI</span> for Leadership &amp; Business Innovation
           </h1>
 
-          <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/78 sm:text-xl">
+          <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/80 sm:text-lg">
             {site.name}: an eight-month cohort where leaders don&rsquo;t watch demos. They build. Every 90-minute,
             in-person session ends with a working asset you can deploy the next morning, with remote 1:1 coaching to
             help you work through decisions and keep moving between sessions.
           </p>
 
-          <div className="mt-9 flex flex-wrap gap-3">
+          <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/#syllabus" className={buttonStyles({ variant: "primary" })}>
               See the 8-session roadmap
               <ArrowRight className="size-4" aria-hidden="true" />
@@ -41,7 +42,7 @@ export function Hero() {
             <VideoCta />
           </div>
 
-          <figure className="mt-9 flex max-w-xl items-center gap-4 border-l-2 border-amber pl-5 sm:mt-11">
+          <figure className="mt-10 flex max-w-xl items-center gap-4 border-l-2 border-amber pl-5">
             <div
               className="grid size-14 shrink-0 place-items-center border border-white/30 font-display text-xl text-amber"
               aria-hidden="true"
@@ -64,9 +65,13 @@ export function Hero() {
             </figcaption>
           </figure>
         </div>
+
+        <div className="animate-rise self-center [animation-delay:120ms]">
+          <HeroRoadmap />
+        </div>
       </div>
 
-      <dl className="home-hero__stats mx-auto grid max-w-7xl grid-cols-2 border-t border-white/15 sm:grid-cols-4">
+      <dl className="mx-auto grid max-w-7xl grid-cols-2 border-t border-white/15 sm:grid-cols-4">
         {cohortStats.map((stat) => (
           <div
             key={stat.label}
