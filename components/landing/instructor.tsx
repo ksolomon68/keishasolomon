@@ -3,8 +3,8 @@ import { instructor } from "@/data/cohortData";
 
 export function InstructorBlock() {
   return (
-    <section aria-labelledby="instructor-title" className="relative border-y border-line bg-paper-deep/85 backdrop-blur-[2px] py-16 sm:py-20">
-      <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 sm:px-6 md:grid-cols-[auto_1fr] lg:px-8">
+    <section aria-labelledby="instructor-title" className="home-section">
+      <div className="home-shell home-surface-light grid items-center gap-10 md:grid-cols-[auto_1fr]">
         <div className="relative size-32 shrink-0 overflow-hidden border-2 border-navy-900 bg-navy-900 sm:size-40">
           <Image
             src="/home.png"

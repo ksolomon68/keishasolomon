@@ -24,6 +24,7 @@ export function ScrollSequence() {
 
     let animationFrameId: number;
     let isDisposed = false;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     // Helper to render a specific frame
     const renderFrame = (index: number) => {
@@ -31,8 +32,8 @@ export function ScrollSequence() {
       if (!img || !img.complete || !canvas) return;
 
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const displayWidth = window.innerWidth;
-      const displayHeight = window.innerHeight;
+      const displayWidth = Math.round(window.visualViewport?.width ?? window.innerWidth);
+      const displayHeight = Math.round(window.visualViewport?.height ?? window.innerHeight);
 
       if (canvas.width !== displayWidth * dpr || canvas.height !== displayHeight * dpr) {
         canvas.width = displayWidth * dpr;
@@ -57,11 +58,13 @@ export function ScrollSequence() {
       if (canvasRatio > imgRatio) {
         drawWidth = displayWidth;
         drawHeight = displayWidth / imgRatio;
-        offsetY = (displayHeight - drawHeight) / 2;
+        offsetY = (displayHeight - drawHeight) * (displayWidth < 768 ? 0.42 : 0.5);
       } else {
         drawHeight = displayHeight;
         drawWidth = displayHeight * imgRatio;
-        offsetX = (displayWidth - drawWidth) / 2;
+        // Mobile needs a portrait-aware crop; the source footage intentionally
+        // places the speaker on the right side of the widescreen frame.
+        offsetX = (displayWidth - drawWidth) * (displayWidth < 768 ? 0.72 : 0.5);
       }
 
       ctx.clearRect(0, 0, displayWidth, displayHeight);
@@ -126,6 +129,7 @@ export function ScrollSequence() {
 
     // 2. Load remaining frames progressively
     const preloadImages = () => {
+      if (reduceMotion) return;
       // Prioritize keyframes first (every 5th frame), then all remaining
       const keyframeIndices: number[] = [];
       const restIndices: number[] = [];
@@ -175,12 +179,14 @@ export function ScrollSequence() {
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("resize", handleResize, { passive: true });
+    window.visualViewport?.addEventListener("resize", handleResize, { passive: true });
 
     return () => {
       isDisposed = true;
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleResize);
+      window.visualViewport?.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -195,8 +201,7 @@ export function ScrollSequence() {
           isLoaded ? "opacity-100" : "opacity-0"
         }`}
       />
-      {/* Subtle ambient gradient overlay for optimal text contrast and high-end depth */}
-      <div className="absolute inset-0 bg-navy-950/20 backdrop-brightness-[0.97]" />
+      <div className="home-video-shade absolute inset-0" />
     </div>
   );
 }

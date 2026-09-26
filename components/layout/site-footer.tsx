@@ -3,7 +3,7 @@ import { instructor, site } from "@/data/cohortData";
 
 export function SiteFooter() {
   return (
-    <footer data-surface="dark" className="border-t border-white/10 bg-navy-950 text-on-navy">
+    <footer data-surface="dark" className="relative z-20 border-t border-white/15 bg-navy-950 text-on-navy shadow-[0_-24px_80px_rgb(0_0_0/0.28)]">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr] lg:px-8">
         <div>
           <p className="font-display text-2xl text-white">{site.name}</p>

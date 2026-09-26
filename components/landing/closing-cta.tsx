@@ -4,8 +4,9 @@ import { buttonStyles } from "@/components/ui/button";
 
 export function ClosingCta() {
   return (
-    <section data-surface="dark" aria-labelledby="cta-title" className="relative grid-backdrop bg-navy-950/80 backdrop-blur-[2px] py-20 text-white sm:py-24">
-      <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
+    <section data-surface="dark" aria-labelledby="cta-title" className="home-section text-white">
+      <div className="home-shell home-surface-dark grid-backdrop text-center">
+        <div className="mx-auto max-w-4xl">
         <h2 id="cta-title" className="font-display text-4xl font-light leading-tight text-balance sm:text-5xl">
           Bring one real problem. Leave with a working solution.
         </h2>
@@ -21,6 +22,7 @@ export function ClosingCta() {
           <Link href="/login" className={buttonStyles({ variant: "outline" }) + " text-white"}>
             Sign in
           </Link>
+        </div>
         </div>
       </div>
     </section>

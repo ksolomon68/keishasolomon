@@ -29,8 +29,8 @@ export function SyllabusTimeline() {
   ];
 
   return (
-    <section id="syllabus" aria-labelledby="syllabus-title" className="relative bg-paper-deep/85 backdrop-blur-[2px] py-20 sm:py-28">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section id="syllabus" aria-labelledby="syllabus-title" className="home-section">
+      <div className="home-shell home-surface-light">
         <SectionHeading
           id="syllabus-title"
           eyebrow="Curriculum & Roadmap"
@@ -108,7 +108,7 @@ function SessionCard({ session, open, onToggle }: { session: Session; open: bool
       </div>
 
       <article
-        className={`border bg-white/90 backdrop-blur-sm transition-colors ${open ? "border-navy-900 border-l-[5px] border-l-amber" : "border-line hover:border-navy-900"}`}
+        className={`border bg-white/94 transition-colors ${open ? "border-navy-900 border-l-[5px] border-l-amber" : "border-line hover:border-navy-900"}`}
       >
         <h3>
           <button

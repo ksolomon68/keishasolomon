@@ -7,9 +7,9 @@ export function SafeHarborPledge() {
       id="safe-harbor"
       data-surface="dark"
       aria-labelledby="safe-harbor-title"
-      className="relative overflow-hidden bg-navy-950/80 backdrop-blur-[2px] py-20 text-white sm:py-28"
+      className="home-section text-white"
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="home-shell home-surface-dark">
         <div className="border-l-4 border-amber pl-6 sm:pl-10">
           <p className="label flex items-center gap-2 text-amber">
             <ShieldCheck className="size-4" aria-hidden="true" />

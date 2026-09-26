@@ -208,11 +208,119 @@ body {
   display: grid;
   gap: 1.5rem;
   padding: clamp(1.25rem, 0.8rem + 2vw, 2.5rem);
+  border: 1px solid rgb(255 255 255 / 0.14);
+  background: rgb(7 14 28 / 0.7);
+  backdrop-filter: blur(4px);
+  box-shadow: 0 40px 80px -40px rgb(0 0 0 / 0.8);
+}
+
+/* Homepage cinematic system -------------------------------------------------
+   The video owns the canvas. Content sits in deliberate, legible panes with
+   open space between them so the moving portrait remains part of the story. */
+.home-experience {
+  isolation: isolate;
+}
+
+.home-video-shade {
+  background:
+    linear-gradient(90deg, rgb(7 14 28 / 0.76) 0%, rgb(7 14 28 / 0.42) 40%, rgb(7 14 28 / 0.08) 72%),
+    linear-gradient(180deg, rgb(7 14 28 / 0.18) 0%, transparent 48%, rgb(7 14 28 / 0.48) 100%);
+  box-shadow: inset 0 0 12rem rgb(7 14 28 / 0.28);
+}
+
+.home-hero {
+  min-height: calc(100svh - 4rem);
+}
+
+.home-hero__content {
+  width: min(100%, 50rem);
+  padding: clamp(1.25rem, 0.9rem + 1.8vw, 2.5rem);
   border: 1px solid rgb(255 255 255 / 0.18);
-  background: rgb(7 14 28 / 0.38);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  box-shadow: 0 40px 80px -40px rgb(0 0 0 / 0.5);
+  background: linear-gradient(135deg, rgb(7 14 28 / 0.8), rgb(7 14 28 / 0.5));
+  -webkit-backdrop-filter: blur(16px) saturate(1.1);
+  backdrop-filter: blur(16px) saturate(1.1);
+  box-shadow: 0 32px 90px -42px rgb(0 0 0 / 0.82);
+}
+
+.home-hero__stats {
+  background: rgb(7 14 28 / 0.72);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+.home-section {
+  position: relative;
+  padding: clamp(2rem, 5vw, 5rem) 1rem;
+}
+
+.home-shell {
+  width: min(100%, 80rem);
+  margin-inline: auto;
+  padding: clamp(1.5rem, 1rem + 3vw, 4rem);
+}
+
+.home-surface-light {
+  color: var(--color-ink);
+  border: 1px solid rgb(255 255 255 / 0.55);
+  background: rgb(246 243 236 / 0.92);
+  -webkit-backdrop-filter: blur(22px) saturate(1.08);
+  backdrop-filter: blur(22px) saturate(1.08);
+  box-shadow: 0 36px 100px -58px rgb(0 0 0 / 0.9);
+}
+
+.home-surface-dark {
+  color: white;
+  border: 1px solid rgb(255 255 255 / 0.16);
+  background: linear-gradient(145deg, rgb(7 14 28 / 0.9), rgb(11 23 48 / 0.78));
+  -webkit-backdrop-filter: blur(22px) saturate(1.12);
+  backdrop-filter: blur(22px) saturate(1.12);
+  box-shadow: 0 36px 100px -58px rgb(0 0 0 / 0.94);
+}
+
+.home-roadmap-intro {
+  display: grid;
+  gap: 1.5rem;
+  margin-bottom: clamp(2rem, 5vw, 3.5rem);
+}
+
+@media (min-width: 900px) {
+  .home-roadmap-intro {
+    grid-template-columns: minmax(0, 1.35fr) minmax(18rem, 0.65fr);
+    align-items: end;
+  }
+
+}
+
+@media (max-width: 767px) {
+  .home-video-shade {
+    background:
+      linear-gradient(180deg, rgb(7 14 28 / 0.08) 0%, rgb(7 14 28 / 0.04) 30%, rgb(7 14 28 / 0.72) 66%, rgb(7 14 28 / 0.9) 100%),
+      linear-gradient(90deg, rgb(7 14 28 / 0.18), transparent 46%, rgb(7 14 28 / 0.08));
+    box-shadow: inset 0 0 5rem rgb(7 14 28 / 0.18);
+  }
+
+  .home-hero__content {
+    background: linear-gradient(180deg, rgb(7 14 28 / 0.7), rgb(7 14 28 / 0.9));
+    -webkit-backdrop-filter: blur(12px) saturate(1.06);
+    backdrop-filter: blur(12px) saturate(1.06);
+  }
+
+  .home-section {
+    padding-block: 1.25rem;
+    padding-inline: 0.75rem;
+  }
+
+  .home-shell {
+    padding: 1.5rem;
+  }
+
+  .home-surface-light {
+    background: rgb(246 243 236 / 0.96);
+  }
+
+  .home-surface-dark {
+    background: rgb(7 14 28 / 0.92);
+  }
 }
 .hero-board__tabs {
   display: grid;
