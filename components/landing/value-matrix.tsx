@@ -14,7 +14,7 @@ export function ValueMatrix() {
 
         <ol className="mt-14 grid gap-px border border-line bg-line/80 md:grid-cols-3">
           {valueMatrix.pillars.map((pillar, i) => (
-            <li key={pillar.title} className="bg-paper/92 p-7 sm:p-9">
+            <li key={pillar.title} className="bg-paper/75 p-7 backdrop-blur-md sm:p-9">
               <p className="label text-amber-deep">0{i + 1}</p>
               <h3 className="mt-4 font-display text-2xl text-navy-900">{pillar.title}</h3>
               <p className="mt-3 text-muted">{pillar.body}</p>
@@ -28,14 +28,14 @@ export function ValueMatrix() {
           </h3>
           <div className="mt-6 space-y-4">
             {valueMatrix.rows.map((row) => (
-              <article key={row.dimension} className="border border-line bg-white/94">
+              <article key={row.dimension} className="border border-line bg-white/80 backdrop-blur-md">
                 <h4 className="label border-b border-line px-4 py-3 text-ink">{row.dimension}</h4>
                 <dl>
                   <div className="grid gap-1 px-4 py-4">
                     <dt className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">Typical workshop</dt>
                     <dd className="text-muted">{row.passive}</dd>
                   </div>
-                  <div className="grid gap-1 bg-navy-900 px-4 py-4 text-white">
+                  <div className="grid gap-1 bg-navy-900/85 px-4 py-4 text-white">
                     <dt className="text-xs font-semibold uppercase tracking-[0.08em] text-amber">The Sandbox</dt>
                     <dd>{row.sandbox}</dd>
                   </div>
@@ -58,7 +58,7 @@ export function ValueMatrix() {
                 <th scope="col" className="w-[37.5%] px-4 py-3 font-semibold text-muted">
                   Typical AI workshop
                 </th>
-                <th scope="col" className="w-[37.5%] bg-navy-900 px-4 py-3 font-semibold text-amber">
+                <th scope="col" className="w-[37.5%] bg-navy-900/85 px-4 py-3 font-semibold text-amber">
                   The AI Executive Sandbox
                 </th>
               </tr>
@@ -70,7 +70,7 @@ export function ValueMatrix() {
                     {row.dimension}
                   </th>
                   <td className="px-4 py-5 text-muted">{row.passive}</td>
-                  <td className="bg-navy-900 px-4 py-5 font-medium text-white">{row.sandbox}</td>
+                  <td className="bg-navy-900/85 px-4 py-5 font-medium text-white">{row.sandbox}</td>
                 </tr>
               ))}
             </tbody>

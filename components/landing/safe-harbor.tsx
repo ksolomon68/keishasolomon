@@ -28,7 +28,7 @@ export function SafeHarborPledge() {
 
         <ul className="mt-14 grid gap-px border border-white/15 bg-white/15 md:grid-cols-3">
           {safeHarbor.commitments.map((c) => (
-            <li key={c.title} className="bg-navy-950/85 backdrop-blur-sm p-7 sm:p-9">
+            <li key={c.title} className="bg-navy-950/60 backdrop-blur-md p-7 sm:p-9">
               <h3 className="font-display text-xl text-amber">{c.title}</h3>
               <p className="mt-3 text-on-navy">{c.body}</p>
             </li>

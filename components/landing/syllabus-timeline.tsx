@@ -53,7 +53,7 @@ export function SyllabusTimeline() {
                   className={`min-h-11 whitespace-nowrap rounded-sm border px-4 text-[0.9375rem] font-medium transition-colors ${
                     filter === o.value
                       ? "border-navy-900 bg-navy-900 text-white"
-                      : "border-edge bg-white text-ink hover:border-navy-900"
+                      : "border-edge bg-white/80 text-ink backdrop-blur-sm hover:border-navy-900"
                   }`}
                 >
                   {o.label} <span className="label ml-1 opacity-80">{o.count}</span>
@@ -99,8 +99,8 @@ function SessionCard({ session, open, onToggle }: { session: Session; open: bool
   return (
     <li className="relative grid grid-cols-[3rem_1fr] gap-3 sm:grid-cols-[4rem_1fr] sm:gap-4">
       <div
-        className={`z-10 mt-5 grid size-12 place-items-center border-2 font-display text-xl sm:size-16 sm:text-2xl ${
-          open ? "border-navy-900 bg-navy-900 text-amber" : "border-navy-900 bg-paper-deep text-navy-900"
+        className={`z-10 mt-5 grid size-12 place-items-center border-2 font-display text-xl sm:size-16 sm:text-2xl backdrop-blur-sm ${
+          open ? "border-navy-900 bg-navy-900 text-amber" : "border-navy-900 bg-paper-deep/85 text-navy-900"
         }`}
         aria-hidden="true"
       >
@@ -108,7 +108,7 @@ function SessionCard({ session, open, onToggle }: { session: Session; open: bool
       </div>
 
       <article
-        className={`border bg-white/94 transition-colors ${open ? "border-navy-900 border-l-[5px] border-l-amber" : "border-line hover:border-navy-900"}`}
+        className={`border bg-white/80 backdrop-blur-md transition-colors ${open ? "border-navy-900 border-l-[5px] border-l-amber" : "border-line hover:border-navy-900"}`}
       >
         <h3>
           <button
@@ -183,7 +183,7 @@ function SessionCard({ session, open, onToggle }: { session: Session; open: bool
               </div>
 
               {session.deliverable && (
-                <div className="mt-7 border border-navy-900 bg-navy-900 p-5 text-white" data-surface="dark">
+                <div className="mt-7 border border-navy-900 bg-navy-900/85 backdrop-blur-sm p-5 text-white" data-surface="dark">
                   <p className="label text-amber">Tangible takeaway</p>
                   <p className="mt-1.5 font-display text-xl">{session.deliverable.title}</p>
                   <p className="mt-1 text-on-navy">{session.deliverable.description}</p>
@@ -194,7 +194,7 @@ function SessionCard({ session, open, onToggle }: { session: Session; open: bool
                 <p className="label text-ink">90-minute run of show</p>
                 <ol className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
                   {session.agenda.map((b) => (
-                    <li key={b.title} className="border border-line bg-paper p-3">
+                    <li key={b.title} className="border border-line bg-paper/75 backdrop-blur-sm p-3">
                       <p className="label text-muted">
                         {b.start}–{b.end}
                       </p>

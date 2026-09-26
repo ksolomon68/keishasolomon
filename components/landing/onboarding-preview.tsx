@@ -25,7 +25,7 @@ export function OnboardingPreview() {
         </div>
 
         <div className="mt-12 grid gap-8 md:grid-cols-2">
-          <div className="border border-line bg-white/94 p-6 sm:p-8">
+          <div className="border border-line bg-white/80 p-6 backdrop-blur-md sm:p-8">
             <h3 className="flex items-center gap-3 font-display text-2xl text-navy-900">
               <Laptop className="size-6 text-amber-deep" aria-hidden="true" />
               Bring to every session
@@ -39,7 +39,7 @@ export function OnboardingPreview() {
               ))}
             </ul>
           </div>
-          <div className="border border-line bg-white/94 p-6 sm:p-8">
+          <div className="border border-line bg-white/80 p-6 backdrop-blur-md sm:p-8">
             <h3 className="flex items-center gap-3 font-display text-2xl text-navy-900">
               <ListChecks className="size-6 text-cyan-deep" aria-hidden="true" />
               Pre-course tech checklist
