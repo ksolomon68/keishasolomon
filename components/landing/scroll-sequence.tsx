@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const TOTAL_FRAMES = 76;
+const TOTAL_FRAMES = 151;
 
 function getFrameUrl(index: number): string {
   const pad = String(index + 1).padStart(3, "0");
