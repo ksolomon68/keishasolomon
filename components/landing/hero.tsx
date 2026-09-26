@@ -1,15 +1,11 @@
 import Link from "next/link";
 import { ArrowRight, ClipboardCheck } from "lucide-react";
 import { buttonStyles } from "@/components/ui/button";
-import { cohortStats, instructor, sessions, site } from "@/data/cohortData";
+import { cohortStats, instructor, site } from "@/data/cohortData";
 import { VideoCta } from "@/components/landing/video-cta";
-
-const first = sessions[0];
-const blockTones = ["bg-navy-700", "bg-cyan", "bg-amber", "bg-cyan", "bg-navy-700"];
-const blockText = ["text-white", "text-navy-950", "text-navy-950", "text-navy-950", "text-white"];
+import { HeroRoadmap } from "@/components/landing/hero-roadmap";
 
 export function Hero() {
-  const agenda = first.agenda;
   return (
     <section data-surface="dark" className="grid-backdrop relative isolate overflow-hidden bg-navy-900 text-white">
       <div
@@ -71,41 +67,7 @@ export function Hero() {
         </div>
 
         <div className="animate-rise self-center [animation-delay:120ms]">
-          <div className="border border-white/20 bg-navy-950/70 p-6 backdrop-blur-sm sm:p-8">
-            <p className="label text-amber">Session 1 · The 90-minute run of show</p>
-            <p className="mt-2 font-display text-2xl leading-snug">
-              Twenty-five minutes of framework. Fifty of building and stress-testing.
-            </p>
-
-            {/* Proportional bar (decorative): each block's width is its share of the 90 minutes. The list below carries the same information for assistive tech. */}
-            <div className="mt-7 flex h-14 gap-1" aria-hidden="true">
-              {agenda.map((block, i) => (
-                <div
-                  key={block.title}
-                  style={{ flexGrow: block.minutes }}
-                  className={`${blockTones[i]} ${blockText[i]} relative min-w-0`}
-                >
-                  <span className="label absolute inset-x-1.5 top-1.5 !text-[0.625rem] !tracking-wider">
-                    {block.minutes}m
-                  </span>
-                </div>
-              ))}
-            </div>
-            <ol className="mt-5 space-y-2.5 text-sm">
-              {agenda.map((block, i) => (
-                <li key={block.title} className="flex items-baseline gap-3">
-                  <span aria-hidden="true" className={`mt-1.5 size-2 shrink-0 ${blockTones[i]}`} />
-                  <span>
-                    <span className="font-medium text-white">{block.title}</span>
-                    <span className="text-on-navy">
-                      {" "}
-                      · {block.minutes} min · {block.detail}
-                    </span>
-                  </span>
-                </li>
-              ))}
-            </ol>
-          </div>
+          <HeroRoadmap />
         </div>
       </div>
 
