@@ -4,7 +4,7 @@ import { buttonStyles } from "@/components/ui/button";
 
 export function ClosingCta() {
   return (
-    <section data-surface="dark" aria-labelledby="cta-title" className="grid-backdrop bg-navy-900 py-20 text-white sm:py-24">
+    <section data-surface="dark" aria-labelledby="cta-title" className="relative grid-backdrop bg-navy-950/80 backdrop-blur-[2px] py-20 text-white sm:py-24">
       <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
         <h2 id="cta-title" className="font-display text-4xl font-light leading-tight text-balance sm:text-5xl">
           Bring one real problem. Leave with a working solution.

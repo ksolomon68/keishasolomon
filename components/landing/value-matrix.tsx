@@ -3,7 +3,7 @@ import { SectionHeading } from "./section-heading";
 
 export function ValueMatrix() {
   return (
-    <section id="method" aria-labelledby="method-title" className="bg-paper py-20 sm:py-28">
+    <section id="method" aria-labelledby="method-title" className="relative bg-paper/85 backdrop-blur-[2px] py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           id="method-title"
@@ -12,9 +12,9 @@ export function ValueMatrix() {
           intro="Most AI training ends with notes. This cohort ends every month with something running in your business."
         />
 
-        <ol className="mt-14 grid gap-px border border-line bg-line md:grid-cols-3">
+        <ol className="mt-14 grid gap-px border border-line bg-line/80 md:grid-cols-3">
           {valueMatrix.pillars.map((pillar, i) => (
-            <li key={pillar.title} className="bg-paper p-7 sm:p-9">
+            <li key={pillar.title} className="bg-paper/90 backdrop-blur-sm p-7 sm:p-9">
               <p className="label text-amber-deep">0{i + 1}</p>
               <h3 className="mt-4 font-display text-2xl text-navy-900">{pillar.title}</h3>
               <p className="mt-3 text-muted">{pillar.body}</p>

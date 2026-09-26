@@ -7,7 +7,7 @@ import { HeroRoadmap } from "@/components/landing/hero-roadmap";
 
 export function Hero() {
   return (
-    <section data-surface="dark" className="grid-backdrop relative isolate overflow-hidden bg-navy-900 text-white">
+    <section data-surface="dark" className="grid-backdrop relative isolate overflow-hidden bg-navy-950/75 backdrop-blur-[1px] text-white">
       <div
         className="pointer-events-none absolute -right-40 -top-40 -z-10 size-[34rem] rounded-full bg-amber/10 blur-3xl"
         aria-hidden="true"

@@ -9,7 +9,7 @@ export function OnboardingPreview() {
   const accounts = onboardingChecklist.filter((i) => i.group === "accounts");
 
   return (
-    <section id="onboarding" aria-labelledby="onboarding-title" className="bg-paper py-20 sm:py-28">
+    <section id="onboarding" aria-labelledby="onboarding-title" className="relative bg-paper/85 backdrop-blur-[2px] py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <SectionHeading
@@ -25,7 +25,7 @@ export function OnboardingPreview() {
         </div>
 
         <div className="mt-12 grid gap-8 md:grid-cols-2">
-          <div className="border border-line bg-white p-6 sm:p-8">
+          <div className="border border-line bg-white/90 backdrop-blur-sm p-6 sm:p-8">
             <h3 className="flex items-center gap-3 font-display text-2xl text-navy-900">
               <Laptop className="size-6 text-amber-deep" aria-hidden="true" />
               Bring to every session
@@ -39,7 +39,7 @@ export function OnboardingPreview() {
               ))}
             </ul>
           </div>
-          <div className="border border-line bg-white p-6 sm:p-8">
+          <div className="border border-line bg-white/90 backdrop-blur-sm p-6 sm:p-8">
             <h3 className="flex items-center gap-3 font-display text-2xl text-navy-900">
               <ListChecks className="size-6 text-cyan-deep" aria-hidden="true" />
               Pre-course tech checklist

@@ -7,7 +7,7 @@ export function SafeHarborPledge() {
       id="safe-harbor"
       data-surface="dark"
       aria-labelledby="safe-harbor-title"
-      className="relative overflow-hidden bg-navy-950 py-20 text-white sm:py-28"
+      className="relative overflow-hidden bg-navy-950/80 backdrop-blur-[2px] py-20 text-white sm:py-28"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="border-l-4 border-amber pl-6 sm:pl-10">
@@ -28,7 +28,7 @@ export function SafeHarborPledge() {
 
         <ul className="mt-14 grid gap-px border border-white/15 bg-white/15 md:grid-cols-3">
           {safeHarbor.commitments.map((c) => (
-            <li key={c.title} className="bg-navy-950 p-7 sm:p-9">
+            <li key={c.title} className="bg-navy-950/85 backdrop-blur-sm p-7 sm:p-9">
               <h3 className="font-display text-xl text-amber">{c.title}</h3>
               <p className="mt-3 text-on-navy">{c.body}</p>
             </li>
