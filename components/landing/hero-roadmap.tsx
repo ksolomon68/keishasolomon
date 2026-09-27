@@ -4,7 +4,6 @@ import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { sessions } from "@/data/cohortData";
 
 const AUTO_MS = 4200;
-const agenda = sessions[0].agenda;
 const segTones = ["navy", "cyan", "amber", "cyan", "navy"];
 
 /**
@@ -107,7 +106,7 @@ export function HeroRoadmap() {
       >
         <div key={active} className="hero-board__slide">
           <p className="label text-amber">
-            Session {session.number} · {session.shortDate} · {session.focus}
+            Session {session.number} · Month {session.number} · {session.focus}
           </p>
           <p className="mt-2 font-display text-2xl leading-snug sm:text-[1.75rem]">{session.theme}</p>
           <p className="mt-4 flex flex-wrap items-baseline gap-x-2.5 gap-y-1 text-sm text-white/85">
@@ -118,23 +117,25 @@ export function HeroRoadmap() {
       </div>
 
       <div className="grid gap-4">
-        <p className="label text-amber">Every session · the 90-minute run of show</p>
+        <p className="label text-amber">
+          {active === 0 ? "Session 1" : active === last ? "Session 8 Showcase" : `Session ${session.number}`} · 90-minute run of show
+        </p>
         {/* Proportional bar (decorative): each block's width is its share of the 90 minutes. The list below carries the same information for assistive tech. */}
         <div className="hero-board__bar" aria-hidden="true">
-          {agenda.map((block, i) => (
+          {session.agenda.map((block, i) => (
             <span
               key={block.title}
               style={{ flexGrow: block.minutes, animationDelay: `${i * 120}ms` }}
-              className={`hero-board__seg hero-board__seg--${segTones[i]}`}
+              className={`hero-board__seg hero-board__seg--${segTones[i % segTones.length]}`}
             >
               {String(block.minutes).padStart(2, "0")}M
             </span>
           ))}
         </div>
         <ul className="grid gap-1.5 text-sm text-white/85">
-          {agenda.map((block, i) => (
+          {session.agenda.map((block, i) => (
             <li key={block.title} className="flex items-center gap-2.5">
-              <span aria-hidden="true" className={`hero-board__key hero-board__seg--${segTones[i]}`} />
+              <span aria-hidden="true" className={`hero-board__key hero-board__seg--${segTones[i % segTones.length]}`} />
               {block.title} <span className="text-white/55">{block.minutes} min</span>
             </li>
           ))}
