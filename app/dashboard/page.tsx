@@ -9,6 +9,7 @@ import { NextStep } from "@/components/dashboard/next-step";
 import { PromptWorkshop } from "@/components/dashboard/prompt-workshop";
 import { SectionNav } from "@/components/dashboard/section-nav";
 import { SupportResources } from "@/components/dashboard/support-resources";
+import { SupportCenter, type ParticipantSupportThread } from "@/components/dashboard/support-center";
 import { capstoneSteps } from "@/data/cohortData";
 import { requireUser } from "@/lib/auth/session";
 import { cohortOf, resourcesFor } from "@/lib/cohort";
@@ -28,14 +29,20 @@ const formatBytes = (n: number) =>
 export default async function DashboardPage() {
   const user = await requireUser("/dashboard");
   const store = await getStore();
-  const [friction, coachingNotes, deliverables, capstone, resources, cohort] = await Promise.all([
+  const [friction, coachingNotes, deliverables, capstone, resources, cohort, supportRequests] = await Promise.all([
     store.listFriction(user.id),
     store.listCoachingNotes(user.id),
     store.listDeliverables(user.id),
     store.listCapstone(user.id),
     resourcesFor(store, user),
     cohortOf(store, user),
+    store.listSupportRequests(user.id),
   ]);
+  const supportThreads: ParticipantSupportThread[] = await Promise.all(
+    supportRequests.map(async (request) => ({ ...request, messages: await store.listSupportMessages(request.id) })),
+  );
+  const activeSupport = supportThreads.filter((thread) => thread.status !== "resolved").length;
+  const instructorReplies = supportThreads.filter((thread) => thread.status === "waiting_on_participant").length;
   const schedule = cohortSchedule(cohort?.sessionDates);
   const deliverableSessions = withDeliverables(schedule);
 
@@ -95,7 +102,7 @@ export default async function DashboardPage() {
           { id: "deliverables", label: "My work", badge: `${submitted}/${deliverableSessions.length}` },
           { id: "friction", label: "Friction log", badge: openFriction ? `${openFriction} open` : undefined },
           { id: "capstone", label: "Capstone", badge: `${capstoneDone}/${totalCapstoneSteps}` },
-          { id: "support", label: "Support & tools" },
+          { id: "support", label: "Support & tools", badge: instructorReplies ? `${instructorReplies} replied` : activeSupport ? `${activeSupport} active` : undefined },
         ]}
       />
 
@@ -133,6 +140,9 @@ export default async function DashboardPage() {
           title="Support & resources"
           intro="Open one area when you need coaching, a stronger prompt, or communications support."
         >
+          <div className="mb-10">
+            <SupportCenter threads={supportThreads} />
+          </div>
           <SupportResources
             coaching={
               <div className="space-y-10">

@@ -72,6 +72,34 @@ CREATE TABLE IF NOT EXISTS coaching_notes (
   CONSTRAINT fk_coaching_notes_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Private, threaded help requests. Status shows whose turn it is so requests do not disappear
+-- into a general notes feed.
+CREATE TABLE IF NOT EXISTS support_requests (
+  id          CHAR(36)     NOT NULL,
+  user_id     CHAR(36)     NOT NULL,
+  subject     VARCHAR(160) NOT NULL,
+  priority    VARCHAR(16)  NOT NULL DEFAULT 'normal',
+  status      VARCHAR(32)  NOT NULL DEFAULT 'open',
+  created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_support_requests_user (user_id, updated_at),
+  KEY idx_support_requests_status (status, updated_at),
+  CONSTRAINT fk_support_requests_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS support_messages (
+  id          CHAR(36)     NOT NULL,
+  request_id  CHAR(36)     NOT NULL,
+  author_id   CHAR(36)     NOT NULL,
+  author_role VARCHAR(16)  NOT NULL,
+  body        TEXT         NOT NULL,
+  created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_support_messages_request (request_id, created_at),
+  CONSTRAINT fk_support_messages_request FOREIGN KEY (request_id) REFERENCES support_requests (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS deliverables (
   user_id     CHAR(36)     NOT NULL,
   session_id  VARCHAR(8)   NOT NULL,

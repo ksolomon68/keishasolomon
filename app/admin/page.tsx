@@ -8,6 +8,7 @@ import { ResourceManager } from "@/components/admin/resource-manager";
 import { FrictionReview } from "@/components/admin/friction-review";
 import { CoachingReview } from "@/components/admin/coaching-review";
 import { UserManager } from "@/components/admin/user-manager";
+import { SupportInbox, type InstructorSupportThread } from "@/components/admin/support-inbox";
 import { capstoneSteps, site } from "@/data/cohortData";
 import { requireAdmin } from "@/lib/auth/session";
 import { cohortSchedule } from "@/lib/cohort-schedule";
@@ -47,21 +48,33 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     );
   }
 
-  const admins = users.filter((u) => u.role === "admin");
   const participants = users.filter((u) => u.role === "participant" && u.cohortId === selected.id);
   const ids = new Set(participants.map((u) => u.id));
   const counts: Record<string, number> = {};
   for (const u of users) if (u.role === "participant" && u.cohortId) counts[u.cohortId] = (counts[u.cohortId] ?? 0) + 1;
 
-  const [allAttendance, allDeliverables, allCapstone, resources] = await Promise.all([
+  const [allAttendance, allDeliverables, allCapstone, resources, allSupportRequests] = await Promise.all([
     store.listAttendance(),
     store.listDeliverables(),
     store.listCapstone(),
     store.listResources(selected.id),
+    store.listSupportRequests(),
   ]);
   const attendance = allAttendance.filter((a) => ids.has(a.userId));
   const deliverables = allDeliverables.filter((d) => ids.has(d.userId));
   const capstone = allCapstone.filter((c) => ids.has(c.userId));
+  const supportRequests = allSupportRequests.filter((request) => ids.has(request.userId));
+  const participantById = new Map(participants.map((participant) => [participant.id, participant]));
+  const supportThreads: InstructorSupportThread[] = await Promise.all(
+    supportRequests.map(async (request) => {
+      const participant = participantById.get(request.userId)!;
+      return {
+        ...request,
+        participant: { name: participant.name, email: participant.email, organization: participant.organization },
+        messages: await store.listSupportMessages(request.id),
+      };
+    }),
+  );
 
   const schedule = cohortSchedule(selected.sessionDates);
   const deliverableCount = schedule.filter((s) => s.deliverable).length;
@@ -93,10 +106,11 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     0,
   );
   const toReview = entries.reduce((sum, e) => sum + e.deliverables.filter((d) => d.status === "submitted").length, 0);
+  const supportWaiting = supportThreads.filter((thread) => thread.status === "open").length;
 
   const stats = [
     { label: "Participants", value: String(n) },
-    { label: "Avg. attendance", value: `${avg(entries.reduce((s, e) => s + e.attended.length, 0), schedule.length)}%` },
+    { label: "Need support", value: String(supportWaiting) },
     { label: "Deliverables in", value: `${avg(submittedTotal, deliverableCount)}%` },
     { label: "Awaiting review", value: String(toReview) },
   ];
@@ -121,6 +135,17 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       <CohortSwitcher cohorts={cohorts} selectedId={selected.id} counts={counts} />
 
       <div className="mx-auto max-w-7xl space-y-16 px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
+        <section aria-labelledby="support-inbox-title">
+          <p className="label text-amber-deep">Respond while it matters</p>
+          <h2 id="support-inbox-title" className="mb-3 mt-2 font-display text-3xl text-navy-900 sm:text-4xl">
+            Participant support inbox
+          </h2>
+          <p className="mb-6 max-w-3xl text-muted">
+            Requests are sorted by the latest activity. Urgent blockers stay visible, and each reply returns to the participant&rsquo;s private dashboard.
+          </p>
+          <SupportInbox threads={supportThreads} />
+        </section>
+
         <section aria-labelledby="settings-title">
           <p className="label text-amber-deep">This cohort</p>
           <h2 id="settings-title" className="mb-6 mt-2 font-display text-3xl text-navy-900 sm:text-4xl">

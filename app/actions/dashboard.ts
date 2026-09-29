@@ -12,11 +12,50 @@ import {
   coachingNoteSchema,
   fieldErrors,
   frictionSchema,
+  supportReplySchema,
+  supportRequestSchema,
   textValues,
   type FormState,
 } from "@/lib/validation";
 
 const idSchema = z.uuid();
+
+/* ---------- Instructor support ---------- */
+
+export async function createSupportRequestAction(_prev: FormState, formData: FormData): Promise<FormState> {
+  const user = await requireUser("/dashboard");
+  const values = textValues(formData);
+  const parsed = supportRequestSchema.safeParse(values);
+  if (!parsed.success) return { errors: fieldErrors(parsed.error), values };
+  await (await getStore()).createSupportRequest(user.id, parsed.data);
+  revalidatePath("/dashboard");
+  revalidatePath("/admin");
+  return { ok: true, message: "Your instructor has received this request." };
+}
+
+export async function replyToSupportAction(_prev: FormState, formData: FormData): Promise<FormState> {
+  const user = await requireUser("/dashboard");
+  const values = textValues(formData);
+  const parsed = supportReplySchema.safeParse(values);
+  if (!parsed.success) return { errors: fieldErrors(parsed.error), values };
+  const store = await getStore();
+  const request = await store.getSupportRequest(parsed.data.requestId);
+  if (!request || request.userId !== user.id) return { message: "That support conversation is unavailable." };
+  await store.addSupportMessage(request.id, user.id, "participant", parsed.data.body, "open");
+  revalidatePath("/dashboard");
+  revalidatePath("/admin");
+  return { ok: true, message: "Reply sent to your instructor." };
+}
+
+export async function resolveOwnSupportRequestAction(requestId: string): Promise<void> {
+  const user = await requireUser("/dashboard");
+  const store = await getStore();
+  const request = await store.getSupportRequest(idSchema.parse(requestId));
+  if (!request || request.userId !== user.id) throw new Error("Unknown support request.");
+  await store.setSupportRequestStatus(request.id, "resolved");
+  revalidatePath("/dashboard");
+  revalidatePath("/admin");
+}
 
 /* ---------- Coaching log ---------- */
 

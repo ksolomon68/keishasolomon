@@ -100,6 +100,17 @@ export const coachingNoteSchema = z.object({
   nextStep: z.string().trim().max(500, "Keep the next step under 500 characters.").default(""),
 });
 
+export const supportRequestSchema = z.object({
+  subject: z.string().trim().min(3, "Summarize what you need help with.").max(160),
+  priority: z.enum(["normal", "urgent"]),
+  body: z.string().trim().min(10, "Add a little more detail so your instructor can help.").max(4000),
+});
+
+export const supportReplySchema = z.object({
+  requestId: z.uuid(),
+  body: z.string().trim().min(2, "Write a reply before sending.").max(4000),
+});
+
 export const deliverableSchema = z.object({
   sessionId: sessionIdSchema,
   status: z.enum(tuple(deliverableStatuses.map((s) => s.value))),

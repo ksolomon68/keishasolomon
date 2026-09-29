@@ -13,6 +13,10 @@ import {
   type Role,
   type Store,
   type StoredFile,
+  type SupportMessage,
+  type SupportPriority,
+  type SupportRequest,
+  type SupportStatus,
   type User,
   type UserWithHash,
 } from "./types";
@@ -87,6 +91,25 @@ const toCoachingNote = (r: Row): CoachingNote => ({
   topic: r.topic,
   note: r.note,
   nextStep: r.next_step ?? "",
+  createdAt: iso(r.created_at),
+});
+
+const toSupportRequest = (r: Row): SupportRequest => ({
+  id: r.id,
+  userId: r.user_id,
+  subject: r.subject,
+  priority: r.priority as SupportPriority,
+  status: r.status as SupportStatus,
+  createdAt: iso(r.created_at),
+  updatedAt: iso(r.updated_at),
+});
+
+const toSupportMessage = (r: Row): SupportMessage => ({
+  id: r.id,
+  requestId: r.request_id,
+  authorId: r.author_id,
+  authorRole: r.author_role as Role,
+  body: r.body,
   createdAt: iso(r.created_at),
 });
 
@@ -287,6 +310,70 @@ export function createMysqlStore(pool: Pool = createPool()): Store {
     },
     async deleteCoachingNote(userId, id) {
       await exec("DELETE FROM coaching_notes WHERE id = ? AND user_id = ?", [id, userId]);
+    },
+
+    async listSupportRequests(userId) {
+      const result = userId
+        ? await rows("SELECT * FROM support_requests WHERE user_id = ? ORDER BY updated_at DESC", [userId])
+        : await rows("SELECT * FROM support_requests ORDER BY updated_at DESC");
+      return result.map(toSupportRequest);
+    },
+    async getSupportRequest(id) {
+      const row = await one("SELECT * FROM support_requests WHERE id = ?", [id]);
+      return row ? toSupportRequest(row) : null;
+    },
+    async createSupportRequest(userId, input) {
+      const id = randomUUID();
+      const messageId = randomUUID();
+      const connection = await pool.getConnection();
+      try {
+        await connection.beginTransaction();
+        await connection.execute(
+          "INSERT INTO support_requests (id, user_id, subject, priority, status) VALUES (?, ?, ?, ?, 'open')",
+          [id, userId, input.subject, input.priority],
+        );
+        await connection.execute(
+          "INSERT INTO support_messages (id, request_id, author_id, author_role, body) VALUES (?, ?, ?, 'participant', ?)",
+          [messageId, id, userId, input.body],
+        );
+        await connection.commit();
+      } catch (error) {
+        await connection.rollback();
+        throw error;
+      } finally {
+        connection.release();
+      }
+      return toSupportRequest((await one("SELECT * FROM support_requests WHERE id = ?", [id]))!);
+    },
+    async listSupportMessages(requestId) {
+      return (await rows("SELECT * FROM support_messages WHERE request_id = ? ORDER BY created_at, id", [requestId])).map(
+        toSupportMessage,
+      );
+    },
+    async addSupportMessage(requestId, authorId, authorRole, body, status) {
+      const id = randomUUID();
+      const connection = await pool.getConnection();
+      try {
+        await connection.beginTransaction();
+        await connection.execute(
+          "INSERT INTO support_messages (id, request_id, author_id, author_role, body) VALUES (?, ?, ?, ?, ?)",
+          [id, requestId, authorId, authorRole, body],
+        );
+        await connection.execute(
+          "UPDATE support_requests SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+          [status, requestId],
+        );
+        await connection.commit();
+      } catch (error) {
+        await connection.rollback();
+        throw error;
+      } finally {
+        connection.release();
+      }
+      return toSupportMessage((await one("SELECT * FROM support_messages WHERE id = ?", [id]))!);
+    },
+    async setSupportRequestStatus(id, status) {
+      await exec("UPDATE support_requests SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?", [status, id]);
     },
 
     async listDeliverables(userId) {

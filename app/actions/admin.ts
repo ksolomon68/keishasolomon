@@ -21,6 +21,7 @@ import {
   resourceSchema,
   sessionDatesFrom,
   sessionIdSchema,
+  supportReplySchema,
   textValues,
   type FormState,
 } from "@/lib/validation";
@@ -41,6 +42,40 @@ async function participantId(userId: string): Promise<string> {
   const user = await (await getStore()).findUserById(idSchema.parse(userId));
   if (!user || user.role !== "participant") throw new Error("Unknown participant.");
   return user.id;
+}
+
+/* ---------- Participant support ---------- */
+
+export async function replyAsInstructorAction(_prev: FormState, formData: FormData): Promise<FormState> {
+  const admin = await requireAdmin("/admin");
+  const values = textValues(formData);
+  const parsed = supportReplySchema.safeParse(values);
+  if (!parsed.success) return { errors: fieldErrors(parsed.error), values };
+  const store = await getStore();
+  const request = await store.getSupportRequest(parsed.data.requestId);
+  if (!request) return { message: "That support request no longer exists.", values };
+  await participantId(request.userId);
+  await store.addSupportMessage(
+    request.id,
+    admin.id,
+    "admin",
+    parsed.data.body,
+    "waiting_on_participant",
+  );
+  revalidatePath("/admin");
+  revalidatePath("/dashboard");
+  return { ok: true, message: "Reply sent. The participant will see it on their dashboard." };
+}
+
+export async function setSupportStatusAction(requestId: string, status: "open" | "resolved"): Promise<void> {
+  await requireAdmin("/admin");
+  const store = await getStore();
+  const request = await store.getSupportRequest(idSchema.parse(requestId));
+  if (!request) throw new Error("Unknown support request.");
+  await participantId(request.userId);
+  await store.setSupportRequestStatus(request.id, status);
+  revalidatePath("/admin");
+  revalidatePath("/dashboard");
 }
 
 /* ---------- Cohorts ---------- */
@@ -302,5 +337,4 @@ export async function deleteUserAction(userId: string): Promise<FormState> {
   revalidatePath("/dashboard");
   return { ok: true, message: `Successfully deleted account for ${user.name}.` };
 }
-
 

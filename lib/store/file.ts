@@ -15,6 +15,8 @@ import {
   type Resource,
   type Store,
   type StoredFile,
+  type SupportMessage,
+  type SupportRequest,
   type User,
   type UserWithHash,
 } from "./types";
@@ -29,6 +31,8 @@ interface Db {
   users: UserWithHash[];
   friction: FrictionEntry[];
   coachingNotes: CoachingNote[];
+  supportRequests: SupportRequest[];
+  supportMessages: SupportMessage[];
   deliverables: Deliverable[];
   capstone: CapstoneProgress[];
   attendance: Attendance[];
@@ -41,6 +45,8 @@ const empty = (): Db => ({
   users: [],
   friction: [],
   coachingNotes: [],
+  supportRequests: [],
+  supportMessages: [],
   deliverables: [],
   capstone: [],
   attendance: [],
@@ -189,6 +195,9 @@ export function createFileStore(dir = path.join(process.cwd(), ".data")): Store 
         const [removed] = db.users.splice(index, 1);
         db.friction = db.friction.filter((f) => f.userId !== id);
         db.coachingNotes = db.coachingNotes.filter((c) => c.userId !== id);
+        const requestIds = new Set(db.supportRequests.filter((r) => r.userId === id).map((r) => r.id));
+        db.supportRequests = db.supportRequests.filter((r) => r.userId !== id);
+        db.supportMessages = db.supportMessages.filter((m) => !requestIds.has(m.requestId));
         db.deliverables = db.deliverables.filter((d) => d.userId !== id);
         db.capstone = db.capstone.filter((c) => c.userId !== id);
         db.attendance = db.attendance.filter((a) => a.userId !== id);
@@ -232,6 +241,63 @@ export function createFileStore(dir = path.join(process.cwd(), ".data")): Store 
     deleteCoachingNote: (userId, id) =>
       run(true, (db) => {
         db.coachingNotes = db.coachingNotes.filter((note) => !(note.id === id && note.userId === userId));
+      }),
+
+    listSupportRequests: (userId) =>
+      run(false, (db) =>
+        db.supportRequests
+          .filter((request) => !userId || request.userId === userId)
+          .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)),
+      ),
+    getSupportRequest: (id) =>
+      run(false, (db) => db.supportRequests.find((request) => request.id === id) ?? null),
+    createSupportRequest: (userId, input) =>
+      run(true, (db) => {
+        const timestamp = now();
+        const request: SupportRequest = {
+          id: randomUUID(),
+          userId,
+          subject: input.subject,
+          priority: input.priority,
+          status: "open",
+          createdAt: timestamp,
+          updatedAt: timestamp,
+        };
+        db.supportRequests.push(request);
+        db.supportMessages.push({
+          id: randomUUID(),
+          requestId: request.id,
+          authorId: userId,
+          authorRole: "participant",
+          body: input.body,
+          createdAt: timestamp,
+        });
+        return request;
+      }),
+    listSupportMessages: (requestId) =>
+      run(false, (db) =>
+        db.supportMessages
+          .filter((message) => message.requestId === requestId)
+          .sort((a, b) => a.createdAt.localeCompare(b.createdAt)),
+      ),
+    addSupportMessage: (requestId, authorId, authorRole, body, status) =>
+      run(true, (db) => {
+        const request = db.supportRequests.find((item) => item.id === requestId);
+        if (!request) throw new Error("Unknown support request.");
+        const createdAt = now();
+        const message: SupportMessage = { id: randomUUID(), requestId, authorId, authorRole, body, createdAt };
+        db.supportMessages.push(message);
+        request.status = status;
+        request.updatedAt = createdAt;
+        return message;
+      }),
+    setSupportRequestStatus: (id, status) =>
+      run(true, (db) => {
+        const request = db.supportRequests.find((item) => item.id === id);
+        if (request) {
+          request.status = status;
+          request.updatedAt = now();
+        }
       }),
 
     listDeliverables: (userId) =>

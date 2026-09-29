@@ -104,6 +104,29 @@ export interface CoachingNote {
   createdAt: string;
 }
 
+export type SupportPriority = "normal" | "urgent";
+export type SupportStatus = "open" | "waiting_on_participant" | "resolved";
+
+/** A private help conversation between one participant and the instructor team. */
+export interface SupportRequest {
+  id: string;
+  userId: string;
+  subject: string;
+  priority: SupportPriority;
+  status: SupportStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SupportMessage {
+  id: string;
+  requestId: string;
+  authorId: string;
+  authorRole: Role;
+  body: string;
+  createdAt: string;
+}
+
 export interface StoredFile {
   id: string;
   ownerId: string;
@@ -155,6 +178,7 @@ export type NewUser = Pick<User, "email" | "name" | "organization" | "role" | "c
 
 export type NewFriction = Pick<FrictionEntry, "task" | "frequency" | "minutes" | "sessionId">;
 export type NewCoachingNote = Pick<CoachingNote, "topic" | "note" | "nextStep">;
+export type NewSupportRequest = Pick<SupportRequest, "subject" | "priority"> & { body: string };
 
 export type DeliverablePatch = Partial<Pick<Deliverable, "status" | "linkUrl" | "notes" | "fileId" | "feedback">> & {
   expectedVersion: number;
@@ -195,6 +219,20 @@ export interface Store {
   listCoachingNotes(userId?: string): Promise<CoachingNote[]>;
   addCoachingNote(userId: string, input: NewCoachingNote): Promise<CoachingNote>;
   deleteCoachingNote(userId: string, id: string): Promise<void>;
+
+  /** Omit `userId` for the instructor queue; participant callers must always pass their own id. */
+  listSupportRequests(userId?: string): Promise<SupportRequest[]>;
+  getSupportRequest(id: string): Promise<SupportRequest | null>;
+  createSupportRequest(userId: string, input: NewSupportRequest): Promise<SupportRequest>;
+  listSupportMessages(requestId: string): Promise<SupportMessage[]>;
+  addSupportMessage(
+    requestId: string,
+    authorId: string,
+    authorRole: Role,
+    body: string,
+    status: SupportStatus,
+  ): Promise<SupportMessage>;
+  setSupportRequestStatus(id: string, status: SupportStatus): Promise<void>;
 
   /** Omit `userId` to list every participant's deliverables (admin roster). */
   listDeliverables(userId?: string): Promise<Deliverable[]>;
