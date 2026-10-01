@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState, useTransition } from "react";
+import { useActionState, useEffect, useState, useTransition } from "react";
 import { CheckCircle2, ChevronDown, Mail, MessageSquareReply, RotateCcw } from "lucide-react";
 import { replyAsInstructorAction, setSupportStatusAction } from "@/app/actions/admin";
 import { FormMessage, TextAreaField } from "@/components/ui/fields";
@@ -18,11 +18,32 @@ const filters = [
   { value: "needs_reply", label: "Needs reply" },
   { value: "active", label: "All active" },
   { value: "resolved", label: "Resolved" },
+  { value: "all", label: "All conversations" },
 ] as const;
 
 export function SupportInbox({ threads }: { threads: InstructorSupportThread[] }) {
   const [filter, setFilter] = useState<(typeof filters)[number]["value"]>("needs_reply");
+  useEffect(() => {
+    const reveal = () => {
+      if (!window.location.hash.startsWith("#support-request-")) return;
+      const id = window.location.hash.slice("#support-request-".length);
+      if (!threads.some((thread) => thread.id === id)) return;
+      setFilter("all");
+      window.requestAnimationFrame(() => {
+        const target = document.getElementById(`support-request-${id}`);
+        if (target instanceof HTMLDetailsElement) {
+          target.open = true;
+          target.scrollIntoView({ block: "start" });
+          target.querySelector("summary")?.focus();
+        }
+      });
+    };
+    reveal();
+    window.addEventListener("hashchange", reveal);
+    return () => window.removeEventListener("hashchange", reveal);
+  }, [threads]);
   const visible = threads.filter((thread) => {
+    if (filter === "all") return true;
     if (filter === "needs_reply") return thread.status === "open";
     if (filter === "active") return thread.status !== "resolved";
     return thread.status === "resolved";
@@ -87,7 +108,7 @@ function QueueStat({ label, value, accent = false }: { label: string; value: num
 function SupportConversation({ thread, open }: { thread: InstructorSupportThread; open: boolean }) {
   const [pending, startTransition] = useTransition();
   return (
-    <details className="group border border-line open:border-navy-900" open={open}>
+    <details id={`support-request-${thread.id}`} className="group scroll-mt-24 border border-line open:border-navy-900" open={open}>
       <summary className="flex min-h-20 cursor-pointer list-none flex-wrap items-center gap-3 p-4 sm:p-5 [&::-webkit-details-marker]:hidden">
         <span className={`size-2.5 shrink-0 rounded-full ${thread.status === "open" ? "bg-amber-deep" : thread.status === "waiting_on_participant" ? "bg-cyan-deep" : "bg-success"}`} aria-hidden="true" />
         <span className="min-w-0 flex-1">

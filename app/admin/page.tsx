@@ -95,7 +95,8 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
 
   const n = entries.length;
   const friction = (await Promise.all(participants.map(async (u) =>
-    (await store.listFriction(u.id)).map((entry) => ({ ...entry, participant: u.name })),
+    (await store.listFriction(u.id)).map((entry) => ({ ...entry, participant: u.name, email: u.email,
+      supportRequests: supportThreads.filter((thread) => thread.userId === u.id).map((thread) => ({ id: thread.id, subject: thread.subject })) })),
   ))).flat();
   const coachingNotes = (await Promise.all(participants.map(async (u) =>
     (await store.listCoachingNotes(u.id)).map((entry) => ({ ...entry, participant: u.name })),
