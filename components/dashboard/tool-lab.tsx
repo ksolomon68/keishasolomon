@@ -1,5 +1,6 @@
 import { buttonStyles } from "@/components/ui/button";
 import { toolLabs, toolLabStarter } from "@/data/tool-labs";
+import { InternalTool } from "./internal-tools";
 
 export function ToolLab({ sessionId }: { sessionId: string }) {
   const lab = toolLabs[sessionId];
@@ -8,9 +9,8 @@ export function ToolLab({ sessionId }: { sessionId: string }) {
   return <details className="border border-line bg-paper p-4">
     <summary className="min-h-7 cursor-pointer font-semibold text-navy-900">Applied Tool Lab · {lab.tool}</summary>
     <p className="mt-3 text-muted">{lab.purpose}</p>
-    <p className="mt-2 text-muted">Optional companion exercise for your session deliverable. Use fictional or permitted inputs. External results are not automatically saved to your cohort account.</p>
-    <a className={`${buttonStyles({ variant: "outline" })} my-4`} href="https://tools.unbundledconsultant.com/" target="_blank" rel="noopener noreferrer">Find {lab.tool} in the tool directory (opens a new tab)</a>
-    <p className="text-xs text-muted">External tool by The Unbundled Consultant. Select the named tool in its directory; availability and features may change.</p>
+    <p className="mt-2 text-muted">Optional companion exercise for your session deliverable. Open and use your tool here in the cohort workspace.</p>
+    <InternalTool sessionId={sessionId} />
     <ol className="my-4 list-decimal space-y-2 pl-5 text-muted">{lab.steps.map((step) => <li key={step}>{step}</li>)}</ol>
     <h5 className="font-semibold text-navy-900">Evidence to submit</h5>
     <p className="mt-2 text-muted">{lab.evidence}</p>

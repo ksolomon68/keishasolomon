@@ -7,13 +7,13 @@ export interface ToolLab {
   fallback: string;
 }
 
-/** Original teaching exercises; external tools belong to The Unbundled Consultant. */
+/** Original internal tools and teaching exercises for the cohort workspace. */
 export const toolLabs: Record<string, ToolLab> = {
   s1: {
-    tool: "AI Tool Finder",
+    tool: "Assistant Selection Planner",
     purpose: "Choose an assistant for one recurring task and explain why it fits your needs.",
     steps: [
-      "Describe your task, budget, team size, and permitted data. Find AI Tool Finder in the external directory and complete its questions using general descriptions.",
+      "Describe your task, budget, team size, and permitted data. Complete the Assistant Selection Planner below and download your editable plan.",
       "Treat the recommendation as a starting point. Check the provider's current features, cost, and data policies against your organization's rules; record anything still awaiting approval.",
       "Use an approved assistant on one fictional input. Check the output against the input and record total time including setup, review, and corrections.",
     ],
@@ -22,10 +22,10 @@ export const toolLabs: Record<string, ToolLab> = {
     fallback: "Compare two assistants using their provider information, or evaluate the assistant you already have permission to use. Record why an alternative was ruled out.",
   },
   s4: {
-    tool: "Lead Tracker",
+    tool: "Lead Priority Tracker",
     purpose: "Practice intake, prioritization, and follow-up before designing your own pipeline.",
     steps: [
-      "Create five fictional inquiries, including one duplicate and one missing important information. Use Lead Tracker from the external directory to explore how they would be recorded and prioritized.",
+      "Create five fictional inquiries, including one duplicate and one missing important information. Use the Lead Priority Tracker below to record, prioritize, and track follow-up. Observe how invalid and duplicate entries are handled.",
       "Compare the tool's priorities with your own written rules. Explain one disagreement and decide who reviews uncertain cases. Do not contact anyone during the exercise.",
       "Map intake → validation → prioritization → draft follow-up → human approval. Test the map manually or in a sandbox, including duplicates and missing fields; document a pause and recovery route.",
     ],
@@ -34,16 +34,16 @@ export const toolLabs: Record<string, ToolLab> = {
     fallback: "Use a spreadsheet with inquiry, priority reason, owner, next action, and follow-up date. A manual simulation is valid evidence for this tool lab.",
   },
   s5: {
-    tool: "Content Autopilot",
+    tool: "Content Draft Studio",
     purpose: "Practice turning one supported idea into drafts for three relevant channels.",
     steps: [
-      "Choose one fictional or public source idea and three channels your audience uses. Try Content Autopilot from the external directory using only material you may share.",
+      "Choose one fictional or public source idea. Use Content Draft Studio below to create editable LinkedIn, Instagram, and email templates from your own takeaway and call to action.",
       "Edit the drafts against your Brand Voice Bible. Check every factual claim, remove invented testimonials, adapt each call to action, and describe accessibility needs.",
       "Place the revised drafts into your editorial calendar with an owner and draft status. Time generation, editing, and review; compare with your usual process. Publication requires approval of the exact version.",
     ],
     evidence: "Attach the source idea, original and revised drafts, editing rationale, and timing record to the Brand Knowledge Base & Content Calendar submission.",
     criteria: ["Three drafts suit their channel and audience.", "Claims are supported and voice changes are explained.", "The calendar records ownership and approval status."],
-    fallback: "Use your approved assistant with the same idea and voice brief, or adapt the drafts manually. Submit the same comparison and review evidence.",
+    fallback: "Adapt the drafts manually using the starter template if interactive drafting is unavailable. Submit the same comparison and review evidence.",
   },
 };
 

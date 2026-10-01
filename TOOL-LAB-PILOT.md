@@ -1,11 +1,13 @@
-# Applied Tool Lab pilot
+# Internal Applied Tool Labs
 
-Added October 1, 2026: optional companion labs for Session 1 (AI Tool Finder), Session 4 (Lead Tracker), and Session 5 (Content Autopilot), attributed to The Unbundled Consultant.
+All three pilot tools run inside the participant dashboard. There are no external tool links, redirects, embeds, API calls, or required subscriptions.
 
-Source: https://tools.unbundledconsultant.com/ (indexed directory reviewed October 1). Direct tool destinations and live functionality could not be verified, so the participant links explicitly open the directory and instruct participants to select the named tool. No embedding, copied tool implementation, API integration, affiliation, or availability guarantee is implied.
+- Session 1: Assistant Selection Planner creates a needs-based, editable selection plan. It does not certify vendors or operate an AI model.
+- Session 4: Lead Priority Tracker validates fictional inquiry fields, blocks exact name/inquiry duplicates, shows transparent scores, and tracks due/overdue/completed follow-up. Scores are teaching heuristics, not measured likelihood of conversion.
+- Session 5: Content Draft Studio creates editable LinkedIn, Instagram, and email templates from participant-authored input. It does not claim AI generation or publish content.
 
-The exercises, rubrics, fallback activities, and downloadable outcome templates are original program materials. Each lab appears inside its existing session learning guide and feeds the existing deliverable upload and instructor feedback flow. Matching lab criteria appear in the instructor guide.
+Work is held in page memory, not browser storage or participant accounts. Downloads preserve results; participants submit them through the existing deliverable upload and instructor review flow. Account persistence and aggregated outcome tracking are not implemented. Navigating away or reloading clears unsaved tool state.
 
-Outcome records capture baseline, trial times including review/correction, quality, assumptions, and an adopt/revise/stop decision. Participants complete and upload these documents; the site does not automatically capture external results or aggregate measured savings. No database migration is required.
+Original exercise guidance, matching instructor criteria, and outcome templates support the same session deliverables. No database migration is required.
 
-Pilot with representative participants before expanding: observe whether they can locate the tool, complete the fallback if needed, submit evidence, and explain their decision. Review instructor effort and participant confusion as well as outcomes. No measured cohort results have been claimed.
+Test with representative participants before claiming measured cohort outcomes.
