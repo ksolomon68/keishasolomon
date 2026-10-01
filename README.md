@@ -93,6 +93,14 @@ atomically before Passenger restarts. Older hashed browser assets are retained s
 
 **Every later deploy:** push to `main`, then *Update from Remote* and *Deploy HEAD Commit*.
 
+On LiteSpeed, touching Passenger's `tmp/restart.txt` may leave the previous `lsnode` process running.
+After activating the build, deployment now sends SIGTERM only to workers owned by the deploying user whose
+process title exactly matches this application directory. It waits up to 15 seconds for them to exit and
+reports failure if they remain. The next request starts the new build; a brief interruption is possible.
+It does not force-kill workers or stop other applications. This helper targets the LiteSpeed setup used here;
+other Passenger setups continue to receive the standard restart marker.
+Run its regression checks with `node --test tests/cpanel-restart.test.mjs`.
+
 **If cPanel says "uncommitted changes"**: the server's clone has edited or untracked files. Never edit files inside the Git Version Control
 clone (the app lives in `~/sandbox-app`, not there). Over SSH, in the clone: `git status`, then `git restore .` (and `git clean -fd` for untracked files), then pull again.
 

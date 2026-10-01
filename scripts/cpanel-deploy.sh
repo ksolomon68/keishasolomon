@@ -141,7 +141,10 @@ ln -s ".next-releases/$RELEASE_NAME" "$NEXT_LINK"
 mv -Tf "$NEXT_LINK" "$APP_DIR/.next"
 echo "==> Activated Next.js build $BUILD_ID"
 
-# 5) Passenger restarts the app when this file's timestamp changes.
+# 5) Request the normal Passenger restart, then retire this app's LiteSpeed workers.
+# On this host restart.txt alone leaves lsnode running with the previous build.
+# The helper only signals exact app-title matches owned by the deploying user.
 mkdir -p tmp
 touch tmp/restart.txt
-echo "==> Done. App restarted."
+node scripts/restart-cpanel-app.cjs "$APP_DIR"
+echo "==> Done. Release activated and old LiteSpeed workers stopped; the next request starts the app."
