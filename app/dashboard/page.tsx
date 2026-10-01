@@ -7,6 +7,7 @@ import { RemoteCoaching } from "@/components/dashboard/remote-coaching";
 import { SessionGrid } from "@/components/dashboard/session-grid";
 import { NextStep } from "@/components/dashboard/next-step";
 import { PromptWorkshop } from "@/components/dashboard/prompt-workshop";
+import { ToolLibrary } from "@/components/dashboard/tool-library";
 import { SectionNav } from "@/components/dashboard/section-nav";
 import { SupportResources } from "@/components/dashboard/support-resources";
 import { SupportCenter, type ParticipantSupportThread } from "@/components/dashboard/support-center";
@@ -99,10 +100,11 @@ export default async function DashboardPage() {
       <SectionNav
         sections={[
           { id: "sessions", label: "Sessions" },
+          { id: "tools", label: "Tools", badge: "3 internal" },
           { id: "deliverables", label: "My work", badge: `${submitted}/${deliverableSessions.length}` },
           { id: "friction", label: "Friction log", badge: openFriction ? `${openFriction} open` : undefined },
           { id: "capstone", label: "Capstone", badge: `${capstoneDone}/${totalCapstoneSteps}` },
-          { id: "support", label: "Support & tools", badge: instructorReplies ? `${instructorReplies} replied` : activeSupport ? `${activeSupport} active` : undefined },
+          { id: "support", label: "Support", badge: instructorReplies ? `${instructorReplies} replied` : activeSupport ? `${activeSupport} active` : undefined },
         ]}
       />
 
@@ -114,6 +116,10 @@ export default async function DashboardPage() {
           intro="See what is coming, review the agenda, and find materials. Preparation and submission live together in My work."
         >
           <SessionGrid resources={resources} schedule={schedule} />
+        </DashSection>
+
+        <DashSection id="tools" eyebrow="Use your workspace" title="Your cohort tools" intro="Open a tool directly below. Create a selection plan, prioritize leads, or draft content without leaving your dashboard.">
+          <ToolLibrary />
         </DashSection>
 
         <DashSection
