@@ -12,6 +12,15 @@ const nextConfig: NextConfig = {
     // Deliverable and resource uploads travel through Server Actions (10 MB file cap + multipart overhead).
     serverActions: { bodySizeLimit: "12mb" },
   },
+  webpack: (config, { dev }) => {
+    if (dev) {
+      config.watchOptions = {
+        poll: 800,
+        aggregateTimeout: 300,
+      };
+    }
+    return config;
+  },
   async headers() {
     return [
       {
