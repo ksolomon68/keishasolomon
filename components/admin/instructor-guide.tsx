@@ -22,6 +22,7 @@ import {
   showcaseFacilitation,
 } from "@/data/instructor-guide";
 import { learningGuides } from "@/data/learning-guides";
+import { toolLabs } from "@/data/tool-labs";
 import { withDeliverables } from "@/lib/cohort-schedule";
 import type { Cohort } from "@/lib/store";
 
@@ -526,6 +527,16 @@ function SessionChapter({ session, next }: { session: Session; next?: Session })
 
         <H2 eyebrow="When reviewing">Criteria: work that meets this session</H2>
         <Checklist items={guide.criteria} />
+
+        {toolLabs[session.id] && (
+          <>
+            <H2>Applied Tool Lab: {toolLabs[session.id].tool}</H2>
+            <p className="mt-3 text-sm text-muted">Optional companion exercise. Use it within the existing lab or as between-session practice. Participants may use the documented fallback; assess their reasoning and evidence rather than the tool they chose.</p>
+            <p className="mt-3 text-sm">{toolLabs[session.id].evidence}</p>
+            <Checklist items={toolLabs[session.id].criteria} />
+            <Callout label="Outcome review">Check comparable inputs, baseline timing, trial count, and time spent reviewing and correcting results. Keep zero and negative outcomes valid. Ask the participant to justify adopting, revising, or stopping the workflow. The downloadable record is submitted with the session deliverable; results are not imported from the external tool.</Callout>
+          </>
+        )}
 
         <H2>What good looks like</H2>
         <p className="mt-3 text-[0.9375rem] italic leading-snug text-muted">{guide.example}</p>
