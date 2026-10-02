@@ -15,7 +15,7 @@ function Export({ text, name }: { text: string; name: string }) {
 }
 
 export function InternalTool({ sessionId }: { sessionId: string }) {
-  return <div className="my-5 border border-line bg-white p-4 sm:p-5">
+  return <div className="my-5">
     <p className="mb-4 text-sm text-muted">Use fictional examples for practice. Work stays in this page while it is open; download your results before leaving, then upload them with your session deliverable.</p>
     {sessionId === "s1" ? <AssistantSelector /> : sessionId === "s4" ? <LeadTracker /> : sessionId === "s5" ? <ContentStudio /> : null}
   </div>;

@@ -8,7 +8,7 @@ export function ToolLab({ sessionId }: { sessionId: string }) {
   return <details className="border border-line bg-paper p-4">
     <summary className="min-h-7 cursor-pointer font-semibold text-navy-900">Applied Tool Lab · {lab.tool}</summary>
     <p className="mt-3 text-muted">{lab.purpose}</p>
-    <p className="mt-2 text-muted">Optional companion exercise for your session deliverable. Your tool is in the dashboard&rsquo;s Tools section.</p>
+    <p className="mt-2 text-muted">Optional companion exercise for your session deliverable. Your tool opens below this guide, inside the same assignment.</p>
     <a className={`${buttonStyles({ variant: "secondary" })} my-4`} href={`#tool-${sessionId}`}>Open {lab.tool}</a>
     <ol className="my-4 list-decimal space-y-2 pl-5 text-muted">{lab.steps.map((step) => <li key={step}>{step}</li>)}</ol>
     <h5 className="font-semibold text-navy-900">Evidence to submit</h5>

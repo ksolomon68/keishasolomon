@@ -13,6 +13,8 @@ import { LearningGuide } from "./learning-guide";
 import { toolLabs } from "@/data/tool-labs";
 import { currentWorkSession } from "@/lib/participant-path";
 import { withDeliverables } from "@/lib/cohort-schedule";
+import { InternalTool } from "./internal-tools";
+import { buttonStyles } from "@/components/ui/button";
 
 export interface FileInfo {
   name: string;
@@ -175,6 +177,12 @@ function DeliverableRow({
             <h3 className="sr-only">Session {session.number} learning guide</h3>
             <div className="mt-5"><LearningGuide sessionId={session.id} /></div>
           </details>
+          {toolLabs[session.id] && <details id={`tool-${session.id}`} className="mt-4 scroll-mt-40 border border-line p-4">
+            <summary className="min-h-11 cursor-pointer font-semibold text-cyan-deep">Use {toolLabs[session.id].tool}</summary>
+            <InternalTool sessionId={session.id} />
+            <p className="mb-4 text-sm text-muted">{toolLabs[session.id].evidence}</p>
+            <a className={buttonStyles({ variant: "secondary" })} href={`#submission-${session.id}`}>Continue to submission</a>
+          </details>}
         </div>
 
         <form id={`submission-${session.id}`} action={action} noValidate className="scroll-mt-40 space-y-4 border-t border-line p-4 sm:p-5">

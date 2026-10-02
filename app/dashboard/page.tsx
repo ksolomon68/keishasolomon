@@ -119,7 +119,7 @@ export default async function DashboardPage() {
           <DeliverableHub deliverables={deliverables} files={files} accept={ACCEPT_ATTR} schedule={schedule} />
         </DashSection>
 
-        <DashSection id="tools" eyebrow="Use your workspace" title="Your cohort tools" intro="Open any tool here. When you finish, download your results and use the link back to your session submission.">
+        <DashSection id="tools" eyebrow="Quick access" title="Your cohort tools" intro="These shortcuts open each tool inside its assignment. Your draft stays in the same workspace as you move between the guide, tool, and submission.">
           <ToolLibrary />
         </DashSection>
 
