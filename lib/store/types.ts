@@ -6,6 +6,21 @@ import type {
 
 export type Role = "participant" | "admin";
 
+export interface ToolDraft {
+  userId: string;
+  sessionId: string;
+  data: Record<string, unknown>;
+  version: number;
+  updatedAt: string;
+}
+
+export class DraftConflictError extends Error {
+  constructor() {
+    super("A newer draft was saved in another tab. Download your work before reloading to see the latest saved draft.");
+    this.name = "DraftConflictError";
+  }
+}
+
 /**
  * Cohort every pre-existing participant and resource is moved into when the multi-cohort schema is
  * first applied. A fixed id keeps the JSON dev store and MySQL migration in agreement.
@@ -193,6 +208,8 @@ export type NewFile = Pick<StoredFile, "ownerId" | "originalName" | "storedName"
  * Every method that takes a `userId` scopes its query to that user; callers must still authorize.
  */
 export interface Store {
+  listToolDrafts(userId: string): Promise<ToolDraft[]>;
+  saveToolDraft(userId: string, sessionId: string, data: Record<string, unknown>, expectedVersion: number): Promise<ToolDraft>;
   /** Newest first, so a freshly created cohort is the instructor's default selection. */
   listCohorts(): Promise<Cohort[]>;
   getCohort(id: string): Promise<Cohort | null>;

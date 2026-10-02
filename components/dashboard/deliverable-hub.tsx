@@ -7,7 +7,7 @@ import { FormMessage, SelectField, TextAreaField, TextField } from "@/components
 import { SubmitButton } from "@/components/ui/submit-button";
 import { Tag } from "@/components/ui/tag";
 import { deliverableSessions as defaultDeliverables, deliverableStatuses, type DeliverableStatus, type Session } from "@/data/cohortData";
-import type { Deliverable } from "@/lib/store";
+import type { Deliverable, ToolDraft } from "@/lib/store";
 import type { FormState } from "@/lib/validation";
 import { LearningGuide } from "./learning-guide";
 import { toolLabs } from "@/data/tool-labs";
@@ -45,11 +45,13 @@ export function DeliverableHub({
   files,
   accept,
   schedule,
+  toolDrafts,
 }: {
   deliverables: Deliverable[];
   files: Record<string, FileInfo>;
   accept: string;
   schedule: Session[];
+  toolDrafts: ToolDraft[];
 }) {
   const deliverableSessions = withDeliverables(schedule);
   const bySession = new Map(deliverables.map((d) => [d.sessionId, d]));
@@ -85,6 +87,7 @@ export function DeliverableHub({
       file={bySession.get(session.id)?.fileId ? files[bySession.get(session.id)!.fileId!] : undefined}
       accept={accept}
       initiallyOpen={featured.includes(session)}
+      toolDraft={toolDrafts.find((draft) => draft.sessionId === session.id)}
     />
   );
 
@@ -114,12 +117,14 @@ function DeliverableRow({
   file,
   accept,
   initiallyOpen,
+  toolDraft,
 }: {
   session: (typeof defaultDeliverables)[number];
   deliverable?: Deliverable;
   file?: FileInfo;
   accept: string;
   initiallyOpen: boolean;
+  toolDraft?: ToolDraft;
 }) {
   const [state, action] = useActionState<FormState, FormData>(saveDeliverableAction, {});
   const status = deliverable?.status ?? "not_started";
@@ -179,7 +184,7 @@ function DeliverableRow({
           </details>
           {toolLabs[session.id] && <details id={`tool-${session.id}`} className="mt-4 scroll-mt-40 border border-line p-4">
             <summary className="min-h-11 cursor-pointer font-semibold text-cyan-deep">Use {toolLabs[session.id].tool}</summary>
-            <InternalTool sessionId={session.id} />
+            <InternalTool sessionId={session.id} draft={toolDraft} />
             <p className="mb-4 text-sm text-muted">{toolLabs[session.id].evidence}</p>
             <a className={buttonStyles({ variant: "secondary" })} href={`#submission-${session.id}`}>Continue to submission</a>
           </details>}

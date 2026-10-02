@@ -6,6 +6,8 @@ import {
   AccessCodeTakenError,
   DEFAULT_COHORT_ID,
   EmailTakenError,
+  DraftConflictError,
+  type ToolDraft,
   type Attendance,
   type CapstoneProgress,
   type Cohort,
@@ -27,6 +29,7 @@ import {
  */
 
 interface Db {
+  toolDrafts: ToolDraft[];
   cohorts: Cohort[];
   users: UserWithHash[];
   friction: FrictionEntry[];
@@ -41,6 +44,7 @@ interface Db {
 }
 
 const empty = (): Db => ({
+  toolDrafts: [],
   cohorts: [],
   users: [],
   friction: [],
@@ -199,6 +203,7 @@ export function createFileStore(dir = path.join(process.cwd(), ".data")): Store 
         db.supportRequests = db.supportRequests.filter((r) => r.userId !== id);
         db.supportMessages = db.supportMessages.filter((m) => !requestIds.has(m.requestId));
         db.deliverables = db.deliverables.filter((d) => d.userId !== id);
+        db.toolDrafts = db.toolDrafts.filter((d) => d.userId !== id);
         db.capstone = db.capstone.filter((c) => c.userId !== id);
         db.attendance = db.attendance.filter((a) => a.userId !== id);
         return publicUser(removed);
@@ -300,6 +305,15 @@ export function createFileStore(dir = path.join(process.cwd(), ".data")): Store 
         }
       }),
 
+    listToolDrafts: (userId) => run(false, (db) => db.toolDrafts.filter((d) => d.userId === userId)),
+    saveToolDraft: (userId, sessionId, data, expectedVersion) => run(true, (db) => {
+      const index = db.toolDrafts.findIndex((d) => d.userId === userId && d.sessionId === sessionId);
+      const current = db.toolDrafts[index];
+      if ((current?.version ?? 0) !== expectedVersion) throw new DraftConflictError();
+      const next = { userId, sessionId, data, version: expectedVersion + 1, updatedAt: new Date().toISOString() };
+      if (index < 0) db.toolDrafts.push(next); else db.toolDrafts[index] = next;
+      return next;
+    }),
     listDeliverables: (userId) =>
       run(false, (db) => db.deliverables.filter((d) => !userId || d.userId === userId)),
     getDeliverable: (userId, sessionId) =>

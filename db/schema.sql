@@ -148,3 +148,12 @@ CREATE TABLE IF NOT EXISTS resources (
   CONSTRAINT fk_resources_cohort FOREIGN KEY (cohort_id) REFERENCES cohorts (id),
   CONSTRAINT fk_resources_file FOREIGN KEY (file_id) REFERENCES files (id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE IF NOT EXISTS tool_drafts (
+  user_id CHAR(36) NOT NULL,
+  session_id VARCHAR(8) NOT NULL,
+  data MEDIUMTEXT NOT NULL,
+  version INT UNSIGNED NOT NULL DEFAULT 0,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (user_id, session_id),
+  CONSTRAINT fk_tool_drafts_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

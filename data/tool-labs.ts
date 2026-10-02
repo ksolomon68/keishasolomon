@@ -9,6 +9,22 @@ export interface ToolLab {
 
 /** Original internal tools and teaching exercises for the cohort workspace. */
 export const toolLabs: Record<string, ToolLab> = {
+  s3: {
+    tool: "Workflow Planner",
+    purpose: "Turn a recurring task into a clear, testable workflow with human review.",
+    steps: ["Record the task, owner, permitted inputs, and decision rules.", "Create your playbook and test a normal case, missing input, and unexpected result.", "Record corrections, total time, approval points, and a pause and recovery route. Save your draft before leaving."],
+    evidence: "Download the tested playbook and attach it to your Session 3 submission with the test results.",
+    criteria: ["Inputs and expected outputs are clear.", "An owner reviews results before use.", "Failure cases have a pause and recovery route."],
+    fallback: "Write the same playbook and test record in a document.",
+  },
+  s7: {
+    tool: "Capstone Outcome Tracker",
+    purpose: "Measure your capstone pilot in Session 7 and prepare evidence for Session 8.",
+    steps: ["Record a comparable baseline and weekly frequency.", "Record three trials including setup, execution, review, and corrections; describe quality and errors for each.", "Choose adopt, revise, or stop and explain why. Save the draft, then download evidence for your submission and presentation."],
+    evidence: "Attach the outcome record and supporting evidence to your Session 7 submission. Reuse the saved record for your Session 8 presentation.",
+    criteria: ["Baseline and trials measure the same task.", "Total effort and quality are documented.", "Zero or negative savings are retained, and estimated impact is labeled."],
+    fallback: "Calculate total trial time and net savings in a spreadsheet, keeping the same evidence and decision fields.",
+  },
   s1: {
     tool: "Assistant Selection Planner",
     purpose: "Choose an assistant for one recurring task and explain why it fits your needs.",
@@ -50,5 +66,5 @@ export const toolLabs: Record<string, ToolLab> = {
 export function toolLabStarter(sessionId: string): string {
   const lab = toolLabs[sessionId];
   if (!lab) return "";
-  return `APPLIED TOOL LAB — ${lab.tool}\nTask / owner / date:\nTool used (or fallback) / approval status:\nFictional or permitted input:\nOriginal result / evidence location:\nHuman checks / corrections / revised result:\nLimitations / next experiment:\n\nOUTCOME RECORD\nComparable task and measurement method:\nBaseline minutes per task / observation date:\nTrial 1 — setup + execution + review + correction minutes:\nTrial 2 — setup + execution + review + correction minutes:\nTrial 3 — setup + execution + review + correction minutes:\nQuality check / errors in each trial:\nAverage total trial minutes:\nNet minutes saved per task = baseline minus average total trial minutes:\nFrequency / estimated weekly impact / assumptions:\nAdopt, revise, or stop — reason:\n\nSUBMISSION\n${lab.evidence}\n\nKeep zero or negative results. Separate one-time setup from recurring effort when explaining future estimates. Save this record in your own document and submit it with the session deliverable; downloading does not save it to your account.`;
+  return `APPLIED TOOL LAB — ${lab.tool}\nTask / owner / date:\nTool used (or fallback) / approval status:\nFictional or permitted input:\nOriginal result / evidence location:\nHuman checks / corrections / revised result:\nLimitations / next experiment:\n\nOUTCOME RECORD\nComparable task and measurement method:\nBaseline minutes per task / observation date:\nTrial 1 — setup + execution + review + correction minutes:\nTrial 2 — setup + execution + review + correction minutes:\nTrial 3 — setup + execution + review + correction minutes:\nQuality check / errors in each trial:\nAverage total trial minutes:\nNet minutes saved per task = baseline minus average total trial minutes:\nFrequency / estimated weekly impact / assumptions:\nAdopt, revise, or stop — reason:\n\nSUBMISSION\n${lab.evidence}\n\nKeep zero or negative results. Separate one-time setup from recurring effort when explaining future estimates. Use Save draft inside the tool to keep your private work in your account. Download this record and submit it with the session deliverable; saving a draft does not submit it.`;
 }

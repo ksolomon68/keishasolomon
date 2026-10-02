@@ -3,6 +3,9 @@
 import { useState, type ReactNode } from "react";
 import { Button, buttonStyles } from "@/components/ui/button";
 import { assistantPlan, contentDrafts, scoreLead, type LeadInput } from "@/lib/internal-tools";
+import { ToolDraftWorkspace, useToolState } from "./tool-draft";
+import { WorkflowPlanner, OutcomeTracker } from "./planning-tools";
+import type { ToolDraft } from "@/lib/store";
 
 const inputStyle = "mt-1 block min-h-11 w-full border border-edge bg-white px-3 py-2 text-sm";
 
@@ -14,19 +17,21 @@ function Export({ text, name }: { text: string; name: string }) {
   return <a className={buttonStyles({ variant: "outline" })} href={`data:text/plain;charset=utf-8,${encodeURIComponent(text)}`} download={`${name}.txt`}>Download results</a>;
 }
 
-export function InternalTool({ sessionId }: { sessionId: string }) {
+export function InternalTool({ sessionId, draft }: { sessionId: string; draft?: ToolDraft }) {
   return <div className="my-5">
-    <p className="mb-4 text-sm text-muted">Use fictional examples for practice. Work stays in this page while it is open; download your results before leaving, then upload them with your session deliverable.</p>
-    {sessionId === "s1" ? <AssistantSelector /> : sessionId === "s4" ? <LeadTracker /> : sessionId === "s5" ? <ContentStudio /> : null}
+    <p className="mb-4 text-sm text-muted">Use fictional or permitted examples. Save your draft before leaving to continue from your account on another visit.</p>
+    <ToolDraftWorkspace sessionId={sessionId} initial={draft}>
+      {sessionId === "s1" ? <AssistantSelector /> : sessionId === "s3" ? <WorkflowPlanner /> : sessionId === "s4" ? <LeadTracker /> : sessionId === "s5" ? <ContentStudio /> : sessionId === "s7" ? <OutcomeTracker /> : null}
+    </ToolDraftWorkspace>
   </div>;
 }
 
 function AssistantSelector() {
-  const [task, setTask] = useState("drafting");
-  const [privacy, setPrivacy] = useState("public");
-  const [budget, setBudget] = useState("free");
-  const [team, setTeam] = useState("solo");
-  const [result, setResult] = useState("");
+  const [task, setTask] = useToolState("task", "drafting");
+  const [privacy, setPrivacy] = useToolState("privacy", "public");
+  const [budget, setBudget] = useToolState("budget", "free");
+  const [team, setTeam] = useToolState("team", "solo");
+  const [result, setResult] = useToolState("result", "");
   return <div className="space-y-4">
     <h3 className="font-display text-xl">Assistant Selection Planner</h3>
     <div className="grid gap-4 sm:grid-cols-2">
@@ -42,8 +47,8 @@ function AssistantSelector() {
 
 function LeadTracker() {
   const blank: LeadInput = { name: "", need: "", fit: 1, urgency: 1, readiness: 1, followUp: "" };
-  const [draft, setDraft] = useState<LeadInput>(blank);
-  const [leads, setLeads] = useState<(LeadInput & { id: number; done: boolean })[]>([]);
+  const [draft, setDraft] = useToolState<LeadInput>("draft", blank);
+  const [leads, setLeads] = useToolState<(LeadInput & { id: number; done: boolean })[]>("leads", []);
   const [message, setMessage] = useState("");
   const update = (key: keyof LeadInput, value: string | number) => setDraft({ ...draft, [key]: value });
   const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Chicago" });
@@ -58,8 +63,9 @@ function LeadTracker() {
     </div>
     <Button type="button" variant="secondary" onClick={() => {
       if (!draft.name.trim() || !draft.need.trim() || !draft.followUp) { setMessage("Add a name, inquiry, and follow-up date."); return; }
+      if (leads.length >= 100) { setMessage("This tracker holds up to 100 practice leads. Download your results before starting a new exercise."); return; }
       if (leads.some((lead) => lead.name.trim().toLowerCase() === draft.name.trim().toLowerCase() && lead.need.trim().toLowerCase() === draft.need.trim().toLowerCase())) { setMessage("This name and inquiry already exist. Review the existing lead before adding a duplicate."); return; }
-      setLeads([...leads, { ...draft, name: draft.name.trim(), need: draft.need.trim(), id: Date.now(), done: false }]); setDraft(blank); setMessage("Lead added. Download the tracker to keep a copy.");
+      setLeads([...leads, { ...draft, name: draft.name.trim(), need: draft.need.trim(), id: Date.now(), done: false }]); setDraft(blank); setMessage("Lead added. Save your draft to keep it in your account.");
     }}>Add lead</Button>
     <p role="status" className="text-sm text-muted">{message}</p>
     {!leads.length ? <p className="text-sm text-muted">Add your first fictional inquiry to see its priority and follow-up status.</p> : <>
@@ -70,11 +76,11 @@ function LeadTracker() {
 }
 
 function ContentStudio() {
-  const [idea, setIdea] = useState("");
-  const [audience, setAudience] = useState("");
-  const [takeaway, setTakeaway] = useState("");
-  const [action, setAction] = useState("");
-  const [drafts, setDrafts] = useState<{ channel: string; text: string }[]>([]);
+  const [idea, setIdea] = useToolState("idea", "");
+  const [audience, setAudience] = useToolState("audience", "");
+  const [takeaway, setTakeaway] = useToolState("takeaway", "");
+  const [action, setAction] = useToolState("action", "");
+  const [drafts, setDrafts] = useToolState<{ channel: string; text: string }[]>("drafts", []);
   const [message, setMessage] = useState("");
   return <div className="space-y-4">
     <h3 className="font-display text-xl">Content Draft Studio</h3>

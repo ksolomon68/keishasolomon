@@ -5,6 +5,7 @@ import type { DeliverableStatus, FrictionFrequency, ResourceKind } from "@/data/
 import {
   AccessCodeTakenError,
   EmailTakenError,
+  DraftConflictError,
   type Cohort,
   type CoachingNote,
   type Deliverable,
@@ -376,6 +377,27 @@ export function createMysqlStore(pool: Pool = createPool()): Store {
       await exec("UPDATE support_requests SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?", [status, id]);
     },
 
+    async listToolDrafts(userId) {
+      return (await rows("SELECT * FROM tool_drafts WHERE user_id = ?", [userId])).map((r) => ({
+        userId: r.user_id, sessionId: r.session_id, data: JSON.parse(r.data), version: r.version, updatedAt: iso(r.updated_at),
+      }));
+    },
+    async saveToolDraft(userId, sessionId, data, expectedVersion) {
+      const connection = await pool.getConnection();
+      try {
+        await connection.beginTransaction();
+        await connection.execute("INSERT INTO tool_drafts (user_id, session_id, data) VALUES (?, ?, '{}') ON DUPLICATE KEY UPDATE user_id = VALUES(user_id)", [userId, sessionId]);
+        const [locked] = await connection.execute<Row[]>("SELECT version FROM tool_drafts WHERE user_id = ? AND session_id = ? FOR UPDATE", [userId, sessionId]);
+        if (locked[0].version !== expectedVersion) throw new DraftConflictError();
+        const updatedAt = new Date().toISOString();
+        await connection.execute("UPDATE tool_drafts SET data = ?, version = ?, updated_at = ? WHERE user_id = ? AND session_id = ?", [JSON.stringify(data), expectedVersion + 1, updatedAt.slice(0, 19).replace('T', ' '), userId, sessionId]);
+        await connection.commit();
+        return { userId, sessionId, data, version: expectedVersion + 1, updatedAt };
+      } catch (error) {
+        await connection.rollback();
+        throw error;
+      } finally { connection.release(); }
+    },
     async listDeliverables(userId) {
       const result = userId
         ? await rows("SELECT * FROM deliverables WHERE user_id = ?", [userId])

@@ -92,6 +92,9 @@ else
 fi
 echo "==> Build output shipped from git (.next). Skipping npm run build."
 
+# Additive, repeatable migration must succeed before activating the new dashboard.
+node --env-file=.env.local scripts/migrate-tool-drafts.cjs
+
 # 4) Assemble and validate the entire Next.js release before making it live.
 #    Previous static chunks are carried forward so open browser tabs can finish loading the old build.
 [ -f "$REPO_DIR/.next/BUILD_ID" ] || { echo "ERROR: committed .next/BUILD_ID is missing." >&2; exit 1; }
