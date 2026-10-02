@@ -111,6 +111,8 @@ Behind a reverse proxy, forward the public host in `X-Forwarded-Host` (Server Ac
 
 ## Editing content
 
+The site-wide **Ask Sandbox** chat provides local, content-based answers to platform questions, suggested questions, and links to relevant pages. It requires no API key and makes no external AI calls. Conversation history stays in memory until cleared or the page reloads; it does not access participant records. The guidance and keyword matching live in `lib/platform-chat.ts`, with curriculum and preparation answers drawn from `data/cohortData.ts`. Unknown questions point users to instructor support. Run its checks with `node --import tsx --test tests/platform-chat.test.ts`.
+
 All curriculum content lives in [`data/cohortData.ts`](data/cohortData.ts): session themes, hooks, labs, deliverables,
 the 90-minute agenda, onboarding checklist, Safe Harbor copy and the capstone steps. The landing page, dashboard,
 roster and tracker all read from it. The `date`, `dateLabel` and `shortDate` values there are the program's *default*
