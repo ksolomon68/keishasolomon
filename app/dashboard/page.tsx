@@ -81,7 +81,7 @@ export default async function DashboardPage() {
             Welcome back, {firstName}.
           </h1>
           <p className="mt-2 max-w-2xl text-[0.9375rem] text-on-navy sm:mt-3 sm:text-base">
-            Your workspace for the eight-month cohort: prep for the next session, log friction, submit
+            Your workspace for the eight-session cohort: prep for the next session, log friction, submit
             deliverables and keep your capstone on track.
           </p>
         </div>

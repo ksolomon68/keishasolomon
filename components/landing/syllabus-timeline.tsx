@@ -122,7 +122,7 @@ function SessionCard({ session, open, onToggle }: { session: Session; open: bool
             <span className="min-w-0 flex-1">
               <span className="flex flex-wrap items-center gap-2">
                 <span className="label text-ink">
-                  Session {session.number} · Month {session.number}
+                  Session {session.number}
                 </span>
                 <Tag tone="cyan">{session.focus}</Tag>
               </span>

@@ -20,6 +20,23 @@ export function defaultSessionDates(): SessionDates {
   return Object.fromEntries(sessions.map((s) => [s.id, s.date]));
 }
 
+/** Generate all eight dates without changing the curriculum or any existing cohort. */
+export function repeatSessionDates(start: string, cadence: "weekly" | "monthly"): SessionDates | null {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(start) || !["weekly", "monthly"].includes(cadence)) return null;
+  const [year, month, day] = start.split("-").map(Number);
+  const first = isoToUtc(start);
+  if (year < 1900 || year > 2099 || first.toISOString().slice(0, 10) !== start) return null;
+  const dates = sessions.map((session, index) => {
+    const date = cadence === "weekly" ? new Date(Date.UTC(year, month - 1, day + index * 7)) : (() => {
+      const lastDay = new Date(Date.UTC(year, month + index, 0)).getUTCDate();
+      return new Date(Date.UTC(year, month - 1 + index, Math.min(day, lastDay)));
+    })();
+    return [session.id, date.toISOString().slice(0, 10)] as const;
+  });
+  if (dates.some(([, date]) => Number(date.slice(0, 4)) > 2099)) return null;
+  return Object.fromEntries(dates);
+}
+
 /**
  * The curriculum with one cohort's dates applied. A session the cohort doesn't mention keeps the
  * program default (including its own "March 2027 (Date TBA)" wording), so old cohorts stay valid if a

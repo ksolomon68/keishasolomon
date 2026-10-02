@@ -164,3 +164,7 @@ Set `NEXT_PUBLIC_CONTACT_EMAIL` to the real public support address. Time, time z
 Built to WCAG 2.1 AA: semantic landmarks, skip link, keyboard-operable accordions/filters/forms, visible focus rings, `aria-live`
 status messages, form errors tied to fields via `aria-describedby`, reduced-motion support, and contrast-checked palette tokens
 (see `app/globals.css`). Checked with axe-core and a computed-contrast sweep on the landing, onboarding, dashboard and instructor pages (0 violations).
+
+### Weekly or monthly cohorts
+
+The curriculum always has eight sessions and seven deliverables. In Instructor > Cohort settings, select a first session date and weekly or monthly spacing, then use Fill eight session dates. Review or adjust the generated dates and select Save cohort. Monthly filling preserves the original day of the month, clamping to the final day in shorter months. Existing cohorts keep their dates until an instructor saves changes. The participant calendar and certificate date use the cohort's saved dates; spacing is a date-filling helper and does not need a new database column.

@@ -106,7 +106,7 @@ export function HeroRoadmap() {
       >
         <div key={active} className="hero-board__slide">
           <p className="label text-amber">
-            Session {session.number} · Month {session.number} · {session.focus}
+            Session {session.number} · {session.focus}
           </p>
           <p className="mt-2 font-display text-2xl leading-snug sm:text-[1.75rem]">{session.theme}</p>
           <p className="mt-4 flex flex-wrap items-baseline gap-x-2.5 gap-y-1 text-sm text-white/85">

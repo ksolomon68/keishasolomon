@@ -17,7 +17,7 @@ export function Hero() {
           <p className="label flex flex-wrap items-center gap-x-3 gap-y-1 text-amber">
             <span>Cohort 01</span>
             <span aria-hidden="true" className="h-px w-8 bg-amber/60" />
-            <span>8-Month Executive Cohort</span>
+            <span>8-Session Executive Cohort</span>
           </p>
 
           <h1 className="mt-5 font-display text-[clamp(2.35rem,5.5vw,4.5rem)] font-light leading-[1.02] tracking-tight text-balance">
@@ -25,7 +25,7 @@ export function Hero() {
           </h1>
 
           <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/80 sm:text-lg">
-            {site.name}: an eight-month cohort where leaders don&rsquo;t watch demos. They build. Every 90-minute,
+            {site.name}: an eight-session cohort, offered weekly or monthly, where leaders don&rsquo;t watch demos. They build. Every 90-minute,
             in-person session ends with a working asset you can deploy the next morning, with remote 1:1 coaching to
             help you work through decisions and keep moving between sessions.
           </p>

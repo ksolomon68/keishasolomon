@@ -9,7 +9,7 @@ export function CoachingSupport() {
         <div className="bg-white/78 p-7 backdrop-blur-xl sm:p-10 lg:p-14">
           <p className="label text-cyan-deep">Support between sessions</p>
           <h2 id="coaching-support-title" className="mt-3 max-w-2xl font-display text-4xl leading-tight text-navy-900 sm:text-5xl">
-            Your build does not have to wait until next month.
+            Your build does not have to wait until the next session.
           </h2>
           <p className="mt-5 max-w-2xl text-lg text-muted">
             Participants can schedule a remote 1:1 coaching session when a decision, draft or workflow needs focused

@@ -206,7 +206,7 @@ export const showcaseFacilitation = {
     "Set up the peer awards: nominations open during the demos, a short ballot afterward. Categories from the program: Biggest Time Saver, Most Creative Automation, Best Governance Champion. Add your own if the cohort suggests them.",
   ],
   opening: [
-    "Welcome people and name what the room has done: eight months, working assets, real measurements.",
+    "Welcome people and name what the room has done: eight sessions, working assets, real measurements.",
     "Explain the demo format once: problem, solution, measurable impact, in five minutes.",
     "Ask the audience to listen for scalability, governance and sustainability. Those are the peer feedback themes.",
   ],
@@ -243,7 +243,7 @@ export const blockPlaybook: Record<string, { move: string; watch: string }> = {
     watch: "Anyone who is stuck and quiet. Note them for the build lab. Keep it to ten minutes; the lab is where the value is.",
   },
   "Interactive Concept & Executive Framework": {
-    move: "Run the hook first (about ten minutes), then teach the month's framework by asking before telling. Keep slides to a minimum and tie every idea to a task from the cohort's friction logs.",
+    move: "Run the hook first (about ten minutes), then teach the session's framework by asking before telling. Keep slides to a minimum and tie every idea to a task from the cohort's friction logs.",
     watch: "Lecturing. If you have talked for five minutes without a question or a task, stop and ask the room to do something.",
   },
   "The Build Lab": {
@@ -254,7 +254,7 @@ export const blockPlaybook: Record<string, { move: string; watch: string }> = {
     move: "Pairs swap laptops and try to break each other's work with the stress-test prompts. Roughly six minutes each way, then a short debrief: what broke, what will you change?",
     watch: "Polite pairs. The point is to find failures. Model a good, kind challenge.",
   },
-  "Next Month Challenge & Adjourn": {
+  "Next Session Challenge & Adjourn": {
     move: "State the milestone in one sentence: what to submit, which capstone step is due, and to keep logging friction. Point to the deliverable hub. Finish on time.",
     watch: "Vague homework. Name the exact deliverable and the date.",
   },

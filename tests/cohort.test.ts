@@ -10,7 +10,7 @@ import { buildPracticePrompt, exampleBrief, decisionPractice } from "../data/coh
 import { createFileStore } from "../lib/store/file";
 import { mergeDeliverable, normalizeDeliverable } from "../lib/store/deliverable-state";
 import { AccessCodeTakenError, DEFAULT_COHORT_ID } from "../lib/store/types";
-import { certificateDate, cohortSchedule, defaultSessionDates } from "../lib/cohort-schedule";
+import { certificateDate, cohortSchedule, defaultSessionDates, repeatSessionDates } from "../lib/cohort-schedule";
 import { cohortSchema, newCohortSchema, sessionDatesFrom } from "../lib/validation";
 
 test("pending dates do not hide confirmed sessions or end of schedule", () => {
@@ -20,6 +20,22 @@ test("pending dates do not hide confirmed sessions or end of schedule", () => {
   assert.equal(nextSessionId([{ id: "pending", date: null }], new Date()), null);
   assert.equal(nextSessionId([...sessions].reverse(), new Date(2026, 8, 20)), "s1");
   assert.equal(sessionStatus({ date: "2027-05-11" }, new Date(2027, 4, 11, 23)), "today");
+});
+
+test("eight-session schedules support weekly dates, month-end clamping, leap years, and year boundaries", () => {
+  const weekly = repeatSessionDates("2026-12-18", "weekly")!;
+  assert.equal(Object.keys(weekly).length, 8);
+  assert.equal(weekly.s2, "2026-12-25");
+  assert.equal(weekly.s8, "2027-02-05");
+  assert.equal(cohortSchedule(weekly)[7].date, "2027-02-05");
+  assert.equal(certificateDate({ sessionDates: weekly, completionDate: null }), "February 5, 2027");
+  const monthly = repeatSessionDates("2027-01-31", "monthly")!;
+  assert.equal(monthly.s2, "2027-02-28");
+  assert.equal(monthly.s3, "2027-03-31");
+  assert.equal(monthly.s8, "2027-08-31");
+  assert.equal(repeatSessionDates("2028-01-31", "monthly")!.s2, "2028-02-29");
+  assert.equal(repeatSessionDates("2026-03-06", "weekly")!.s2, "2026-03-13");
+  for (const invalid of ["", "2026-02-30", "not a date", "2099-12-31"]) assert.equal(repeatSessionDates(invalid, "weekly"), null);
 });
 
 test("reviews stay with their revision; changed evidence requires review; stale writes fail", () => {

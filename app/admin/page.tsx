@@ -162,7 +162,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             Cohort settings
           </h2>
           <CohortSettings
-            key={`${selected.id}:${selected.accessCode}:${selected.archived}`}
+            key={`${selected.id}:${selected.accessCode}:${selected.archived}:${JSON.stringify(selected.sessionDates)}`}
             cohort={selected}
             schedule={schedule}
             participantCount={n}

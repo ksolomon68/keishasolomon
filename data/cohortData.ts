@@ -10,7 +10,7 @@ export const site = {
   headline: "Applied AI for Leadership & Business Innovation",
   url: process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://evobrandacademy.com",
   contactEmail: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "",
-  format: "8-month cohort · 90-minute in-person sessions · remote 1:1 coaching",
+  format: "8-session cohort · weekly or monthly · 90-minute in-person sessions · remote 1:1 coaching",
 } as const;
 
 export const instructor = {
@@ -23,7 +23,7 @@ export const instructor = {
 } as const;
 
 export const cohortStats = [
-  { value: "8", label: "Monthly sessions" },
+  { value: "8", label: "Sessions" },
   { value: "90", label: "Minutes per session" },
   { value: "7", label: "Working assets built" },
   { value: "0", label: "Coding required" },
@@ -75,14 +75,14 @@ const standardAgenda: AgendaBlock[] = [
     end: "00:10",
     minutes: 10,
     title: "The Brag Board",
-    detail: "Wins and troubleshooting from last month's build.",
+    detail: "Wins and troubleshooting from the previous session's build.",
   },
   {
     start: "00:10",
     end: "00:35",
     minutes: 25,
     title: "Interactive Concept & Executive Framework",
-    detail: "The hook plus the month's strategy, live and unscripted.",
+    detail: "The hook plus the session's strategy, live and unscripted.",
   },
   {
     start: "00:35",
@@ -102,7 +102,7 @@ const standardAgenda: AgendaBlock[] = [
     start: "01:25",
     end: "01:30",
     minutes: 5,
-    title: "Next Month Challenge & Adjourn",
+    title: "Next Session Challenge & Adjourn",
     detail: "The milestone to hit before the next session.",
   },
 ];
@@ -429,7 +429,7 @@ export const valueMatrix = {
       sandbox: "Your workplace friction log drives the labs",
     },
     {
-      dimension: "Monthly outcome",
+      dimension: "Session outcome",
       passive: "Notes and a certificate",
       sandbox: "A working asset: policy, workflow, pipeline or prototype",
     },

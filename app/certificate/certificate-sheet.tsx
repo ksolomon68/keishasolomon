@@ -158,7 +158,7 @@ export function CertificateSheet({
             {organization && <p className="cert-org">{organization}</p>}
 
             <p className="cert-text">
-              for successfully completing the eight-month cohort program and its capstone project,
+              for successfully completing the eight-session cohort program and its capstone project,
               building real AI workflows, policies and automations for their organization.
             </p>
 

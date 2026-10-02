@@ -30,7 +30,7 @@ export default async function OnboardingPage() {
             Welcome to the cohort. Here&rsquo;s how to be ready.
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-on-navy">
-            Over eight months we&rsquo;ll cut through the noise, demystify AI and build tools you can use the very next
+            Across eight sessions, offered weekly or monthly, we&rsquo;ll cut through the noise, demystify AI and build tools you can use the very next
             day. Come ready to experiment, build and have fun.
           </p>
         </div>

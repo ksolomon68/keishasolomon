@@ -441,7 +441,7 @@ function SessionChapter({ session, next }: { session: Session; next?: Session })
                 <p className="font-semibold text-navy-900">{block.title}</p>
                 {i === 0 && (
                   <p className="mt-1 text-muted">
-                    Ask about last month&rsquo;s deliverable and what people measured. Follow up with anyone who
+                    Ask about the previous session&rsquo;s deliverable and what people measured. Follow up with anyone who
                     didn&rsquo;t submit.
                   </p>
                 )}

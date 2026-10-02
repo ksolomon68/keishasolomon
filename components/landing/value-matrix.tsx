@@ -9,7 +9,7 @@ export function ValueMatrix() {
           id="method-title"
           eyebrow="The method"
           title="Built to be used, not just attended"
-          intro="Most AI training ends with notes. This cohort ends every month with something running in your business."
+          intro="Most AI training ends with notes. Each build session ends with something you can use in your business."
         />
 
         <ol className="mt-14 grid gap-px border border-line bg-line/80 md:grid-cols-3">
