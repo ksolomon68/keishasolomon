@@ -72,5 +72,6 @@ test("deployment creates only the additive draft table before activating a relea
   assert.match(sql, /PRIMARY KEY \(user_id, session_id\)/);
   assert.match(sql, /ON DELETE CASCADE/);
   assert.doesNotMatch(sql, /\b(DROP|ALTER)\b|DELETE FROM/);
-  assert.ok(script.indexOf("node --env-file=.env.local scripts/migrate-tool-drafts.cjs") < script.indexOf('mv -Tf "$NEXT_LINK"'));
+  const migration = script.indexOf("UV_THREADPOOL_SIZE=1 node --v8-pool-size=1 --max-old-space-size=256 --env-file=.env.local scripts/migrate-tool-drafts.cjs");
+  assert.ok(migration >= 0 && migration < script.indexOf('mv -Tf "$NEXT_LINK"'));
 });

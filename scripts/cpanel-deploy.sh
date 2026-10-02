@@ -93,7 +93,9 @@ fi
 echo "==> Build output shipped from git (.next). Skipping npm run build."
 
 # Additive, repeatable migration must succeed before activating the new dashboard.
-node --env-file=.env.local scripts/migrate-tool-drafts.cjs
+# Keep this helper within the shared host's process/thread and memory limits.
+# CLI flags override the larger build heap above, only for this migration process.
+UV_THREADPOOL_SIZE=1 node --v8-pool-size=1 --max-old-space-size=256 --env-file=.env.local scripts/migrate-tool-drafts.cjs
 
 # 4) Assemble and validate the entire Next.js release before making it live.
 #    Previous static chunks are carried forward so open browser tabs can finish loading the old build.
