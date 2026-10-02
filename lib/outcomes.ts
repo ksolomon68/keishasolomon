@@ -10,5 +10,7 @@ export function measureOutcome(baseline: string, frequency: string, trials: stri
   });
   if (!Number.isFinite(base) || base <= 0 || !Number.isFinite(times) || times <= 0 || totals.some((value) => !Number.isFinite(value))) return null;
   const average = totals.reduce((sum, total) => sum + total, 0) / totals.length;
-  return { count: totals.length, average, saved: base - average, weekly: (base - average) * times };
+  const saved = base - average, weekly = saved * times;
+  if (![average, saved, weekly].every(Number.isFinite)) return null;
+  return { count: totals.length, average, saved, weekly };
 }

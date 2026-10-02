@@ -12,7 +12,8 @@ test("migration limits connection and metadata waits, creates the table, and clo
   assert.deepEqual(calls[0], { sql: "SET SESSION lock_wait_timeout = 15", timeout: 20000 });
   assert.deepEqual(calls[1], { sql: "CREATE TABLE IF NOT EXISTS tool_drafts (...)", timeout: 20000 });
   assert.equal(calls.at(-1), "destroy");
-  assert.equal(logs.at(-1), "Participant draft table is ready.");
+  assert.ok(logs.includes("Participant draft table is ready."));
+  assert.equal(logs.at(-1), "Participant result sharing table is ready.");
   assert.ok(logs.every((line) => !line.includes("test-only")));
 });
 
@@ -31,4 +32,17 @@ test("file backend skips MySQL; missing credentials fail before connection", asy
   const connect = async () => { throw new Error("Must not connect"); };
   await migrateToolDrafts({ env: { DATA_BACKEND: "file" }, connect, log: () => {} });
   await assert.rejects(migrateToolDrafts({ env: {}, connect }), /settings are missing/);
+});
+
+test("draft and result tables are prepared separately; second-table failure stops success", async () => {
+  const sql = ["CREATE TABLE tool_drafts (...)" , "CREATE TABLE tool_results (...)"];
+  const queries = [], logs = [];
+  let closed = false;
+  await assert.rejects(migrateToolDrafts({ env, readSql: () => sql, log: (line) => logs.push(line), connect: async () => ({
+    query: async (query) => { queries.push(query.sql); if (query.sql.includes("tool_results")) throw new Error("result table failed"); },
+    destroy: () => { closed = true; },
+  }) }), /result table failed/);
+  assert.deepEqual(queries.slice(1), sql);
+  assert.ok(closed);
+  assert.ok(!logs.includes("Participant draft table is ready."));
 });

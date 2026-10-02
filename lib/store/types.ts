@@ -14,6 +14,8 @@ export interface ToolDraft {
   updatedAt: string;
 }
 
+export type ToolResult = ToolDraft;
+
 export class DraftConflictError extends Error {
   constructor() {
     super("A newer draft was saved in another tab. Download your work before reloading to see the latest saved draft.");
@@ -210,6 +212,10 @@ export type NewFile = Pick<StoredFile, "ownerId" | "originalName" | "storedName"
 export interface Store {
   listToolDrafts(userId: string): Promise<ToolDraft[]>;
   saveToolDraft(userId: string, sessionId: string, data: Record<string, unknown>, expectedVersion: number): Promise<ToolDraft>;
+  /** Omit owner only for authorized instructors; callers still authorize and scope their cohort. */
+  listToolResults(userId?: string): Promise<ToolResult[]>;
+  shareToolResult(userId: string, sessionId: string, expectedVersion: number): Promise<ToolResult>;
+  withdrawToolResult(userId: string, sessionId: string, expectedVersion: number): Promise<void>;
   /** Newest first, so a freshly created cohort is the instructor's default selection. */
   listCohorts(): Promise<Cohort[]>;
   getCohort(id: string): Promise<Cohort | null>;

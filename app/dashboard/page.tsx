@@ -31,7 +31,7 @@ const formatBytes = (n: number) =>
 export default async function DashboardPage() {
   const user = await requireUser("/dashboard");
   const store = await getStore();
-  const [friction, coachingNotes, deliverables, capstone, resources, cohort, supportRequests, toolDrafts] = await Promise.all([
+  const [friction, coachingNotes, deliverables, capstone, resources, cohort, supportRequests, toolDrafts, toolResults] = await Promise.all([
     store.listFriction(user.id),
     store.listCoachingNotes(user.id),
     store.listDeliverables(user.id),
@@ -40,6 +40,7 @@ export default async function DashboardPage() {
     cohortOf(store, user),
     store.listSupportRequests(user.id),
     store.listToolDrafts(user.id),
+    store.listToolResults(user.id),
   ]);
   const supportThreads: ParticipantSupportThread[] = await Promise.all(
     supportRequests.map(async (request) => ({ ...request, messages: await store.listSupportMessages(request.id) })),
@@ -117,7 +118,7 @@ export default async function DashboardPage() {
           title="My work & feedback"
           intro="Follow three steps: prepare, use your tool, then save your work or submit it for feedback. Your current assignment is open below."
         >
-          <DeliverableHub deliverables={deliverables} files={files} accept={ACCEPT_ATTR} schedule={schedule} toolDrafts={toolDrafts} />
+          <DeliverableHub deliverables={deliverables} files={files} accept={ACCEPT_ATTR} schedule={schedule} toolDrafts={toolDrafts} toolResults={toolResults} />
         </DashSection>
 
         <DashSection id="tools" eyebrow="Quick access" title="Your cohort tools" intro="These shortcuts open each tool inside its assignment. Your draft stays in the same workspace as you move between the guide, tool, and submission.">

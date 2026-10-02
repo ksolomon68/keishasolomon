@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import mysql, { type Pool, type ResultSetHeader, type RowDataPacket } from "mysql2/promise";
 import { mergeDeliverable } from "./deliverable-state";
+import { sharedToolData } from "../tool-results";
 import type { DeliverableStatus, FrictionFrequency, ResourceKind } from "@/data/cohortData";
 import {
   AccessCodeTakenError,
@@ -377,6 +378,35 @@ export function createMysqlStore(pool: Pool = createPool()): Store {
       await exec("UPDATE support_requests SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?", [status, id]);
     },
 
+    async listToolResults(userId) {
+      const result = userId ? await rows("SELECT * FROM tool_results WHERE user_id = ?", [userId]) : await rows("SELECT * FROM tool_results");
+      return result.map((r) => ({ userId: r.user_id, sessionId: r.session_id, data: JSON.parse(r.data), version: r.version, updatedAt: iso(r.updated_at) }));
+    },
+    async shareToolResult(userId, sessionId, expectedVersion) {
+      const connection = await pool.getConnection();
+      try {
+        await connection.beginTransaction();
+        const [drafts] = await connection.execute<Row[]>("SELECT * FROM tool_drafts WHERE user_id = ? AND session_id = ? FOR UPDATE", [userId, sessionId]);
+        if (!drafts[0] || drafts[0].version !== expectedVersion) throw new DraftConflictError();
+        const data = sharedToolData(sessionId, JSON.parse(drafts[0].data));
+        const updatedAt = new Date().toISOString();
+        await connection.execute("INSERT INTO tool_results (user_id, session_id, data, version, updated_at) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE data = VALUES(data), version = VALUES(version), updated_at = VALUES(updated_at)", [userId, sessionId, JSON.stringify(data), expectedVersion, updatedAt.slice(0, 19).replace('T', ' ')]);
+        await connection.commit();
+        return { userId, sessionId, data, version: expectedVersion, updatedAt };
+      } catch (error) { await connection.rollback(); throw error; }
+      finally { connection.release(); }
+    },
+    async withdrawToolResult(userId, sessionId, expectedVersion) {
+      const connection = await pool.getConnection();
+      try {
+        await connection.beginTransaction();
+        const [shared] = await connection.execute<Row[]>("SELECT version FROM tool_results WHERE user_id = ? AND session_id = ? FOR UPDATE", [userId, sessionId]);
+        if (shared[0] && shared[0].version !== expectedVersion) throw new DraftConflictError();
+        await connection.execute("DELETE FROM tool_results WHERE user_id = ? AND session_id = ?", [userId, sessionId]);
+        await connection.commit();
+      } catch (error) { await connection.rollback(); throw error; }
+      finally { connection.release(); }
+    },
     async listToolDrafts(userId) {
       return (await rows("SELECT * FROM tool_drafts WHERE user_id = ?", [userId])).map((r) => ({
         userId: r.user_id, sessionId: r.session_id, data: JSON.parse(r.data), version: r.version, updatedAt: iso(r.updated_at),

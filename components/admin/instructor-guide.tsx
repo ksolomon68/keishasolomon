@@ -534,7 +534,7 @@ function SessionChapter({ session, next }: { session: Session; next?: Session })
             <p className="mt-3 text-sm text-muted">Optional companion exercise. Use it within the existing lab or as between-session practice. Participants may use the documented fallback; assess their reasoning and evidence rather than the tool they chose.</p>
             <p className="mt-3 text-sm">{toolLabs[session.id].evidence}</p>
             <Checklist items={toolLabs[session.id].criteria} />
-            <Callout label="Outcome review">Check comparable inputs, baseline timing, trial count, and time spent reviewing and correcting results. Keep zero and negative outcomes valid. Ask the participant to justify adopting, revising, or stopping the workflow. Participants use the internal dashboard tools, download their results, and submit the record with the session deliverable. Content drafts use templates rather than AI generation.</Callout>
+            <Callout label="Outcome review">Open Participant results in the instructor command center to see tool results explicitly shared by the selected cohort. Check comparable inputs, baseline timing, trial count, and review and correction time. Keep zero and negative outcomes valid; fewer than three trials is preliminary. Ask the participant to justify adopting, revising, or stopping. Drafts remain private until the participant shares a saved snapshot. Full session evidence and feedback stay in the roster. Content drafts use templates rather than AI generation.</Callout>
           </>
         )}
 

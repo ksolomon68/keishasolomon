@@ -9,15 +9,16 @@ async function migrateToolDrafts(options = {}) {
   const { DB_HOST, DB_NAME, DB_USER, DB_PASSWORD, DB_PORT } = env;
   if (!DB_HOST || !DB_NAME || !DB_USER) throw new Error("Database settings are missing; release activation stopped.");
   // This tiny read does not need libuv filesystem workers on process-limited shared hosting.
-  const sql = (options.readSql ?? (() => readFileSync(path.join(__dirname, "../db/tool-drafts.sql"), "utf8")))();
+  const sql = (options.readSql ?? (() => ["tool-drafts.sql", "tool-results.sql"].map((file) => readFileSync(path.join(__dirname, "../db", file), "utf8"))))();
   log("==> Connecting to the draft database (10-second connection limit). ");
   const connection = await (options.connect ?? mysql.createConnection)({ host: DB_HOST, database: DB_NAME, user: DB_USER, password: DB_PASSWORD ?? "", port: Number(DB_PORT ?? 3306), charset: "utf8mb4", connectTimeout: 10000 });
   try {
     // Metadata locks can otherwise wait for hours behind another transaction.
     await connection.query({ sql: "SET SESSION lock_wait_timeout = 15", timeout: 20000 });
     log("==> Preparing participant draft table (20-second query limit).");
-    await connection.query({ sql, timeout: 20000 });
+    for (const statement of Array.isArray(sql) ? sql : [sql]) await connection.query({ sql: statement, timeout: 20000 });
     log("Participant draft table is ready.");
+    log("Participant result sharing table is ready.");
   } finally {
     // No pending writes remain after awaited queries; destroy avoids an unbounded close handshake.
     connection.destroy();

@@ -2,12 +2,14 @@ import { randomUUID } from "node:crypto";
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { mergeDeliverable, normalizeDeliverable } from "./deliverable-state";
+import { sharedToolData } from "../tool-results";
 import {
   AccessCodeTakenError,
   DEFAULT_COHORT_ID,
   EmailTakenError,
   DraftConflictError,
   type ToolDraft,
+  type ToolResult,
   type Attendance,
   type CapstoneProgress,
   type Cohort,
@@ -30,6 +32,7 @@ import {
 
 interface Db {
   toolDrafts: ToolDraft[];
+  toolResults: ToolResult[];
   cohorts: Cohort[];
   users: UserWithHash[];
   friction: FrictionEntry[];
@@ -45,6 +48,7 @@ interface Db {
 
 const empty = (): Db => ({
   toolDrafts: [],
+  toolResults: [],
   cohorts: [],
   users: [],
   friction: [],
@@ -204,6 +208,7 @@ export function createFileStore(dir = path.join(process.cwd(), ".data")): Store 
         db.supportMessages = db.supportMessages.filter((m) => !requestIds.has(m.requestId));
         db.deliverables = db.deliverables.filter((d) => d.userId !== id);
         db.toolDrafts = db.toolDrafts.filter((d) => d.userId !== id);
+        db.toolResults = db.toolResults.filter((d) => d.userId !== id);
         db.capstone = db.capstone.filter((c) => c.userId !== id);
         db.attendance = db.attendance.filter((a) => a.userId !== id);
         return publicUser(removed);
@@ -306,6 +311,20 @@ export function createFileStore(dir = path.join(process.cwd(), ".data")): Store 
       }),
 
     listToolDrafts: (userId) => run(false, (db) => db.toolDrafts.filter((d) => d.userId === userId)),
+    listToolResults: (userId) => run(false, (db) => db.toolResults.filter((d) => !userId || d.userId === userId)),
+    shareToolResult: (userId, sessionId, expectedVersion) => run(true, (db) => {
+      const draft = db.toolDrafts.find((d) => d.userId === userId && d.sessionId === sessionId);
+      if (!draft || draft.version !== expectedVersion) throw new DraftConflictError();
+      const shared = { ...draft, data: sharedToolData(sessionId, draft.data), updatedAt: now() };
+      const index = db.toolResults.findIndex((d) => d.userId === userId && d.sessionId === sessionId);
+      if (index < 0) db.toolResults.push(shared); else db.toolResults[index] = shared;
+      return shared;
+    }),
+    withdrawToolResult: (userId, sessionId, expectedVersion) => run(true, (db) => {
+      const shared = db.toolResults.find((d) => d.userId === userId && d.sessionId === sessionId);
+      if (shared && shared.version !== expectedVersion) throw new DraftConflictError();
+      db.toolResults = db.toolResults.filter((d) => d.userId !== userId || d.sessionId !== sessionId);
+    }),
     saveToolDraft: (userId, sessionId, data, expectedVersion) => run(true, (db) => {
       const index = db.toolDrafts.findIndex((d) => d.userId === userId && d.sessionId === sessionId);
       const current = db.toolDrafts[index];

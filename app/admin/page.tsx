@@ -9,6 +9,8 @@ import { FrictionReview } from "@/components/admin/friction-review";
 import { CoachingReview } from "@/components/admin/coaching-review";
 import { UserManager } from "@/components/admin/user-manager";
 import { SupportInbox, type InstructorSupportThread } from "@/components/admin/support-inbox";
+import { ResultReview } from "@/components/admin/result-review";
+import { instructorResults } from "@/lib/instructor-results";
 import { capstoneSteps, site } from "@/data/cohortData";
 import { requireAdmin } from "@/lib/auth/session";
 import { cohortSchedule } from "@/lib/cohort-schedule";
@@ -53,12 +55,13 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   const counts: Record<string, number> = {};
   for (const u of users) if (u.role === "participant" && u.cohortId) counts[u.cohortId] = (counts[u.cohortId] ?? 0) + 1;
 
-  const [allAttendance, allDeliverables, allCapstone, resources, allSupportRequests] = await Promise.all([
+  const [allAttendance, allDeliverables, allCapstone, resources, allSupportRequests, allToolResults] = await Promise.all([
     store.listAttendance(),
     store.listDeliverables(),
     store.listCapstone(),
     store.listResources(selected.id),
     store.listSupportRequests(),
+    store.listToolResults(),
   ]);
   const attendance = allAttendance.filter((a) => ids.has(a.userId));
   const deliverables = allDeliverables.filter((d) => ids.has(d.userId));
@@ -136,6 +139,12 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       <CohortSwitcher cohorts={cohorts} selectedId={selected.id} counts={counts} />
 
       <div className="mx-auto max-w-7xl space-y-16 px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
+        <section id="participant-results" aria-labelledby="participant-results-title" className="scroll-mt-24">
+          <p className="label text-amber-deep">See the work and its impact</p>
+          <h2 id="participant-results-title" className="mb-3 mt-2 font-display text-3xl text-navy-900 sm:text-4xl">Participant results</h2>
+          <p className="mb-6 max-w-3xl text-muted">Review the results participants have explicitly shared from their tools. Private drafts stay private. Shared results are participant-reported evidence; session submissions and instructor feedback remain in the roster below.</p>
+          <ResultReview entries={instructorResults(selected.id, users, allToolResults)} cohortName={selected.name} refreshHref={`/admin?cohort=${selected.id}#participant-results`} />
+        </section>
         <section aria-labelledby="support-inbox-title">
           <p className="label text-amber-deep">Respond while it matters</p>
           <h2 id="support-inbox-title" className="mb-3 mt-2 font-display text-3xl text-navy-900 sm:text-4xl">

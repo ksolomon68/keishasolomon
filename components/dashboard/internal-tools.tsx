@@ -5,7 +5,7 @@ import { Button, buttonStyles } from "@/components/ui/button";
 import { assistantPlan, contentDrafts, scoreLead, type LeadInput } from "@/lib/internal-tools";
 import { ToolDraftWorkspace, useToolState } from "./tool-draft";
 import { WorkflowPlanner, OutcomeTracker } from "./planning-tools";
-import type { ToolDraft } from "@/lib/store";
+import type { ToolDraft, ToolResult } from "@/lib/store";
 
 const inputStyle = "mt-1 block min-h-11 w-full border border-edge bg-white px-3 py-2 text-sm";
 
@@ -17,10 +17,10 @@ function Export({ text, name }: { text: string; name: string }) {
   return <a className={buttonStyles({ variant: "outline" })} href={`data:text/plain;charset=utf-8,${encodeURIComponent(text)}`} download={`${name}.txt`}>Download results</a>;
 }
 
-export function InternalTool({ sessionId, draft }: { sessionId: string; draft?: ToolDraft }) {
+export function InternalTool({ sessionId, draft, shared }: { sessionId: string; draft?: ToolDraft; shared?: ToolResult }) {
   return <div className="my-5">
     <p className="mb-4 text-sm text-muted">Use fictional or permitted examples. Save your draft before leaving to continue from your account on another visit.</p>
-    <ToolDraftWorkspace sessionId={sessionId} initial={draft}>
+    <ToolDraftWorkspace sessionId={sessionId} initial={draft} initialShared={shared}>
       {sessionId === "s1" ? <AssistantSelector /> : sessionId === "s3" ? <WorkflowPlanner /> : sessionId === "s4" ? <LeadTracker /> : sessionId === "s5" ? <ContentStudio /> : sessionId === "s7" ? <OutcomeTracker /> : null}
     </ToolDraftWorkspace>
   </div>;
