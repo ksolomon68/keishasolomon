@@ -8,6 +8,7 @@ import { SessionGrid } from "@/components/dashboard/session-grid";
 import { NextStep } from "@/components/dashboard/next-step";
 import { PromptWorkshop } from "@/components/dashboard/prompt-workshop";
 import { ToolLibrary } from "@/components/dashboard/tool-library";
+import { DashboardPath } from "@/components/dashboard/dashboard-path";
 import { SectionNav } from "@/components/dashboard/section-nav";
 import { SupportResources } from "@/components/dashboard/support-resources";
 import { SupportCenter, type ParticipantSupportThread } from "@/components/dashboard/support-center";
@@ -68,6 +69,7 @@ export default async function DashboardPage() {
 
   return (
     <>
+      <DashboardPath />
       <section data-surface="dark" className="grid-backdrop bg-navy-900 pb-8 pt-8 text-white sm:pb-10 sm:pt-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <p className="label text-amber">
@@ -99,51 +101,51 @@ export default async function DashboardPage() {
 
       <SectionNav
         sections={[
-          { id: "sessions", label: "Sessions" },
-          { id: "tools", label: "Tools", badge: "3 internal" },
           { id: "deliverables", label: "My work", badge: `${submitted}/${deliverableSessions.length}` },
-          { id: "friction", label: "Friction log", badge: openFriction ? `${openFriction} open` : undefined },
-          { id: "capstone", label: "Capstone", badge: `${capstoneDone}/${totalCapstoneSteps}` },
-          { id: "support", label: "Support", badge: instructorReplies ? `${instructorReplies} replied` : activeSupport ? `${activeSupport} active` : undefined },
+          { id: "tools", label: "Tools" },
+          { id: "progress", label: "Progress" },
+          { id: "sessions", label: "Schedule" },
+          { id: "support", label: "Help", badge: instructorReplies ? `${instructorReplies} replied` : activeSupport ? `${activeSupport} active` : undefined },
         ]}
       />
 
       <div className="mx-auto max-w-7xl space-y-10 px-4 py-10 sm:space-y-14 sm:px-6 sm:py-16 lg:px-8">
         <DashSection
-          id="sessions"
-          eyebrow="Learn"
-          title="Prepare for sessions"
-          intro="See what is coming, review the agenda, and find materials. Preparation and submission live together in My work."
+          id="deliverables"
+          eyebrow="Start here"
+          title="My work & feedback"
+          intro="Follow three steps: prepare, use your tool, then save your work or submit it for feedback. Your current assignment is open below."
         >
-          <SessionGrid resources={resources} schedule={schedule} />
+          <DeliverableHub deliverables={deliverables} files={files} accept={ACCEPT_ATTR} schedule={schedule} />
         </DashSection>
 
-        <DashSection id="tools" eyebrow="Use your workspace" title="Your cohort tools" intro="Open a tool directly below. Create a selection plan, prioritize leads, or draft content without leaving your dashboard.">
+        <DashSection id="tools" eyebrow="Use your workspace" title="Your cohort tools" intro="Open any tool here. When you finish, download your results and use the link back to your session submission.">
           <ToolLibrary />
         </DashSection>
 
-        <DashSection
-          id="deliverables"
-          eyebrow="Build"
-          title="My work & feedback"
-          intro="Start with the current assignment, use its preparation guide, then save a draft or send your evidence for feedback."
-        >
-          <DeliverableHub deliverables={deliverables} files={files} accept={ACCEPT_ATTR} />
-        </DashSection>
-
-        <DashSection id="friction" eyebrow="Steer the labs" title="Workplace friction log">
-          <FrictionLog entries={friction} schedule={schedule} />
-        </DashSection>
-
-        <DashSection id="capstone" eyebrow="Track" title="Capstone progress">
-          <CapstoneTracker doneIds={capstone.map((c) => c.stepId)} schedule={schedule} />
+        <DashSection id="progress" eyebrow="Track your learning" title="Your progress" intro="Check milestones or record a workplace problem when you need to. Your current work stays above.">
+          <details id="capstone" className="scroll-mt-40 border border-line bg-white p-5">
+            <summary className="min-h-11 cursor-pointer font-semibold">Capstone milestones · {capstoneDone}/{totalCapstoneSteps} complete</summary>
+            <div className="mt-5"><CapstoneTracker doneIds={capstone.map((c) => c.stepId)} schedule={schedule} /></div>
+          </details>
+          <details id="friction" className="mt-4 scroll-mt-40 border border-line bg-white p-5">
+            <summary className="min-h-11 cursor-pointer font-semibold">Workplace problem log · {openFriction} unresolved</summary>
+            <div className="mt-5"><FrictionLog entries={friction} schedule={schedule} /></div>
+          </details>
           <CertificateBanner unlocked={isCertUnlocked} done={capstoneDone} total={totalCapstoneSteps} />
+        </DashSection>
+
+        <DashSection id="sessions" eyebrow="Plan ahead" title="Session schedule & materials" intro="Dates, agendas, and session resources are here when you need them. Start assignments in My work.">
+          <details className="border border-line bg-white p-5">
+            <summary className="min-h-11 cursor-pointer font-semibold">View all {schedule.length} sessions and materials</summary>
+            <div className="mt-5"><SessionGrid resources={resources} schedule={schedule} /></div>
+          </details>
         </DashSection>
 
         <DashSection
           id="support"
           eyebrow="Use when needed"
-          title="Support & resources"
+          title="Help & resources"
           intro="Open one area when you need coaching, a stronger prompt, or communications support."
         >
           <div className="mb-10">
@@ -158,7 +160,7 @@ export default async function DashboardPage() {
             }
             toolkit={
               <div className="space-y-12">
-                <div>
+                <div id="prompt-workshop" className="scroll-mt-40">
                   <h3 className="mb-4 font-display text-2xl text-navy-900">Better briefs. Better decisions.</h3>
                   <PromptWorkshop />
                 </div>

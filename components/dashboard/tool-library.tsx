@@ -24,7 +24,7 @@ export function ToolLibrary() {
         <span className="min-w-0 flex-1"><span className="label block text-amber-deep">Session {sessionId.slice(1)} tool</span><span className="mt-2 block font-display text-xl text-navy-900 sm:text-2xl">{lab.tool}</span><span className="mt-2 block text-sm text-muted">{lab.purpose}</span></span>
         <span className="border border-edge px-4 py-2 text-sm font-semibold text-cyan-deep"><span className="group-open:hidden">Open tool</span><span className="hidden group-open:inline">Close tool</span></span>
       </summary>
-      <div className="border-t border-line px-4 pb-5 sm:px-5"><InternalTool sessionId={sessionId} /><p className="text-sm text-muted">{lab.evidence}</p><a className="mt-3 inline-flex min-h-11 items-center font-semibold text-cyan-deep underline" href={`#deliverable-${sessionId}`}>Go to Session {sessionId.slice(1)} submission and feedback</a></div>
+      <div className="border-t border-line px-4 pb-5 sm:px-5"><InternalTool sessionId={sessionId} /><p className="text-sm text-muted">{lab.evidence}</p><a className="mt-3 inline-flex min-h-11 items-center font-semibold text-cyan-deep underline" href={`#submission-${sessionId}`}>Go to Session {sessionId.slice(1)} submission and feedback</a></div>
     </details>)}
   </div>;
 }

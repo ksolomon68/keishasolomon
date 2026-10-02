@@ -6,10 +6,13 @@ import { saveDeliverableAction } from "@/app/actions/dashboard";
 import { FormMessage, SelectField, TextAreaField, TextField } from "@/components/ui/fields";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { Tag } from "@/components/ui/tag";
-import { deliverableSessions, deliverableStatuses, type DeliverableStatus } from "@/data/cohortData";
+import { deliverableSessions as defaultDeliverables, deliverableStatuses, type DeliverableStatus, type Session } from "@/data/cohortData";
 import type { Deliverable } from "@/lib/store";
 import type { FormState } from "@/lib/validation";
 import { LearningGuide } from "./learning-guide";
+import { toolLabs } from "@/data/tool-labs";
+import { currentWorkSession } from "@/lib/participant-path";
+import { withDeliverables } from "@/lib/cohort-schedule";
 
 export interface FileInfo {
   name: string;
@@ -39,21 +42,23 @@ export function DeliverableHub({
   deliverables,
   files,
   accept,
+  schedule,
 }: {
   deliverables: Deliverable[];
   files: Record<string, FileInfo>;
   accept: string;
+  schedule: Session[];
 }) {
+  const deliverableSessions = withDeliverables(schedule);
   const bySession = new Map(deliverables.map((d) => [d.sessionId, d]));
   const otherWork = useRef<HTMLDetailsElement>(null);
   const statusFor = (sessionId: string): DeliverableStatus => bySession.get(sessionId)?.status ?? "not_started";
-  const priority = deliverableSessions.find((session) => statusFor(session.id) === "needs_revision")
-    ?? deliverableSessions.find((session) => statusFor(session.id) === "in_progress")
-    ?? deliverableSessions.find((session) => statusFor(session.id) === "not_started");
+  const priority = currentWorkSession(schedule, deliverables);
+  const awaitingReview = deliverableSessions.findIndex((session) => statusFor(session.id) === "submitted");
   const start = priority
     ? deliverableSessions.findIndex((session) => session.id === priority.id)
-    : Math.max(0, deliverableSessions.length - 2);
-  const featured = deliverableSessions.slice(start, start + 2);
+    : Math.max(0, awaitingReview < 0 ? deliverableSessions.length - 1 : awaitingReview);
+  const featured = deliverableSessions.slice(start, start + 1);
   const remaining = deliverableSessions.filter((session) => !featured.includes(session));
 
   useEffect(() => {
@@ -70,13 +75,14 @@ export function DeliverableHub({
     return () => window.removeEventListener("hashchange", reveal);
   }, []);
 
-  const row = (session: (typeof deliverableSessions)[number]) => (
+  const row = (session: (typeof defaultDeliverables)[number]) => (
     <DeliverableRow
       key={session.id}
       session={session}
       deliverable={bySession.get(session.id)}
       file={bySession.get(session.id)?.fileId ? files[bySession.get(session.id)!.fileId!] : undefined}
       accept={accept}
+      initiallyOpen={featured.includes(session)}
     />
   );
 
@@ -105,11 +111,13 @@ function DeliverableRow({
   deliverable,
   file,
   accept,
+  initiallyOpen,
 }: {
-  session: (typeof deliverableSessions)[number];
+  session: (typeof defaultDeliverables)[number];
   deliverable?: Deliverable;
   file?: FileInfo;
   accept: string;
+  initiallyOpen: boolean;
 }) {
   const [state, action] = useActionState<FormState, FormData>(saveDeliverableAction, {});
   const status = deliverable?.status ?? "not_started";
@@ -131,7 +139,7 @@ function DeliverableRow({
 
   return (
     <li>
-      <details ref={disclosure} name="deliverables" id={`deliverable-${session.id}`} className="group scroll-mt-10 border border-line bg-white open:border-navy-900">
+      <details ref={disclosure} data-current-work={initiallyOpen ? "true" : undefined} open={initiallyOpen} name="deliverables" id={`deliverable-${session.id}`} className="group scroll-mt-40 border border-line bg-white open:border-navy-900">
         <summary className="grid min-h-16 cursor-pointer list-none grid-cols-[2.5rem_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 p-4 marker:content-none transition-colors hover:bg-paper group-open:bg-paper sm:flex sm:flex-wrap sm:gap-3 sm:px-5 [&::-webkit-details-marker]:hidden">
           <span className="row-span-2 grid size-10 shrink-0 place-items-center border border-navy-900 font-display text-lg text-navy-900 sm:row-auto" aria-hidden="true">
             {session.number}
@@ -153,17 +161,24 @@ function DeliverableRow({
         </summary>
 
         <div className="border-t border-line p-4 sm:p-5">
+          <nav aria-label={`Session ${session.number} work steps`} className="mb-5 grid gap-2 sm:grid-cols-3">
+            <a href={`#guide-${session.id}`} className="flex min-h-12 items-center border border-edge px-3 py-2 font-semibold text-cyan-deep hover:bg-paper">1. Prepare</a>
+            <a href={toolLabs[session.id] ? `#tool-${session.id}` : "#prompt-workshop"} className="flex min-h-12 items-center border border-edge px-3 py-2 font-semibold text-cyan-deep hover:bg-paper">2. {toolLabs[session.id] ? "Use the tool" : "Build your brief"}</a>
+            <a href={`#submission-${session.id}`} className="flex min-h-12 items-center border border-edge px-3 py-2 font-semibold text-cyan-deep hover:bg-paper">3. Submit for feedback</a>
+          </nav>
           {deliverable?.feedback && <aside aria-label="Instructor feedback" className="mb-5 border-l-4 border-cyan-deep bg-paper p-4">
             <p className="label text-cyan-deep">Instructor feedback · revision {deliverable.feedbackRevision}</p>
             <p className="mt-3 whitespace-pre-wrap break-words">{deliverable.feedback}</p>
             {deliverable.feedbackRevision !== deliverable.revision && <p className="mt-3 text-sm text-muted">This feedback is for an earlier revision. Your updated work has not been reviewed yet.</p>}
           </aside>}
-          <details className="border border-line p-4"><summary className="min-h-7 cursor-pointer font-semibold">Build guide &amp; submission checklist</summary>
+          <details id={`guide-${session.id}`} data-session-guide className="scroll-mt-40 border border-line p-4"><summary className="min-h-11 cursor-pointer font-semibold">Preparation, build guide &amp; checklist</summary>
+            <h3 className="sr-only">Session {session.number} learning guide</h3>
             <div className="mt-5"><LearningGuide sessionId={session.id} /></div>
           </details>
         </div>
 
-        <form action={action} noValidate className="space-y-4 border-t border-line p-4 sm:p-5">
+        <form id={`submission-${session.id}`} action={action} noValidate className="scroll-mt-40 space-y-4 border-t border-line p-4 sm:p-5">
+          <h3 className="font-semibold text-navy-900">Save your work or submit for feedback</h3>
           <p className="max-w-2xl text-sm text-muted">{session.deliverable.description}</p>
           <input type="hidden" name="sessionId" value={session.id} />
           <input type="hidden" name="version" value={deliverable?.version ?? 0} />

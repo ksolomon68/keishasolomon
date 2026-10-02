@@ -51,6 +51,7 @@ export function SectionNav({ sections }: { sections: NavSection[] }) {
     if (!target) return;
     setActive(id);
     window.history.pushState(null, "", `#${id}`);
+    window.dispatchEvent(new HashChangeEvent("hashchange"));
     const top = window.scrollY + target.getBoundingClientRect().top - 140;
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const isLongJump = Math.abs(top - window.scrollY) > window.innerHeight * 1.5;

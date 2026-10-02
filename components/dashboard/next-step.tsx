@@ -3,9 +3,9 @@
 import { ArrowRight, CalendarDays } from "lucide-react";
 import type { Session } from "@/data/cohortData";
 import { learningGuides } from "@/data/learning-guides";
-import { withDeliverables } from "@/lib/cohort-schedule";
+import { currentWorkSession } from "@/lib/participant-path";
 import type { Deliverable } from "@/lib/store";
-import { nextSessionId, sessionStatus } from "@/lib/dates";
+import { nextSessionId } from "@/lib/dates";
 import { Countdown, useMinuteClock } from "./countdown";
 import { buttonStyles } from "@/components/ui/button";
 
@@ -13,11 +13,7 @@ export function NextStep({ deliverables, hasFriction, schedule }: { deliverables
   const now = useMinuteClock();
   const next = now ? schedule.find((s) => s.id === nextSessionId(schedule, now)) : undefined;
   const revision = deliverables.find((d) => d.status === "needs_revision");
-  const outstanding = withDeliverables(schedule).find((s) => {
-    const d = deliverables.find((item) => item.sessionId === s.id);
-    return d?.status !== "submitted" && d?.status !== "reviewed" &&
-      (d?.status === "in_progress" || (now && sessionStatus(s, now) === "past"));
-  });
+  const outstanding = currentWorkSession(schedule, deliverables);
   const action = revision ? {
     title: "Turn feedback into your next improvement.",
     body: revision.feedback || "Your instructor has requested a revision. Open the deliverable to review the criteria and update your work.",

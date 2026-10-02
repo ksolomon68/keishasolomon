@@ -28,7 +28,7 @@ function AssistantSelector() {
   const [team, setTeam] = useState("solo");
   const [result, setResult] = useState("");
   return <div className="space-y-4">
-    <h5 className="font-display text-xl">Assistant Selection Planner</h5>
+    <h3 className="font-display text-xl">Assistant Selection Planner</h3>
     <div className="grid gap-4 sm:grid-cols-2">
       <Field label="Main task"><select className={inputStyle} value={task} onChange={(e) => setTask(e.target.value)}><option value="drafting">Writing and everyday planning</option><option value="research">Research and source checking</option><option value="data">Spreadsheet and document analysis</option></select></Field>
       <Field label="Data boundary"><select className={inputStyle} value={privacy} onChange={(e) => setPrivacy(e.target.value)}><option value="public">Public or fictional information</option><option value="restricted">Internal or sensitive information</option></select></Field>
@@ -48,7 +48,7 @@ function LeadTracker() {
   const update = (key: keyof LeadInput, value: string | number) => setDraft({ ...draft, [key]: value });
   const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Chicago" });
   return <div className="space-y-4">
-    <h5 className="font-display text-xl">Lead Priority Tracker</h5>
+    <h3 className="font-display text-xl">Lead Priority Tracker</h3>
     <p className="text-sm text-muted">Transparent practice score: fit contributes 40 points, urgency 30, and readiness 30. Review these teaching rules against your own business needs.</p>
     <div className="grid gap-4 sm:grid-cols-2">
       <Field label="Fictional lead name"><input className={inputStyle} maxLength={120} value={draft.name} onChange={(e) => update("name", e.target.value)} /></Field>
@@ -77,7 +77,7 @@ function ContentStudio() {
   const [drafts, setDrafts] = useState<{ channel: string; text: string }[]>([]);
   const [message, setMessage] = useState("");
   return <div className="space-y-4">
-    <h5 className="font-display text-xl">Content Draft Studio</h5>
+    <h3 className="font-display text-xl">Content Draft Studio</h3>
     <p className="text-sm text-muted">Build editable LinkedIn, Instagram, and email drafts from your own material. This uses templates rather than AI generation. Review facts, voice, and accessibility before publishing.</p>
     <div className="grid gap-4 sm:grid-cols-2">
       <Field label="Source idea or headline"><input className={inputStyle} maxLength={200} value={idea} onChange={(e) => setIdea(e.target.value)} /></Field>
