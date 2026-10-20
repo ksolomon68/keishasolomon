@@ -3,6 +3,7 @@ import mysql, { type Pool, type ResultSetHeader, type RowDataPacket } from "mysq
 import { mergeDeliverable } from "./deliverable-state";
 import { sharedToolData } from "../tool-results";
 import type { DeliverableStatus, FrictionFrequency, ResourceKind } from "@/data/cohortData";
+import type { InquiryPlan, TeamSize } from "@/data/plans";
 import {
   AccessCodeTakenError,
   EmailTakenError,
@@ -12,6 +13,8 @@ import {
   type Deliverable,
   type FrictionEntry,
   type Resource,
+  type InquiryStatus,
+  type PlanInquiry,
   type Role,
   type Store,
   type StoredFile,
@@ -93,6 +96,18 @@ const toCoachingNote = (r: Row): CoachingNote => ({
   topic: r.topic,
   note: r.note,
   nextStep: r.next_step ?? "",
+  createdAt: iso(r.created_at),
+});
+
+const toInquiry = (r: Row): PlanInquiry => ({
+  id: r.id,
+  plan: r.plan as InquiryPlan,
+  name: r.name,
+  email: r.email,
+  organization: r.organization,
+  teamSize: r.team_size as TeamSize,
+  message: r.message ?? "",
+  status: r.status as InquiryStatus,
   createdAt: iso(r.created_at),
 });
 
@@ -509,6 +524,40 @@ export function createMysqlStore(pool: Pool = createPool()): Store {
       if (!row) return null;
       await exec("DELETE FROM resources WHERE id = ?", [id]);
       return toResource(row);
+    },
+
+    async listInquiries() {
+      return (await rows("SELECT * FROM plan_inquiries ORDER BY created_at DESC")).map(toInquiry);
+    },
+    async createInquiry(input) {
+      const id = randomUUID();
+      await exec(
+        "INSERT INTO plan_inquiries (id, plan, name, email, organization, team_size, message) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        [id, input.plan, input.name, input.email, input.organization, input.teamSize, input.message],
+      );
+      return toInquiry((await one("SELECT * FROM plan_inquiries WHERE id = ?", [id]))!);
+    },
+    async setInquiryStatus(id, status) {
+      await exec("UPDATE plan_inquiries SET status = ? WHERE id = ?", [status, id]);
+    },
+
+    async createPasswordReset(userId, tokenHash, expiresAt) {
+      await exec("UPDATE password_resets SET used_at = UTC_TIMESTAMP() WHERE user_id = ? AND used_at IS NULL", [userId]);
+      await exec("INSERT INTO password_resets (token_hash, user_id, expires_at) VALUES (?, ?, ?)", [
+        tokenHash,
+        userId,
+        expiresAt.slice(0, 19).replace("T", " "),
+      ]);
+    },
+    async consumePasswordReset(tokenHash) {
+      // The conditional UPDATE is the claim: only one request can flip used_at, so a token works once.
+      const result = await exec(
+        "UPDATE password_resets SET used_at = UTC_TIMESTAMP() WHERE token_hash = ? AND used_at IS NULL AND expires_at > UTC_TIMESTAMP()",
+        [tokenHash],
+      );
+      if (result.affectedRows !== 1) return null;
+      const row = await one("SELECT user_id FROM password_resets WHERE token_hash = ?", [tokenHash]);
+      return row ? (row.user_id as string) : null;
     },
 
     async createFile(input) {

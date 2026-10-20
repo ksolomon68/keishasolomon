@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { capstoneSteps, sessionById } from "@/data/cohortData";
-import { requireUser } from "@/lib/auth/session";
+import { requireCohortMember, requireUser } from "@/lib/auth/session";
 import { getStore } from "@/lib/store";
 import { DeliverableError } from "@/lib/store/deliverable-state";
 import { removeFile, saveUpload, UploadError } from "@/lib/uploads";
@@ -23,7 +23,7 @@ const idSchema = z.uuid();
 /* ---------- Instructor support ---------- */
 
 export async function createSupportRequestAction(_prev: FormState, formData: FormData): Promise<FormState> {
-  const user = await requireUser("/dashboard");
+  const user = await requireCohortMember("/dashboard");
   const values = textValues(formData);
   const parsed = supportRequestSchema.safeParse(values);
   if (!parsed.success) return { errors: fieldErrors(parsed.error), values };
@@ -34,7 +34,7 @@ export async function createSupportRequestAction(_prev: FormState, formData: For
 }
 
 export async function replyToSupportAction(_prev: FormState, formData: FormData): Promise<FormState> {
-  const user = await requireUser("/dashboard");
+  const user = await requireCohortMember("/dashboard");
   const values = textValues(formData);
   const parsed = supportReplySchema.safeParse(values);
   if (!parsed.success) return { errors: fieldErrors(parsed.error), values };
@@ -48,7 +48,7 @@ export async function replyToSupportAction(_prev: FormState, formData: FormData)
 }
 
 export async function resolveOwnSupportRequestAction(requestId: string): Promise<void> {
-  const user = await requireUser("/dashboard");
+  const user = await requireCohortMember("/dashboard");
   const store = await getStore();
   const request = await store.getSupportRequest(idSchema.parse(requestId));
   if (!request || request.userId !== user.id) throw new Error("Unknown support request.");
@@ -60,7 +60,7 @@ export async function resolveOwnSupportRequestAction(requestId: string): Promise
 /* ---------- Coaching log ---------- */
 
 export async function addCoachingNoteAction(_prev: FormState, formData: FormData): Promise<FormState> {
-  const user = await requireUser("/dashboard");
+  const user = await requireCohortMember("/dashboard");
   const values = textValues(formData);
   const parsed = coachingNoteSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { errors: fieldErrors(parsed.error), values };
@@ -72,7 +72,7 @@ export async function addCoachingNoteAction(_prev: FormState, formData: FormData
 }
 
 export async function deleteCoachingNoteAction(id: string): Promise<void> {
-  const user = await requireUser("/dashboard");
+  const user = await requireCohortMember("/dashboard");
   await (await getStore()).deleteCoachingNote(user.id, idSchema.parse(id));
   revalidatePath("/dashboard");
   revalidatePath("/admin");
@@ -88,7 +88,7 @@ export async function addFrictionAction(_prev: FormState, formData: FormData): P
   await (await getStore()).addFriction(user.id, parsed.data);
   revalidatePath("/dashboard");
   revalidatePath("/admin");
-  return { ok: true, message: "Added to your friction log." };
+  return { ok: true, message: "Added to your list." };
 }
 
 export async function setFrictionDoneAction(id: string, done: boolean): Promise<void> {
@@ -106,7 +106,7 @@ export async function deleteFrictionAction(id: string): Promise<void> {
 /* ---------- Deliverable submission hub ---------- */
 
 export async function saveDeliverableAction(_prev: FormState, formData: FormData): Promise<FormState> {
-  const user = await requireUser("/dashboard");
+  const user = await requireCohortMember("/dashboard");
   const values = textValues(formData);
   const parsed = deliverableSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { errors: fieldErrors(parsed.error), values };
@@ -171,7 +171,7 @@ export async function saveDeliverableAction(_prev: FormState, formData: FormData
 /* ---------- Capstone tracker ---------- */
 
 export async function setCapstoneStepAction(stepId: string, done: boolean): Promise<void> {
-  const user = await requireUser("/dashboard");
+  const user = await requireCohortMember("/dashboard");
   if (!capstoneSteps.some((s) => s.id === stepId)) throw new Error("Unknown capstone step.");
   await (await getStore()).setCapstoneStep(user.id, stepId, done);
   revalidatePath("/dashboard");

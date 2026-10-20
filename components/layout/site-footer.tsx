@@ -28,9 +28,12 @@ export function SiteFooter() {
             {[
               ["/#method", "The method"],
               ["/#syllabus", "Syllabus & timeline"],
+              ["/plans", "Plans & pricing"],
+              ["/start", "Start free"],
               ["/onboarding", "Before Day 1 checklist"],
               ["/#safe-harbor", "Safe Harbor pledge"],
-              ["/login", "Participant sign in"],
+              ["/register", "Activate with an access code"],
+              ["/login", "Sign in"],
             ].map(([href, label]) => (
               <li key={href}>
                 <Link href={href} className="text-white underline-offset-4 hover:text-amber hover:underline">

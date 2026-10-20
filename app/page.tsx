@@ -7,6 +7,7 @@ import { SafeHarborPledge } from "@/components/landing/safe-harbor";
 import { SyllabusTimeline } from "@/components/landing/syllabus-timeline";
 import { ValueMatrix } from "@/components/landing/value-matrix";
 import { ScrollSequence } from "@/components/landing/scroll-sequence";
+import { PlansOverview } from "@/components/landing/plans-overview";
 
 export default function HomePage() {
   return (
@@ -20,6 +21,7 @@ export default function HomePage() {
         <InstructorBlock />
         <OnboardingPreview />
         <SafeHarborPledge />
+        <PlansOverview />
         <ClosingCta />
       </div>
     </div>

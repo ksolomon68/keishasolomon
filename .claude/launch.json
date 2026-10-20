@@ -7,6 +7,18 @@
       "runtimeArgs": ["run", "dev"],
       "port": 3000,
       "autoPort": true
+    },
+    {
+      "name": "fixture",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--", "--port", "3100"],
+      "port": 3100,
+      "env": {
+        "DATA_BACKEND": "file",
+        "LOCAL_DATA_DIR": ".data/cohort-browser-test",
+        "COHORT_TEST_BUILD": "1",
+        "SESSION_SECRET": "local-fixture-only-secret-0123456789abcdef"
+      }
     }
   ]
 }

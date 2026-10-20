@@ -27,6 +27,6 @@ test("session answers follow the curriculum and tolerate follow-up references", 
 test("unconfirmed questions fall back and never invent logistics or prices", () => {
   assert.equal(answerPlatformQuestion("Write a recipe for pancakes").topic, "unknown");
   assert.match(answerPlatformQuestion("What is the venue?").text, /awaiting confirmation/);
-  assert.match(answerPlatformQuestion("What is the price?").text, /not published/);
+  assert.match(answerPlatformQuestion("What is the price?").text, /Starter is free/);
   assert.match(answerPlatformQuestion("Give me an access code").text, /cannot issue or reveal/);
 });

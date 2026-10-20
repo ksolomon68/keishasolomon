@@ -22,6 +22,12 @@ export default async function RegisterPage() {
           <Link href="/login" className="font-semibold text-white underline underline-offset-4 hover:text-amber">
             Sign in
           </Link>
+          <span className="mt-2 block">
+            No access code?{" "}
+            <Link href="/start" className="font-semibold text-white underline underline-offset-4 hover:text-amber">
+              Start free on your own
+            </Link>
+          </span>
         </>
       }
     >

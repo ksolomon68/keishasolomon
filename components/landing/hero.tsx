@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, ClipboardCheck } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import { buttonStyles } from "@/components/ui/button";
 import { cohortStats, instructor, site } from "@/data/cohortData";
 import { VideoCta } from "@/components/landing/video-cta";
@@ -35,9 +35,9 @@ export function Hero() {
               See the 8-session roadmap
               <ArrowRight className="size-4" aria-hidden="true" />
             </Link>
-            <Link href="/onboarding" className={buttonStyles({ variant: "outline" }) + " text-white"}>
-              <ClipboardCheck className="size-4" aria-hidden="true" />
-              Before Day 1 checklist
+            <Link href="/start" className={buttonStyles({ variant: "outline" }) + " text-white"}>
+              <Sparkles className="size-4" aria-hidden="true" />
+              Start free
             </Link>
             <VideoCta />
           </div>

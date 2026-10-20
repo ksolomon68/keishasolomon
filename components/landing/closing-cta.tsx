@@ -11,18 +11,24 @@ export function ClosingCta() {
           Bring one real problem. Leave with a working solution.
         </h2>
         <p className="mx-auto mt-5 max-w-2xl text-lg text-on-navy">
-          Registered participants use the portal to log workplace friction, submit deliverables and track their path
-          to the final showcase.
+          Not ready for a cohort? Start free on your own and learn when AI is worth using. Bringing a team or a
+          leadership group? Tell us about it and get a proposal.
         </p>
         <div className="mt-9 flex flex-wrap justify-center gap-3">
-          <Link href="/register" className={buttonStyles({ variant: "primary" })}>
-            Create your participant account
+          <Link href="/start" className={buttonStyles({ variant: "primary" })}>
+            Start free
             <ArrowRight className="size-4" aria-hidden="true" />
           </Link>
-          <Link href="/login" className={buttonStyles({ variant: "outline" }) + " text-white"}>
-            Sign in
+          <Link href="/plans#inquiry" className={buttonStyles({ variant: "outline" }) + " text-white"}>
+            Plan training for my team
           </Link>
         </div>
+        <p className="mt-6 text-sm text-on-navy">
+          Have an access code?{" "}
+          <Link href="/register" className="font-semibold text-white underline underline-offset-4 hover:text-amber">
+            Activate your account
+          </Link>
+        </p>
         </div>
       </div>
     </section>

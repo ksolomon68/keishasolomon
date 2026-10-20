@@ -65,8 +65,8 @@ export function SiteNav({ links, account }: SiteNavProps) {
       <Link href="/login" className={buttonStyles({ variant: "outline", size: "sm" }) + " text-white"}>
         Sign in
       </Link>
-      <Link href="/register" className={buttonStyles({ variant: "primary", size: "sm" })}>
-        Activate account
+      <Link href="/start" className={buttonStyles({ variant: "primary", size: "sm" })}>
+        Start free
       </Link>
     </>
   );

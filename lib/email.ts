@@ -133,3 +133,55 @@ ${site.name} · EVOBRAND Concepts
     };
   }
 }
+
+const escapeHtml = (value: string) =>
+  value.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+
+/** Sends a one-time reset link. Returns sent: false (never throws) so callers keep a uniform response. */
+export async function sendPasswordResetEmail({
+  to,
+  name,
+  resetUrl,
+  expiresInMinutes,
+}: {
+  to: string;
+  name: string;
+  resetUrl: string;
+  expiresInMinutes: number;
+}): Promise<{ sent: boolean; error?: string }> {
+  const transporter = getTransporter();
+  if (!transporter) return { sent: false, error: "SMTP not configured" };
+  const fromEmail = process.env.SMTP_FROM || `"The AI Executive Sandbox" <${process.env.SMTP_USER || "info@evobrand.net"}>`;
+  const text = `
+Hello ${name},
+
+Someone asked to reset the password for your ${site.name} account. To choose a new password, open this link:
+
+${resetUrl}
+
+The link works once and expires in ${expiresInMinutes} minutes. If you didn't ask for this, ignore this email; your password stays the same.
+
+${site.name} · EVOBRAND Concepts
+`.trim();
+  const html = `
+<!DOCTYPE html>
+<html>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background:#f7f9fa; color:#1e293b; padding:24px;">
+  <div style="max-width:580px; margin:0 auto; background:#ffffff; border:1px solid #e2e8f0; padding:32px;">
+    <h1 style="font-size:22px; color:#0f172a; margin:0 0 20px;">${site.name}</h1>
+    <p>Hello <strong>${escapeHtml(name)}</strong>,</p>
+    <p>Someone asked to reset the password for your account. Select the button to choose a new password.</p>
+    <p><a href="${escapeHtml(resetUrl)}" style="display:inline-block; background:#f59e0b; color:#0f172a; font-weight:600; text-decoration:none; padding:12px 24px;">Choose a new password</a></p>
+    <p style="font-size:14px; color:#475569;">The link works once and expires in ${expiresInMinutes} minutes. If you didn't ask for this, ignore this email; your password stays the same.</p>
+  </div>
+</body>
+</html>
+`.trim();
+  try {
+    await transporter.sendMail({ from: fromEmail, to, subject: `Reset your ${site.name} password`, text, html });
+    return { sent: true };
+  } catch (error) {
+    console.error("[Email] Failed to send password reset email:", error);
+    return { sent: false, error: error instanceof Error ? error.message : "Unknown error sending email" };
+  }
+}

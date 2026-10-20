@@ -167,3 +167,30 @@ CREATE TABLE IF NOT EXISTS tool_results (
   PRIMARY KEY (user_id, session_id),
   CONSTRAINT fk_tool_results_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Teams and Leadership Programs requests from the public /plans page. Not linked to an account.
+CREATE TABLE IF NOT EXISTS plan_inquiries (
+  id            CHAR(36)     NOT NULL,
+  plan          VARCHAR(16)  NOT NULL,
+  name          VARCHAR(120) NOT NULL,
+  email         VARCHAR(190) NOT NULL,
+  organization  VARCHAR(160) NOT NULL DEFAULT '',
+  team_size     VARCHAR(16)  NOT NULL,
+  message       TEXT         NULL,
+  status        VARCHAR(16)  NOT NULL DEFAULT 'new',
+  created_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_plan_inquiries_created (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Self-serve password resets. Only the SHA-256 of each emailed token is stored; tokens are single-use and short-lived.
+CREATE TABLE IF NOT EXISTS password_resets (
+  token_hash  CHAR(64)  NOT NULL,
+  user_id     CHAR(36)  NOT NULL,
+  expires_at  DATETIME  NOT NULL,
+  used_at     DATETIME  NULL,
+  created_at  DATETIME  NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (token_hash),
+  KEY idx_password_resets_user (user_id),
+  CONSTRAINT fk_password_resets_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

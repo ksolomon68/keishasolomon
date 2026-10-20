@@ -14,6 +14,7 @@ export function NextStep({ deliverables, hasFriction, schedule }: { deliverables
   const next = now ? schedule.find((s) => s.id === nextSessionId(schedule, now)) : undefined;
   const revision = deliverables.find((d) => d.status === "needs_revision");
   const outstanding = currentWorkSession(schedule, deliverables);
+  const started = !!outstanding && deliverables.some((d) => d.sessionId === outstanding.id && d.status !== "not_started");
   const action = revision ? {
     title: "Turn feedback into your next improvement.",
     body: revision.feedback || "Your instructor has requested a revision. Open the deliverable to review the criteria and update your work.",
@@ -23,9 +24,11 @@ export function NextStep({ deliverables, hasFriction, schedule }: { deliverables
     body: "Think of a repetitive task from this week. Record how often you do it and the minutes it takes. Your instructor will use this to shape the labs.",
     label: "Log my first problem", target: "friction",
   } : outstanding ? {
-    title: `Continue your ${outstanding.deliverable.title}.`,
-    body: "Open the starter and success checklist, then save a draft or send your work for instructor feedback.",
-    label: "Continue my work", target: `deliverable-${outstanding.id}`,
+    title: `${started ? "Continue" : "Start"} your ${outstanding.deliverable.title}.`,
+    body: started
+      ? "Pick up where you left off, then save a draft or send your work for instructor feedback."
+      : "Open the preparation guide and success checklist first. It takes a few minutes and shows exactly what to submit.",
+    label: started ? "Continue my work" : "Start my work", target: `deliverable-${outstanding.id}`,
   } : next ? {
     title: `Get ready for Session ${next.number}.`,
     body: learningGuides[next.id]?.prepare ?? "Prepare your five-minute demonstration: the problem, your working solution, the measured result, and what you learned.",

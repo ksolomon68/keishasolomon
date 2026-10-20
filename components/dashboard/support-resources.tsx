@@ -38,8 +38,8 @@ export function SupportResources({ coaching, toolkit }: { coaching: ReactNode; t
         panelRef={toolkitRef}
         id="toolkit"
         eyebrow="Reusable tools"
-        title="Prompt and communications toolkit"
-        description="Build a stronger AI brief or adapt a ready-to-use communications starter."
+        title="AI Fit Check, prompts and communications"
+        description="Check whether a task suits AI, build a stronger AI brief, or adapt a communications starter."
       >
         {toolkit}
       </SupportPanel>

@@ -5,6 +5,7 @@ import {
   resourceKinds,
   sessions,
 } from "@/data/cohortData";
+import { inquiryPlanOptions, teamSizeOptions } from "@/data/plans";
 
 const tuple = <T extends string>(values: readonly T[]) => values as unknown as [T, ...T[]];
 
@@ -40,11 +41,45 @@ export const registerSchema = z.object({
   accessCode: z.string().trim().min(1, "Enter the cohort access code."),
 });
 
+/** Free Starter accounts: same fields as cohort registration, without an access code. */
+export const starterRegisterSchema = registerSchema.omit({ accessCode: true });
+
+export const joinCohortSchema = z.object({
+  accessCode: z.string().trim().min(1, "Enter the cohort access code."),
+});
+
+export const inquirySchema = z.object({
+  plan: z.enum(tuple(inquiryPlanOptions.map((o) => o.value)), "Choose what you're interested in."),
+  name: z.string().trim().min(1, "Enter your name.").max(120),
+  email: z.string().trim().toLowerCase().pipe(z.email("Enter a valid email address.").max(190)),
+  organization: z.string().trim().min(1, "Enter your organization or program.").max(160),
+  teamSize: z.enum(tuple(teamSizeOptions.map((o) => o.value)), "Choose a group size."),
+  message: z.string().trim().max(2000, "Keep this under 2,000 characters.").default(""),
+});
+
+const newPassword = z
+  .string()
+  .min(10, "Use at least 10 characters.")
+  .refine((v) => new TextEncoder().encode(v).length <= 72, "Use 72 bytes or fewer.");
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().trim().toLowerCase().pipe(z.email("Enter a valid email address.")),
+});
+
+export const resetPasswordSchema = z
+  .object({
+    token: z.string().regex(/^[A-Za-z0-9_-]{43}$/, "This reset link is invalid."),
+    password: newPassword,
+    confirm: z.string(),
+  })
+  .refine((data) => data.password === data.confirm, { message: "The passwords don't match.", path: ["confirm"] });
+
 export const loginSchema = z.object({
   email: z.string().trim().toLowerCase().pipe(z.email("Enter a valid email address.")),
   password: z.string().min(1, "Enter your password."),
 });
 
+/** An empty cohort puts a participant on the free Starter plan. */
 export const createUserSchema = z
   .object({
     name: z.string().trim().min(1, "Enter a full name.").max(120),
@@ -56,10 +91,6 @@ export const createUserSchema = z
       .string()
       .min(10, "Use at least 10 characters.")
       .refine((v) => new TextEncoder().encode(v).length <= 72, "Use 72 bytes or fewer."),
-  })
-  .refine((data) => data.role !== "participant" || !!data.cohortId, {
-    message: "Select a cohort for the participant.",
-    path: ["cohortId"],
   });
 
 export const updateUserSchema = z
@@ -79,10 +110,6 @@ export const updateUserSchema = z
           .refine((v) => new TextEncoder().encode(v).length <= 72, "Use 72 bytes or fewer."),
       ])
       .transform((v) => (v === "" ? null : v)),
-  })
-  .refine((data) => data.role !== "participant" || !!data.cohortId, {
-    message: "Select a cohort for the participant.",
-    path: ["cohortId"],
   });
 
 export const frictionSchema = z.object({

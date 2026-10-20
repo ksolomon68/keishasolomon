@@ -10,6 +10,7 @@ import { CoachingReview } from "@/components/admin/coaching-review";
 import { UserManager } from "@/components/admin/user-manager";
 import { SupportInbox, type InstructorSupportThread } from "@/components/admin/support-inbox";
 import { ResultReview } from "@/components/admin/result-review";
+import { InquiryReview } from "@/components/admin/inquiry-review";
 import { instructorResults } from "@/lib/instructor-results";
 import { capstoneSteps, site } from "@/data/cohortData";
 import { requireAdmin } from "@/lib/auth/session";
@@ -55,13 +56,15 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   const counts: Record<string, number> = {};
   for (const u of users) if (u.role === "participant" && u.cohortId) counts[u.cohortId] = (counts[u.cohortId] ?? 0) + 1;
 
-  const [allAttendance, allDeliverables, allCapstone, resources, allSupportRequests, allToolResults] = await Promise.all([
+  const starterCount = users.filter((u) => u.role === "participant" && !u.cohortId).length;
+  const [allAttendance, allDeliverables, allCapstone, resources, allSupportRequests, allToolResults, inquiries] = await Promise.all([
     store.listAttendance(),
     store.listDeliverables(),
     store.listCapstone(),
     store.listResources(selected.id),
     store.listSupportRequests(),
     store.listToolResults(),
+    store.listInquiries(),
   ]);
   const attendance = allAttendance.filter((a) => ids.has(a.userId));
   const deliverables = allDeliverables.filter((d) => ids.has(d.userId));
@@ -154,6 +157,18 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             Requests are sorted by the latest activity. Urgent blockers stay visible, and each reply returns to the participant&rsquo;s private dashboard.
           </p>
           <SupportInbox threads={supportThreads} />
+        </section>
+
+        <section id="inquiries" aria-labelledby="inquiries-title" className="scroll-mt-24">
+          <p className="label text-amber-deep">Across all cohorts</p>
+          <h2 id="inquiries-title" className="mb-3 mt-2 font-display text-3xl text-navy-900 sm:text-4xl">
+            Team &amp; program requests
+          </h2>
+          <p className="mb-6 max-w-3xl text-muted">
+            Requests from the Plans page, newest first. {starterCount} {starterCount === 1 ? "person is" : "people are"} on the
+            free Starter plan; find them under User Accounts with no cohort. When a group signs on, create a cohort and send its access code.
+          </p>
+          <InquiryReview inquiries={inquiries} />
         </section>
 
         <section aria-labelledby="settings-title">

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { requireUser } from "@/lib/auth/session";
+import { requireCohortMember } from "@/lib/auth/session";
 import { getStore } from "@/lib/store";
 import { capstoneSteps } from "@/data/cohortData";
 import { cohortOf } from "@/lib/cohort";
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 };
 
 export default async function CertificatePage() {
-  const user = await requireUser("/certificate");
+  const user = await requireCohortMember("/certificate");
   const store = await getStore();
   const [capstone, cohort] = await Promise.all([store.listCapstone(user.id), cohortOf(store, user)]);
   const capstoneDone = capstone.filter((c) =>

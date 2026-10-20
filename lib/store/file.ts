@@ -18,6 +18,8 @@ import {
   type FrictionEntry,
   type Resource,
   type Store,
+  type PasswordReset,
+  type PlanInquiry,
   type StoredFile,
   type SupportMessage,
   type SupportRequest,
@@ -44,6 +46,8 @@ interface Db {
   attendance: Attendance[];
   resources: Resource[];
   files: StoredFile[];
+  inquiries: PlanInquiry[];
+  passwordResets: PasswordReset[];
 }
 
 const empty = (): Db => ({
@@ -60,6 +64,8 @@ const empty = (): Db => ({
   attendance: [],
   resources: [],
   files: [],
+  inquiries: [],
+  passwordResets: [],
 });
 
 export function createFileStore(dir = path.join(process.cwd(), ".data")): Store {
@@ -395,6 +401,34 @@ export function createFileStore(dir = path.join(process.cwd(), ".data")): Store 
         const found = db.resources.find((r) => r.id === id) ?? null;
         db.resources = db.resources.filter((r) => r.id !== id);
         return found;
+      }),
+
+    listInquiries: () => run(false, (db) => [...db.inquiries].sort((a, b) => b.createdAt.localeCompare(a.createdAt))),
+    createInquiry: (input) =>
+      run(true, (db) => {
+        const inquiry: PlanInquiry = { id: randomUUID(), status: "new", createdAt: now(), ...input };
+        db.inquiries.push(inquiry);
+        return inquiry;
+      }),
+    setInquiryStatus: (id, status) =>
+      run(true, (db) => {
+        const inquiry = db.inquiries.find((i) => i.id === id);
+        if (inquiry) inquiry.status = status;
+      }),
+
+    createPasswordReset: (userId, tokenHash, expiresAt) =>
+      run(true, (db) => {
+        const timestamp = now();
+        for (const r of db.passwordResets) if (r.userId === userId && !r.usedAt) r.usedAt = timestamp;
+        db.passwordResets.push({ tokenHash, userId, expiresAt, usedAt: null, createdAt: timestamp });
+      }),
+    consumePasswordReset: (tokenHash) =>
+      run(true, (db) => {
+        const reset = db.passwordResets.find((r) => r.tokenHash === tokenHash);
+        const timestamp = now();
+        if (!reset || reset.usedAt || reset.expiresAt <= timestamp) return null;
+        reset.usedAt = timestamp;
+        return reset.userId;
       }),
 
     createFile: (input) =>

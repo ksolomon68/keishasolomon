@@ -13,7 +13,9 @@ import { SectionNav } from "@/components/dashboard/section-nav";
 import { SupportResources } from "@/components/dashboard/support-resources";
 import { SupportCenter, type ParticipantSupportThread } from "@/components/dashboard/support-center";
 import { capstoneSteps } from "@/data/cohortData";
-import { requireUser } from "@/lib/auth/session";
+import { isStarter, requireUser } from "@/lib/auth/session";
+import { StarterDashboard } from "@/components/dashboard/starter-dashboard";
+import { AiFitCheck } from "@/components/dashboard/ai-fit-check";
 import { cohortOf, resourcesFor } from "@/lib/cohort";
 import { cohortSchedule, withDeliverables } from "@/lib/cohort-schedule";
 import { getStore } from "@/lib/store";
@@ -31,6 +33,7 @@ const formatBytes = (n: number) =>
 export default async function DashboardPage() {
   const user = await requireUser("/dashboard");
   const store = await getStore();
+  if (isStarter(user)) return <StarterDashboard user={user} friction={await store.listFriction(user.id)} />;
   const [friction, coachingNotes, deliverables, capstone, resources, cohort, supportRequests, toolDrafts, toolResults] = await Promise.all([
     store.listFriction(user.id),
     store.listCoachingNotes(user.id),
@@ -81,8 +84,8 @@ export default async function DashboardPage() {
             Welcome back, {firstName}.
           </h1>
           <p className="mt-2 max-w-2xl text-[0.9375rem] text-on-navy sm:mt-3 sm:text-base">
-            Your workspace for the eight-session cohort: prep for the next session, log friction, submit
-            deliverables and keep your capstone on track.
+            Your workspace for the eight-session cohort: prepare for the next session, note workplace problems AI could help with,
+            submit your work and keep your capstone on track.
           </p>
         </div>
       </section>
@@ -92,12 +95,12 @@ export default async function DashboardPage() {
         <ul aria-label="Your progress" className="mt-3 grid grid-cols-3 gap-px border border-line bg-line sm:hidden">
           <CompactProgressLink href="#deliverables" label="Submitted" value={`${submitted}/${deliverableSessions.length}`} />
           <CompactProgressLink href="#capstone" label="Capstone" value={`${capstoneDone}/${totalCapstoneSteps}`} />
-          <CompactProgressLink href="#friction" label="Open tasks" value={String(openFriction)} />
+          <CompactProgressLink href="#friction" label="Problems" value={String(openFriction)} />
         </ul>
         <ul aria-label="Your progress" className="mt-4 hidden gap-px border border-line bg-line sm:grid sm:grid-cols-3">
           <ProgressTile href="#deliverables" label="Deliverables submitted" value={submitted} total={deliverableSessions.length} />
           <ProgressTile href="#capstone" label="Capstone steps done" value={capstoneDone} total={totalCapstoneSteps} />
-          <ProgressTile href="#friction" label="Open friction tasks" value={openFriction} />
+          <ProgressTile href="#friction" label="Open workplace problems" value={openFriction} />
         </ul>
       </div>
 
@@ -162,6 +165,11 @@ export default async function DashboardPage() {
             }
             toolkit={
               <div className="space-y-12">
+                <div id="fit-check" className="scroll-mt-40">
+                  <h3 className="mb-2 font-display text-2xl text-navy-900">Is AI right for this task?</h3>
+                  <p className="mb-4 max-w-3xl text-muted">Six quick questions with an explained answer. Use it before you build anything new.</p>
+                  <AiFitCheck />
+                </div>
                 <div id="prompt-workshop" className="scroll-mt-40">
                   <h3 className="mb-4 font-display text-2xl text-navy-900">Better briefs. Better decisions.</h3>
                   <PromptWorkshop />

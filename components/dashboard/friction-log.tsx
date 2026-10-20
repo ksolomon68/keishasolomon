@@ -16,7 +16,8 @@ type Update = { type: "done"; id: string; done: boolean } | { type: "remove"; id
 
 const initial: FormState = {};
 
-export function FrictionLog({ entries, schedule }: { entries: FrictionEntry[]; schedule: Session[] }) {
+/** `starter` members have no cohort, so the log is personal and has no build lab to target. */
+export function FrictionLog({ entries, schedule, starter = false }: { entries: FrictionEntry[]; schedule: Session[]; starter?: boolean }) {
   const targetOptions = [
     { value: "", label: "No specific session" },
     ...schedule
@@ -39,8 +40,12 @@ export function FrictionLog({ entries, schedule }: { entries: FrictionEntry[]; s
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,22rem)_1fr]">
       <form action={action} noValidate className="h-fit space-y-4 border border-line bg-white p-5 sm:p-6">
-        <h3 className="font-display text-xl text-navy-900">Log a friction point</h3>
-        <p className="text-sm text-muted">Visible to you and your instructors so they can plan the labs. Use a task description, not private customer or employee data.</p>
+        <h3 className="font-display text-xl text-navy-900">{starter ? "Add a task to try" : "Log a workplace problem"}</h3>
+        <p className="text-sm text-muted">
+          {starter
+            ? "Only you can see this list. Describe the task, not private customer or employee details."
+            : "Visible to you and your instructors so they can plan the labs. Use a task description, not private customer or employee data."}
+        </p>
         <TextField
           id="friction-task"
           name="task"
@@ -73,14 +78,18 @@ export function FrictionLog({ entries, schedule }: { entries: FrictionEntry[]; s
             required
           />
         </div>
-        <SelectField
-          id="friction-session"
-          name="sessionId"
-          label="Target in which build lab?"
-          options={targetOptions}
-          defaultValue={v.sessionId ?? ""}
-          errors={state.errors?.sessionId}
-        />
+        {starter ? (
+          <input type="hidden" name="sessionId" value="" />
+        ) : (
+          <SelectField
+            id="friction-session"
+            name="sessionId"
+            label="Target in which build lab?"
+            options={targetOptions}
+            defaultValue={v.sessionId ?? ""}
+            errors={state.errors?.sessionId}
+          />
+        )}
         <SubmitButton variant="secondary" className="w-full" pendingLabel="Adding…">
           Add to my log
         </SubmitButton>
@@ -103,8 +112,8 @@ export function FrictionLog({ entries, schedule }: { entries: FrictionEntry[]; s
 
         {items.length === 0 ? (
           <p className="mt-6 border border-dashed border-edge p-6 text-muted">
-            Nothing logged yet. Start with the last thing that made you sigh at your desk. These entries steer the
-            build labs.
+            Nothing logged yet. Start with the last thing that made you sigh at your desk.
+            {starter ? " Then run it through the AI Fit Check." : " These entries steer the build labs."}
           </p>
         ) : (
           <ul className="divide-y divide-line">

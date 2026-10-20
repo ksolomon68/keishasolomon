@@ -28,7 +28,7 @@ const statusLabel = {
 
 export function SupportCenter({ threads }: { threads: ParticipantSupportThread[] }) {
   const [state, action] = useActionState(createSupportRequestAction, {} as FormState);
-  const [showForm, setShowForm] = useState(threads.length === 0);
+  const [showForm, setShowForm] = useState(false);
   const openCount = threads.filter((thread) => thread.status !== "resolved").length;
   const values = state.values ?? {};
 
@@ -102,7 +102,7 @@ export function SupportCenter({ threads }: { threads: ParticipantSupportThread[]
           </div>
         </div>
         {threads.length === 0 ? (
-          <p className="border border-dashed border-edge p-6 text-muted">No help requests yet. Use the form above whenever you get stuck.</p>
+          <p className="border border-dashed border-edge p-6 text-muted">No help requests yet. Select <strong>Ask your instructor</strong> whenever you get stuck.</p>
         ) : (
           <div className="space-y-3">
             {threads.map((thread) => <ParticipantThread key={thread.id} thread={thread} />)}

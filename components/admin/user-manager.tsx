@@ -49,7 +49,9 @@ export function UserManager({
 
   const filteredUsers = users.filter((u) => {
     if (roleFilter !== "all" && u.role !== roleFilter) return false;
-    if (cohortFilter !== "all" && u.cohortId !== cohortFilter) return false;
+    if (cohortFilter === "starter") {
+      if (u.role !== "participant" || u.cohortId) return false;
+    } else if (cohortFilter !== "all" && u.cohortId !== cohortFilter) return false;
     if (search.trim()) {
       const q = search.toLowerCase();
       const matchName = u.name.toLowerCase().includes(q);
@@ -138,6 +140,7 @@ export function UserManager({
               className="min-h-10 rounded-sm border border-edge bg-white px-3 text-sm text-ink"
             >
               <option value="all">All Cohorts</option>
+              <option value="starter">Starter plan (no cohort)</option>
               {cohorts.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
@@ -276,7 +279,7 @@ function UserListTable({
                     ) : u.role === "admin" ? (
                       <span className="text-xs text-muted">All Cohorts (Global)</span>
                     ) : (
-                      <span className="text-xs text-danger">Unassigned</span>
+                      <span className="text-xs text-muted">Starter plan (free)</span>
                     )}
                   </td>
                   <td className="px-5 py-4 text-right">
@@ -340,12 +343,15 @@ function CreateUserForm({
     }
   };
 
-  const cohortOptions = cohorts
-    .filter((c) => !c.archived)
-    .map((c) => ({
-      value: c.id,
-      label: `${c.name} (${c.accessCode})`,
-    }));
+  const cohortOptions = [
+    { value: "", label: "No cohort: Starter plan (free)" },
+    ...cohorts
+      .filter((c) => !c.archived)
+      .map((c) => ({
+        value: c.id,
+        label: `${c.name} (${c.accessCode})`,
+      })),
+  ];
 
   return (
     <div className="mx-auto max-w-2xl border border-line bg-white p-6 sm:p-8">
@@ -544,12 +550,15 @@ function EditUserForm({
     }
   };
 
-  const cohortOptions = cohorts
-    .filter((c) => !c.archived)
-    .map((c) => ({
-      value: c.id,
-      label: `${c.name} (${c.accessCode})`,
-    }));
+  const cohortOptions = [
+    { value: "", label: "No cohort: Starter plan (free)" },
+    ...cohorts
+      .filter((c) => !c.archived)
+      .map((c) => ({
+        value: c.id,
+        label: `${c.name} (${c.accessCode})`,
+      })),
+  ];
 
   return (
     <div className="mx-auto max-w-2xl border border-line bg-white p-6 sm:p-8">

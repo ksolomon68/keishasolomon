@@ -58,6 +58,19 @@ export async function requireUser(next?: string): Promise<User> {
   return user;
 }
 
+/** A participant who signed up for the free Starter plan and has not joined a cohort yet. */
+export const isStarter = (user: Pick<User, "role" | "cohortId">): boolean => user.role === "participant" && !user.cohortId;
+
+/**
+ * Use for cohort features (assignments, feedback, coaching, help requests, capstone). Starter members are
+ * sent to their dashboard, which explains how to join a cohort.
+ */
+export async function requireCohortMember(next?: string): Promise<User> {
+  const user = await requireUser(next);
+  if (isStarter(user)) redirect("/dashboard");
+  return user;
+}
+
 /** Use for instructor-only pages and actions. Participants are sent back to their dashboard. */
 export async function requireAdmin(next?: string): Promise<User> {
   const user = await requireUser(next);

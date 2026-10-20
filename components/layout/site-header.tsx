@@ -5,6 +5,7 @@ import { SiteNav, type NavLink } from "./site-nav";
 const links: NavLink[] = [
   { href: "/#method", label: "Method" },
   { href: "/#syllabus", label: "Syllabus" },
+  { href: "/plans", label: "Plans" },
   { href: "/onboarding", label: "Before Day 1" },
   { href: "/#safe-harbor", label: "Safe Harbor" },
 ];

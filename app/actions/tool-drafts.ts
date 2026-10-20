@@ -1,11 +1,11 @@
 "use server";
 
-import { requireUser } from "@/lib/auth/session";
+import { requireCohortMember } from "@/lib/auth/session";
 import { getStore } from "@/lib/store";
 import { parseToolDraft } from "@/lib/tool-drafts";
 
 export async function shareToolResultAction(sessionId: string, version: number) {
-  const user = await requireUser("/dashboard");
+  const user = await requireCohortMember("/dashboard");
   if (!parseToolDraft(sessionId, {}) || !Number.isSafeInteger(version) || version < 1) return { ok: false as const, message: "Save your draft before sharing results." };
   try {
     const shared = await (await getStore()).shareToolResult(user.id, sessionId, version);
@@ -16,7 +16,7 @@ export async function shareToolResultAction(sessionId: string, version: number) 
 }
 
 export async function withdrawToolResultAction(sessionId: string, version: number) {
-  const user = await requireUser("/dashboard");
+  const user = await requireCohortMember("/dashboard");
   if (!parseToolDraft(sessionId, {}) || !Number.isSafeInteger(version) || version < 1) return { ok: false as const, message: "Unknown shared result." };
   try {
     await (await getStore()).withdrawToolResult(user.id, sessionId, version);
@@ -27,7 +27,7 @@ export async function withdrawToolResultAction(sessionId: string, version: numbe
 }
 
 export async function saveToolDraftAction(sessionId: string, data: Record<string, unknown>, version: number) {
-  const user = await requireUser("/dashboard");
+  const user = await requireCohortMember("/dashboard");
   const parsed = parseToolDraft(sessionId, data);
   if (!parsed || !Number.isSafeInteger(version) || version < 0) return { ok: false as const, message: "Check your draft. A field is too long or contains an invalid value." };
   try {

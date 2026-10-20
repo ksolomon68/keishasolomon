@@ -14,14 +14,18 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
 
   return (
     <AuthShell
-      eyebrow="Participant portal"
+      eyebrow="Your account"
       title="Welcome back"
-      intro="Sign in to log friction, submit deliverables and track your capstone."
+      intro="Sign in to pick up where you left off: your tools, your work and your progress."
       footer={
         <>
-          New to the cohort?{" "}
+          New here?{" "}
+          <Link href="/start" className="font-semibold text-white underline underline-offset-4 hover:text-amber">
+            Start free
+          </Link>{" "}
+          or{" "}
           <Link href="/register" className="font-semibold text-white underline underline-offset-4 hover:text-amber">
-            Create your account
+            activate with an access code
           </Link>
         </>
       }

@@ -69,6 +69,7 @@ The public landing page still shows the program's default schedule from `data/co
 | `COHORT_ACCESS_CODE` | Optional. Only used once, to keep the existing access code on the "Founding cohort" when `db:migrate` upgrades a single-cohort database. Access codes are otherwise managed per cohort in `/admin`. |
 | `UPLOAD_DIR` | Where uploaded files are stored. Must be a **persistent** directory in production. |
 | `NEXT_PUBLIC_CONTACT_EMAIL` | Optional. Shown in the footer when set. |
+| `SMTP_HOST` `SMTP_PORT` `SMTP_SECURE` `SMTP_USER` `SMTP_PASS` `SMTP_FROM` | Outbound email for welcome messages and **password reset links**. Without them, self-serve password reset cannot reach anyone. |
 | `NEXT_PUBLIC_SITE_URL` | Canonical public URL used in metadata, invitations, certificates and the footer. Set to `https://evobrandacademy.com`. |
 
 Never commit `.env.local` (it is git-ignored). Copy `.env.example` when configuring a new environment.

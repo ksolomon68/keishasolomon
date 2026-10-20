@@ -3,6 +3,7 @@ import type {
   FrictionFrequency,
   ResourceKind,
 } from "@/data/cohortData";
+import type { InquiryPlan, TeamSize } from "@/data/plans";
 
 export type Role = "participant" | "admin";
 
@@ -144,6 +145,31 @@ export interface SupportMessage {
   createdAt: string;
 }
 
+export interface PasswordReset {
+  tokenHash: string;
+  userId: string;
+  expiresAt: string;
+  usedAt: string | null;
+  createdAt: string;
+}
+
+export type InquiryStatus = "new" | "contacted" | "closed";
+
+/** A Teams or Leadership Programs request from the public plans page. Not tied to an account. */
+export interface PlanInquiry {
+  id: string;
+  plan: InquiryPlan;
+  name: string;
+  email: string;
+  organization: string;
+  teamSize: TeamSize;
+  message: string;
+  status: InquiryStatus;
+  createdAt: string;
+}
+
+export type NewPlanInquiry = Pick<PlanInquiry, "plan" | "name" | "email" | "organization" | "teamSize" | "message">;
+
 export interface StoredFile {
   id: string;
   ownerId: string;
@@ -272,6 +298,19 @@ export interface Store {
   listResources(cohortId?: string): Promise<Resource[]>;
   createResource(input: NewResource): Promise<Resource>;
   deleteResource(id: string): Promise<Resource | null>;
+
+  /** Newest first. Instructor-only; callers authorize. */
+  listInquiries(): Promise<PlanInquiry[]>;
+  createInquiry(input: NewPlanInquiry): Promise<PlanInquiry>;
+  setInquiryStatus(id: string, status: InquiryStatus): Promise<void>;
+
+  /** Stores only the SHA-256 of a reset token. Creating one invalidates the user's earlier unused tokens. */
+  createPasswordReset(userId: string, tokenHash: string, expiresAt: string): Promise<void>;
+  /**
+   * Marks the token used and returns its user id, or null when it is unknown, used or expired.
+   * Single-use: a second call with the same hash returns null.
+   */
+  consumePasswordReset(tokenHash: string): Promise<string | null>;
 
   createFile(input: NewFile): Promise<StoredFile>;
   getFile(id: string): Promise<StoredFile | null>;
