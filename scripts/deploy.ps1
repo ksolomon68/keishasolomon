@@ -1,5 +1,5 @@
 #!/usr/bin/env pwsh
-# deploy.ps1 — Build, commit, and push so cPanel always ships fresh code.
+# deploy.ps1 -- Build, commit, and push so cPanel always ships fresh code.
 #
 # Usage:
 #   .\scripts\deploy.ps1
@@ -11,8 +11,8 @@
 #   3. Commits with a timestamped message.
 #   4. Pushes to origin/main.
 #
-# After this, go to cPanel > Git Version Control > Manage >
-# Pull or Deploy > "Update from Remote" then "Deploy HEAD Commit".
+# After this, go to cPanel -> Git Version Control -> Manage ->
+# Pull or Deploy -> "Update from Remote" then "Deploy HEAD Commit".
 
 param(
     [string]$Message = ""
@@ -37,7 +37,7 @@ git add .
 
 $Status = git status --porcelain
 if (-not $Status) {
-    Write-Host "Nothing new to commit — live site is already up to date." -ForegroundColor Yellow
+    Write-Host "Nothing new to commit -- live site is already up to date." -ForegroundColor Yellow
     exit 0
 }
 
@@ -52,5 +52,5 @@ git commit -m $Message
 Write-Host "`n===> Pushing to origin/main..." -ForegroundColor Cyan
 git push origin main
 
-Write-Host "`n===> Done! Now go to cPanel > Git Version Control > Manage >" -ForegroundColor Green
-Write-Host "     Pull or Deploy > 'Update from Remote' then 'Deploy HEAD Commit'." -ForegroundColor Green
+Write-Host "`n===> Done! Now go to cPanel -> Git Version Control -> Manage ->" -ForegroundColor Green
+Write-Host "     Pull or Deploy -> 'Update from Remote' then 'Deploy HEAD Commit'." -ForegroundColor Green

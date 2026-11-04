@@ -11,7 +11,7 @@ interface SendWelcomeEmailOptions {
 
 function getTransporter() {
   const host = process.env.SMTP_HOST;
-  const user = process.env.SMTP_USER || "info@evobrand.net";
+  const user = process.env.SMTP_USER || "info@evobrandai.com";
   const pass = process.env.SMTP_PASS;
   const port = Number(process.env.SMTP_PORT || 465);
   const secure = process.env.SMTP_SECURE !== "false" && port === 465;
@@ -28,6 +28,9 @@ function getTransporter() {
       user,
       pass,
     },
+    tls: {
+      rejectUnauthorized: process.env.SMTP_REJECT_UNAUTHORIZED === 'true',
+    },
   });
 }
 
@@ -41,7 +44,7 @@ export async function sendWelcomeEmail({
   const transporter = getTransporter();
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || site.url;
   const loginUrl = `${siteUrl}/login`;
-  const fromEmail = process.env.SMTP_FROM || `"The AI Executive Sandbox" <${process.env.SMTP_USER || "info@evobrand.net"}>`;
+  const fromEmail = process.env.SMTP_FROM || `"The AI Executive Sandbox" <${process.env.SMTP_USER || "info@evobrandai.com"}>`;
 
   if (!transporter) {
     console.warn("[Email] SMTP configuration missing (SMTP_HOST / SMTP_PASS). Skipping email dispatch.");
@@ -151,7 +154,7 @@ export async function sendPasswordResetEmail({
 }): Promise<{ sent: boolean; error?: string }> {
   const transporter = getTransporter();
   if (!transporter) return { sent: false, error: "SMTP not configured" };
-  const fromEmail = process.env.SMTP_FROM || `"The AI Executive Sandbox" <${process.env.SMTP_USER || "info@evobrand.net"}>`;
+  const fromEmail = process.env.SMTP_FROM || `"The AI Executive Sandbox" <${process.env.SMTP_USER || "info@evobrandai.com"}>`;
   const text = `
 Hello ${name},
 

@@ -5,10 +5,14 @@
  */
 const { createServer } = require("node:http");
 const next = require("next");
+const { loadEnvConfig } = require("@next/env");
+
+// Explicitly load .env and .env.local from the app directory for Phusion Passenger
+loadEnvConfig(__dirname);
 
 process.env.NODE_ENV ??= "production";
 
-const app = next({ dev: false });
+const app = next({ dev: false, dir: __dirname });
 const handle = app.getRequestHandler();
 
 app

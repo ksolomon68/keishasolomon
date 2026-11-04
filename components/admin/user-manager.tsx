@@ -495,7 +495,7 @@ function CreateUserForm({
             <p className="mt-1.5 text-sm font-medium text-danger">{state.errors.password[0]}</p>
           )}
           <p className="mt-1 text-xs text-muted">
-            If SMTP is configured (e.g. info@evobrand.net), credentials will be emailed automatically. You can also copy it directly.
+            If SMTP is configured (e.g. info@evobrandai.com), credentials will be emailed automatically. You can also copy it directly.
           </p>
         </div>
 
