@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { requireCohortMember } from "@/lib/auth/session";
 import { getStore } from "@/lib/store";
-import { capstoneSteps } from "@/data/cohortData";
+import { programCompletion } from "@/lib/program-completion";
 import { cohortOf } from "@/lib/cohort";
 import { certificateDate } from "@/lib/cohort-schedule";
 import { CertificateSheet } from "./certificate-sheet";
@@ -20,11 +20,9 @@ export default async function CertificatePage() {
   const user = await requireCohortMember("/certificate");
   const store = await getStore();
   const [capstone, cohort] = await Promise.all([store.listCapstone(user.id), cohortOf(store, user)]);
-  const capstoneDone = capstone.filter((c) =>
-    capstoneSteps.some((s) => s.id === c.stepId),
-  ).length;
-  const totalSteps = capstoneSteps.length;
-  const isCompleted = user.role === "admin" || capstoneDone >= totalSteps;
+  const completion = programCompletion(capstone.map((step) => step.stepId));
+  const { done: capstoneDone, total: totalSteps } = completion;
+  const isCompleted = user.role === "admin" || completion.complete;
 
   if (!isCompleted) {
     const percent = Math.round((capstoneDone / totalSteps) * 100);
@@ -50,7 +48,7 @@ export default async function CertificatePage() {
             >
               EVOBRAND Concepts
             </a>{" "}
-            Certificate of Completion is awarded upon finishing all milestones in your capstone project.
+            Certificate of Completion is awarded to every participant who completes the program, in both Teams and Leadership Programs. Finish all required capstone milestones to unlock yours.
           </p>
 
           {/* Progress Box */}

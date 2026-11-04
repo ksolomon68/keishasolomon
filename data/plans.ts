@@ -47,7 +47,10 @@ export const plans: Plan[] = [
       "All eight guided sessions and seven working assets",
       "Instructor feedback on every submission",
       "Team AI usage policy built from your own rules",
-      "Progress summaries for your team lead",
+      "Instructor tracking of progress and completed work",
+      "One remote 1:1 coaching session per participant",
+      "Capstone project and final showcase",
+      "Certificate of Completion after completing the program",
     ],
     cta: { label: "Plan training for my team", href: "/plans?plan=teams#inquiry" },
     highlighted: true,
@@ -58,13 +61,13 @@ export const plans: Plan[] = [
     audience: "For leadership programs and workshops",
     price: "Custom",
     priceNote: "Cohorts, retreats and one-day workshops",
-    summary: "The full AI Executive Sandbox: in-person, hands-on sessions for leaders, plus 1:1 coaching between sessions.",
+    summary: "The full AI Executive Sandbox adapted for leadership groups: in-person sessions, practical projects and one private coaching session per participant.",
     features: [
       "Everything in Teams",
       "Eight 90-minute in-person sessions, weekly or monthly",
       "One remote 1:1 coaching session per participant, with a private coaching log",
       "Capstone project and final showcase",
-      "Certificate of Completion",
+      "Certificate of Completion after completing the program",
       "Single-day workshop formats available",
     ],
     cta: { label: "Bring the Sandbox to my program", href: "/plans?plan=programs#inquiry" },
@@ -80,12 +83,16 @@ export const planComparison: { feature: string; starter: boolean | string; teams
   { feature: "Session tools and saved drafts", starter: false, teams: true, programs: true },
   { feature: "Instructor feedback on your work", starter: false, teams: true, programs: true },
   { feature: "Help requests to your instructor", starter: false, teams: true, programs: true },
-  { feature: "Private cohort for your organization", starter: false, teams: true, programs: "Optional" },
-  { feature: "Remote 1:1 coaching", starter: false, teams: "Optional", programs: true },
+  { feature: "Cohort access code and calendar", starter: false, teams: true, programs: true },
+  { feature: "Remote 1:1 coaching", starter: false, teams: "1 per participant", programs: "1 per participant" },
   { feature: "Capstone and certificate", starter: false, teams: true, programs: true },
 ];
 
 export const planFaqs = [
+  {
+    q: "Who receives a Certificate of Completion?",
+    a: "Every participant who completes the full cohort program receives a Certificate of Completion, whether they join through Teams or Leadership Programs. Complete all required capstone milestones in your dashboard to unlock your certificate, then print it or save it as a PDF. Starter is an introduction; join a cohort to complete the full program. Short workshop formats and their completion requirements are agreed with the instructor before enrollment.",
+  },
   {
     q: "Is Starter really free?",
     a: "Yes. Create an account with your name, email and a password. There is no trial period and nothing to cancel.",

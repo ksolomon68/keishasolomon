@@ -5,6 +5,7 @@ import { CoachingLog } from "@/components/dashboard/coaching-log";
 import { MarketingToolkit } from "@/components/dashboard/marketing-toolkit";
 import { RemoteCoaching } from "@/components/dashboard/remote-coaching";
 import { coachingRequestId } from "@/lib/coaching-request";
+import { programCompletion } from "@/lib/program-completion";
 import { SessionGrid } from "@/components/dashboard/session-grid";
 import { NextStep } from "@/components/dashboard/next-step";
 import { PromptWorkshop } from "@/components/dashboard/prompt-workshop";
@@ -13,7 +14,6 @@ import { DashboardPath } from "@/components/dashboard/dashboard-path";
 import { SectionNav } from "@/components/dashboard/section-nav";
 import { SupportResources } from "@/components/dashboard/support-resources";
 import { SupportCenter, type ParticipantSupportThread } from "@/components/dashboard/support-center";
-import { capstoneSteps } from "@/data/cohortData";
 import { isStarter, requireUser } from "@/lib/auth/session";
 import { StarterDashboard } from "@/components/dashboard/starter-dashboard";
 import { AiFitCheck } from "@/components/dashboard/ai-fit-check";
@@ -65,11 +65,9 @@ export default async function DashboardPage() {
   const submitted = deliverables.filter(
     (d) => d.status === "submitted" || d.status === "reviewed",
   ).length;
-  const capstoneDone = capstone.filter((c) =>
-    capstoneSteps.some((s) => s.id === c.stepId),
-  ).length;
-  const totalCapstoneSteps = capstoneSteps.length;
-  const isCertUnlocked = user.role === "admin" || capstoneDone >= totalCapstoneSteps;
+  const completion = programCompletion(capstone.map((step) => step.stepId));
+  const { done: capstoneDone, total: totalCapstoneSteps } = completion;
+  const isCertUnlocked = user.role === "admin" || completion.complete;
   const openFriction = friction.filter((f) => !f.done).length;
   const firstName = user.name.split(" ")[0];
 

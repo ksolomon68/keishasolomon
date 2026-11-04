@@ -11,16 +11,18 @@ export function PlanCards({ headingLevel = "h3" }: { headingLevel?: "h2" | "h3" 
       {plans.map((plan) => (
         <li
           key={plan.id}
-          className={`relative flex flex-col p-6 sm:p-8 ${plan.highlighted ? "bg-navy-900 text-white" : "bg-white text-ink"}`}
+          className={`relative flex flex-col p-6 sm:p-8 lg:row-span-7 lg:grid lg:grid-rows-subgrid ${plan.highlighted ? "bg-navy-900 text-white" : "bg-white text-ink"}`}
           data-surface={plan.highlighted ? "dark" : "light"}
         >
-          {plan.highlighted && (
-            <span className="label mb-4 self-start bg-amber px-2 py-0.5 !text-[0.6875rem] text-navy-950">Recommended for organizations</span>
-          )}
+          <div className={plan.highlighted ? "mb-4" : "hidden lg:block"}>
+            {plan.highlighted && <span className="label inline-block bg-amber px-2 py-0.5 !text-[0.6875rem] text-navy-950">Recommended for organizations</span>}
+          </div>
           <p className={`label ${plan.highlighted ? "text-amber" : "text-amber-deep"}`}>{plan.audience}</p>
           <Heading className="mt-2 font-display text-3xl">{plan.name}</Heading>
-          <p className="mt-4 font-display text-4xl font-light">{plan.price}</p>
-          <p className={`mt-1 text-sm ${plan.highlighted ? "text-on-navy" : "text-muted"}`}>{plan.priceNote}</p>
+          <div className="mt-4">
+            <p className="font-display text-4xl font-light">{plan.price}</p>
+            <p className={`mt-1 text-sm ${plan.highlighted ? "text-on-navy" : "text-muted"}`}>{plan.priceNote}</p>
+          </div>
           <p className={`mt-5 ${plan.highlighted ? "text-white/85" : "text-muted"}`}>{plan.summary}</p>
           <ul className="mt-6 flex-1 space-y-3 text-[0.9375rem]">
             {plan.features.map((feature) => (
