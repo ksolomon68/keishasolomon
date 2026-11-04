@@ -62,7 +62,7 @@ export const plans: Plan[] = [
     features: [
       "Everything in Teams",
       "Eight 90-minute in-person sessions, weekly or monthly",
-      "Remote 1:1 coaching with a private coaching log",
+      "One remote 1:1 coaching session per participant, with a private coaching log",
       "Capstone project and final showcase",
       "Certificate of Completion",
       "Single-day workshop formats available",

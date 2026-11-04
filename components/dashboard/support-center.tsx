@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState, useTransition } from "react";
+import { useActionState, useEffect, useState, useTransition } from "react";
 import { CheckCircle2, ChevronDown, LifeBuoy, MessageCircle } from "lucide-react";
 import {
   createSupportRequestAction,
@@ -27,6 +27,20 @@ const statusLabel = {
 } as const;
 
 export function SupportCenter({ threads }: { threads: ParticipantSupportThread[] }) {
+  useEffect(() => {
+    const reveal = () => {
+      const id = window.location.hash.slice(1);
+      if (!threads.some((thread) => id === `support-request-${thread.id}`)) return;
+      const target = document.getElementById(id);
+      if (target instanceof HTMLDetailsElement) {
+        target.open = true;
+        target.scrollIntoView({ block: "start" });
+      }
+    };
+    reveal();
+    window.addEventListener("hashchange", reveal);
+    return () => window.removeEventListener("hashchange", reveal);
+  }, [threads]);
   const [state, action] = useActionState(createSupportRequestAction, {} as FormState);
   const [showForm, setShowForm] = useState(false);
   const openCount = threads.filter((thread) => thread.status !== "resolved").length;
@@ -117,7 +131,7 @@ function ParticipantThread({ thread }: { thread: ParticipantSupportThread }) {
   const [pending, startTransition] = useTransition();
   const latest = thread.messages.at(-1);
   return (
-    <details className="group border border-line bg-white" open={thread.status === "waiting_on_participant"}>
+    <details id={`support-request-${thread.id}`} className="group scroll-mt-40 border border-line bg-white" open={thread.status === "waiting_on_participant"}>
       <summary className="flex min-h-16 cursor-pointer list-none flex-wrap items-center gap-3 p-4 [&::-webkit-details-marker]:hidden">
         <MessageCircle className="size-5 shrink-0 text-cyan-deep" aria-hidden="true" />
         <span className="min-w-0 flex-1">
@@ -134,9 +148,12 @@ function ParticipantThread({ thread }: { thread: ParticipantSupportThread }) {
       </summary>
       <div className="border-t border-line p-4 sm:p-5">
         <MessageHistory messages={thread.messages} />
+        <>
+          {thread.status === "resolved" && <p className="mb-3 text-sm text-muted">Reply to reopen this conversation if you need a follow-up or a time change.</p>}
+          <SupportReplyForm requestId={thread.id} />
+        </>
         {thread.status !== "resolved" ? (
           <>
-            <SupportReplyForm requestId={thread.id} />
             <button
               type="button"
               disabled={pending}

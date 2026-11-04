@@ -25,6 +25,14 @@ ADMIN_PASSWORD='choose-a-long-password' npm run admin:create -- "Keisha Solomon"
 
 ## Instructor guide
 
+### One course coaching session
+
+Each cohort participant can request one coaching session from **Dashboard → Help & resources → Remote 1:1 coaching**. They provide a focus and preferred times with a time zone. The request appears in the instructor's participant-conversation inbox. Agree on the time there, create one Google Calendar appointment, and share the invitation/Meet details in the same conversation. The platform does not create Calendar events or send booking notifications automatically; check the inbox regularly.
+
+Repeat submissions return the same conversation, including after it is resolved. Replies can reopen it for a time change without creating another entitlement. Coaching notes can be edited or deleted without resetting the limit. Limits are per participant and cohort; a genuinely different course has its own allowance. The existing support tables store these requests, so no new database migration is required. The shared `NEXT_PUBLIC_COACHING_BOOKING_URL` is no longer used; do not distribute it as a participant booking route. Existing Google Calendar appointments are not imported: review them before confirming new requests and use the conversation to manage an existing appointment if one is already booked. General help conversations are still available and do not grant additional coaching sessions.
+
+Validate the quota with `node --import tsx --test tests/coaching-request.test.ts`. For authenticated HTTP checks, use the existing synthetic fixture seeder, start `DATA_BACKEND=file LOCAL_DATA_DIR=.data/cohort-browser-test UPLOAD_DIR=.data/cohort-browser-test/uploads COHORT_TEST_BUILD=1 npm run dev -- --port 3200`, then run `node scripts/smoke-coaching.mjs`. Stop other servers using `.next-cohort-test` first. The smoke test uses only fictional accounts and reuses their one coaching conversation on subsequent runs.
+
 `/admin/guide` (button on the command center) is a printable facilitation booklet: the 90-minute run of show, how to review
 work, and a chapter per session with prep, hook and lab steps, coaching notes, peer stress-test prompts, the discussion case,
 review criteria and a capstone checkpoint. It is generated from the same data as the participant dashboard

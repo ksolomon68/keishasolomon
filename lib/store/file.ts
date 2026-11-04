@@ -3,6 +3,7 @@ import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { mergeDeliverable, normalizeDeliverable } from "./deliverable-state";
 import { sharedToolData } from "../tool-results";
+import { coachingRequestId, COACHING_REQUEST_SUBJECT } from "../coaching-request";
 import {
   AccessCodeTakenError,
   DEFAULT_COHORT_ID,
@@ -259,6 +260,19 @@ export function createFileStore(dir = path.join(process.cwd(), ".data")): Store 
         db.coachingNotes = db.coachingNotes.filter((note) => !(note.id === id && note.userId === userId));
       }),
 
+    requestCoachingSession: (userId, cohortId, body) =>
+      run(true, (db) => {
+        const user = db.users.find((item) => item.id === userId);
+        if (!user || user.role !== "participant" || user.cohortId !== cohortId) throw new Error("A participant cohort account is required.");
+        const id = coachingRequestId(userId, cohortId);
+        const existing = db.supportRequests.find((request) => request.id === id);
+        if (existing) return existing;
+        const timestamp = now();
+        const request: SupportRequest = { id, userId, subject: COACHING_REQUEST_SUBJECT, priority: "normal", status: "open", createdAt: timestamp, updatedAt: timestamp };
+        db.supportRequests.push(request);
+        db.supportMessages.push({ id: randomUUID(), requestId: id, authorId: userId, authorRole: "participant", body, createdAt: timestamp });
+        return request;
+      }),
     listSupportRequests: (userId) =>
       run(false, (db) =>
         db.supportRequests

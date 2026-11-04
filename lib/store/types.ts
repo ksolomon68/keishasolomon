@@ -273,6 +273,8 @@ export interface Store {
   listSupportRequests(userId?: string): Promise<SupportRequest[]>;
   getSupportRequest(id: string): Promise<SupportRequest | null>;
   createSupportRequest(userId: string, input: NewSupportRequest): Promise<SupportRequest>;
+  /** Exactly one coaching conversation per participant and course, including after resolution. */
+  requestCoachingSession(userId: string, cohortId: string, body: string): Promise<SupportRequest>;
   listSupportMessages(requestId: string): Promise<SupportMessage[]>;
   addSupportMessage(
     requestId: string,

@@ -4,6 +4,7 @@ import { FrictionLog } from "@/components/dashboard/friction-log";
 import { CoachingLog } from "@/components/dashboard/coaching-log";
 import { MarketingToolkit } from "@/components/dashboard/marketing-toolkit";
 import { RemoteCoaching } from "@/components/dashboard/remote-coaching";
+import { coachingRequestId } from "@/lib/coaching-request";
 import { SessionGrid } from "@/components/dashboard/session-grid";
 import { NextStep } from "@/components/dashboard/next-step";
 import { PromptWorkshop } from "@/components/dashboard/prompt-workshop";
@@ -159,7 +160,7 @@ export default async function DashboardPage() {
           <SupportResources
             coaching={
               <div className="space-y-10">
-                <RemoteCoaching participantName={user.name} />
+                <RemoteCoaching canRequest={user.role === "participant" && !!user.cohortId} request={user.cohortId ? supportRequests.find((request) => request.id === coachingRequestId(user.id, user.cohortId!)) ?? null : null} />
                 <CoachingLog entries={coachingNotes} />
               </div>
             }

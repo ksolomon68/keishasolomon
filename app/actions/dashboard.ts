@@ -20,6 +20,18 @@ import {
 
 const idSchema = z.uuid();
 
+export async function requestCoachingSessionAction(_prev: FormState, formData: FormData): Promise<FormState> {
+  const user = await requireCohortMember("/dashboard");
+  if (user.role !== "participant" || !user.cohortId) return { message: "A participant cohort account is required." };
+  const values = textValues(formData);
+  const parsed = z.object({ body: z.string().trim().min(10, "Add your focus and a few preferred times.").max(3000) }).safeParse(values);
+  if (!parsed.success) return { errors: fieldErrors(parsed.error), values };
+  await (await getStore()).requestCoachingSession(user.id, user.cohortId, parsed.data.body);
+  revalidatePath("/dashboard");
+  revalidatePath("/admin");
+  return { ok: true, message: "Your one coaching session has been requested. Your instructor will confirm the time and Google Meet details in your support conversation." };
+}
+
 /* ---------- Instructor support ---------- */
 
 export async function createSupportRequestAction(_prev: FormState, formData: FormData): Promise<FormState> {

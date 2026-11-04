@@ -12,7 +12,7 @@ export function CoachingSupport() {
             Your build does not have to wait until the next session.
           </h2>
           <p className="mt-5 max-w-2xl text-lg text-muted">
-            Participants can schedule a remote 1:1 coaching session when a decision, draft or workflow needs focused
+            Each cohort participant can schedule one remote 1:1 coaching session during the course when a decision, draft or workflow needs focused
             attention. Bring the real work; leave with one clear next step.
           </p>
           <Link href="/register" className={`${buttonStyles({ variant: "secondary" })} mt-8`}>

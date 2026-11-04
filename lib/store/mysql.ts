@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import mysql, { type Pool, type ResultSetHeader, type RowDataPacket } from "mysql2/promise";
 import { mergeDeliverable } from "./deliverable-state";
 import { sharedToolData } from "../tool-results";
+import { coachingRequestId, COACHING_REQUEST_SUBJECT } from "../coaching-request";
 import type { DeliverableStatus, FrictionFrequency, ResourceKind } from "@/data/cohortData";
 import type { InquiryPlan, TeamSize } from "@/data/plans";
 import {
@@ -329,6 +330,30 @@ export function createMysqlStore(pool: Pool = createPool()): Store {
       await exec("DELETE FROM coaching_notes WHERE id = ? AND user_id = ?", [id, userId]);
     },
 
+    async requestCoachingSession(userId, cohortId, body) {
+      const id = coachingRequestId(userId, cohortId);
+      const connection = await pool.getConnection();
+      try {
+        await connection.beginTransaction();
+        const [users] = await connection.execute<Row[]>("SELECT id FROM users WHERE id = ? AND cohort_id = ? AND role = 'participant' FOR UPDATE", [userId, cohortId]);
+        if (!users.length) throw new Error("A participant cohort account is required.");
+        const [existing] = await connection.execute<Row[]>("SELECT * FROM support_requests WHERE id = ?", [id]);
+        if (existing.length) {
+          await connection.commit();
+          return toSupportRequest(existing[0]);
+        }
+        await connection.execute("INSERT INTO support_requests (id, user_id, subject, priority, status) VALUES (?, ?, ?, 'normal', 'open')", [id, userId, COACHING_REQUEST_SUBJECT]);
+        await connection.execute("INSERT INTO support_messages (id, request_id, author_id, author_role, body) VALUES (?, ?, ?, 'participant', ?)", [randomUUID(), id, userId, body]);
+        const [created] = await connection.execute<Row[]>("SELECT * FROM support_requests WHERE id = ?", [id]);
+        await connection.commit();
+        return toSupportRequest(created[0]);
+      } catch (error) {
+        await connection.rollback();
+        throw error;
+      } finally {
+        connection.release();
+      }
+    },
     async listSupportRequests(userId) {
       const result = userId
         ? await rows("SELECT * FROM support_requests WHERE user_id = ? ORDER BY updated_at DESC", [userId])

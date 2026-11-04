@@ -20,7 +20,7 @@ export function CoachingLog({ entries }: { entries: CoachingNote[] }) {
         <p className="text-sm text-muted">Visible only to you and your instructors. Do not include private customer, employee, or account data.</p>
         <TextField id="coaching-topic" name="topic" label="Session focus" placeholder="e.g. Client onboarding workflow" maxLength={160} defaultValue={values.topic} errors={state.errors?.topic} required />
         <TextAreaField id="coaching-note" name="note" label="What became clear?" placeholder="Record the useful decision, feedback, or insight." maxLength={3000} defaultValue={values.note} errors={state.errors?.note} required />
-        <TextAreaField id="coaching-next-step" name="nextStep" label="Next step" placeholder="What will you do before the next session?" maxLength={500} defaultValue={values.nextStep} errors={state.errors?.nextStep} optional />
+        <TextAreaField id="coaching-next-step" name="nextStep" label="Next step" placeholder="What will you do after your coaching session?" maxLength={500} defaultValue={values.nextStep} errors={state.errors?.nextStep} optional />
         <SubmitButton className="w-full" pendingLabel="Saving…">Save coaching note</SubmitButton>
         <FormMessage ok={state.ok} message={state.message} />
       </form>
@@ -33,7 +33,7 @@ export function CoachingLog({ entries }: { entries: CoachingNote[] }) {
           {isPending && <span className="inline-flex items-center gap-2"><Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />Updating history…</span>}
         </p>
         {entries.length === 0 ? (
-          <p className="mt-6 border border-dashed border-edge p-6 text-muted">No coaching notes yet. After your next 1:1, capture the decision and one concrete follow-through.</p>
+          <p className="mt-6 border border-dashed border-edge p-6 text-muted">No coaching notes yet. After your course coaching session, capture the decision and one concrete follow-through.</p>
         ) : (
           <ul className="divide-y divide-line">
             {entries.map((entry) => <li key={entry.id} className="group relative py-5 pr-12">
