@@ -39,7 +39,9 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   if (!selected) {
     return (
       <>
-        <Hero eyebrow="Instructor view" title="Set up your first cohort" />
+        <Hero eyebrow="Instructor view" title="Set up your first cohort">
+          <Link href="/admin/inquiries" className={`${buttonStyles({ variant: "primary" })} mt-6`}>View team &amp; program inquiries</Link>
+        </Hero>
         <div className="mx-auto max-w-4xl space-y-6 px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
           <p className="max-w-2xl text-muted">
             Every participant joins through a cohort. Create one, share its access code, and the roster, resources and
@@ -125,6 +127,9 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   return (
     <>
       <Hero eyebrow={`Instructor view · ${selected.name}`} title="Cohort command center">
+        <Link href="/admin/inquiries" className={`${buttonStyles({ variant: "primary" })} mr-3 mt-6`}>
+          Team &amp; program inquiries ({inquiries.filter((inquiry) => inquiry.status === "new").length} new)
+        </Link>
         <Link href={`/admin/guide?cohort=${selected.id}`} className={`${buttonStyles({ variant: "primary" })} mt-6`}>
           <BookOpen className="size-4" aria-hidden="true" />
           Instructor guide (printable booklet)
@@ -162,7 +167,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
         <section id="inquiries" aria-labelledby="inquiries-title" className="scroll-mt-24">
           <p className="label text-amber-deep">Across all cohorts</p>
           <h2 id="inquiries-title" className="mb-3 mt-2 font-display text-3xl text-navy-900 sm:text-4xl">
-            Team &amp; program requests
+            Team &amp; program inquiries
           </h2>
           <p className="mb-6 max-w-3xl text-muted">
             Requests from the Plans page, newest first. {starterCount} {starterCount === 1 ? "person is" : "people are"} on the

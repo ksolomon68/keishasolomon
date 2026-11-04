@@ -9,10 +9,11 @@
   "/(auth)/login/page": "/login",
   "/(auth)/reset-password/page": "/reset-password",
   "/certificate/page": "/certificate",
-  "/onboarding/page": "/onboarding",
-  "/plans/page": "/plans",
   "/start/page": "/start",
+  "/plans/page": "/plans",
   "/admin/page": "/admin",
+  "/admin/inquiries/page": "/admin/inquiries",
   "/admin/guide/page": "/admin/guide",
-  "/dashboard/page": "/dashboard"
+  "/dashboard/page": "/dashboard",
+  "/onboarding/page": "/onboarding"
 }

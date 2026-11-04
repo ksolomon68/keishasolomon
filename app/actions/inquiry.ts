@@ -23,6 +23,7 @@ export async function createInquiryAction(_prev: FormState, formData: FormData):
 
   await (await getStore()).createInquiry(parsed.data);
   revalidatePath("/admin");
+  revalidatePath("/admin/inquiries");
   return {
     ok: true,
     message: "Thank you. Your request has been received, and you'll get a reply by email with next steps and a proposal.",
@@ -35,4 +36,5 @@ export async function setInquiryStatusAction(id: string, status: InquiryStatus):
   await requireAdmin("/admin");
   await (await getStore()).setInquiryStatus(z.uuid().parse(id), statusSchema.parse(status));
   revalidatePath("/admin");
+  revalidatePath("/admin/inquiries");
 }

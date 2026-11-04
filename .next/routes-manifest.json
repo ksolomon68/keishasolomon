@@ -86,6 +86,12 @@
       "namedRegex": "^/admin/guide(?:/)?$"
     },
     {
+      "page": "/admin/inquiries",
+      "regex": "^/admin/inquiries(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/inquiries(?:/)?$"
+    },
+    {
       "page": "/certificate",
       "regex": "^/certificate(?:/)?$",
       "routeKeys": {},

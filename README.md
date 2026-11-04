@@ -25,6 +25,8 @@ ADMIN_PASSWORD='choose-a-long-password' npm run admin:create -- "Keisha Solomon"
 
 ## Instructor guide
 
+**Public inquiries:** open `/admin/inquiries` or select **Team & program inquiries** at the top of the instructor dashboard. This inbox contains all submissions from the public Plans inquiry form, across all cohorts, and is available before the first cohort is created. Follow up using the submitted email and mark each request New, Contacted or Closed. This is separate from the participant support inbox; no inquiry email notification is sent automatically.
+
 ### One course coaching session
 
 Each cohort participant can request one coaching session from **Dashboard → Help & resources → Remote 1:1 coaching**. They provide a focus and preferred times with a time zone. The request appears in the instructor's participant-conversation inbox. Agree on the time there, create one Google Calendar appointment, and share the invitation/Meet details in the same conversation. The platform does not create Calendar events or send booking notifications automatically; check the inbox regularly.
