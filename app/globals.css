@@ -221,15 +221,15 @@ body {
   inset: 0;
   overflow: hidden;
   z-index: 0;
-  background: #0a182b;
+  background: #091323;
 }
 
 .ambient-background__grid {
   position: absolute;
   inset: 0;
-  background-image: linear-gradient(rgb(136 199 209 / .1) 1px, transparent 1px), linear-gradient(90deg, rgb(136 199 209 / .1) 1px, transparent 1px);
+  background-image: linear-gradient(rgb(136 199 209 / .045) 1px, transparent 1px), linear-gradient(90deg, rgb(136 199 209 / .045) 1px, transparent 1px);
   background-size: 72px 72px;
-  mask-image: linear-gradient(90deg, rgb(0 0 0 / .25), #000 65%);
+  mask-image: linear-gradient(90deg, transparent, #000 65%);
 }
 
 .ambient-background__glow {
@@ -237,21 +237,21 @@ body {
   width: min(85vw, 70rem);
   aspect-ratio: 1;
   border-radius: 50%;
-  animation: ambient-drift 18s ease-in-out infinite alternate;
+  animation: ambient-drift 24s ease-in-out infinite alternate;
 }
 
 .ambient-background__glow--cyan {
-  top: -20%;
-  right: -10%;
-  background: radial-gradient(ellipse, rgb(43 161 177 / .48), transparent 70%);
+  top: -25%;
+  right: -20%;
+  background: radial-gradient(ellipse, rgb(42 123 142 / .23), transparent 66%);
 }
 
 .ambient-background__glow--gold {
-  bottom: -35%;
-  left: -10%;
-  background: radial-gradient(ellipse, rgb(190 139 64 / .3), transparent 70%);
+  bottom: -48%;
+  left: 5%;
+  background: radial-gradient(ellipse, rgb(167 118 48 / .14), transparent 66%);
   animation-delay: -12s;
-  animation-duration: 24s;
+  animation-duration: 32s;
 }
 
 .ambient-background__network {
@@ -260,45 +260,23 @@ body {
   width: 100%;
   height: 100%;
   color: #72b6c6;
-  opacity: .85;
+  opacity: .55;
 }
 
 .ambient-background__signals {
-  animation: ambient-signal 16s linear infinite;
-  opacity: .85;
+  animation: ambient-signal 28s linear infinite;
+  opacity: .45;
 }
 
 .ambient-background__shade {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgb(7 14 28 / .4), transparent 85%), linear-gradient(0deg, rgb(7 14 28 / .2), transparent 45%);
+  background: linear-gradient(90deg, rgb(7 14 28 / .65), transparent 85%), linear-gradient(0deg, rgb(7 14 28 / .4), transparent 45%);
 }
-
-.ambient-background__control {
-  position: fixed;
-  left: 1rem;
-  bottom: 1rem;
-  z-index: 45;
-  display: inline-flex;
-  min-height: 44px;
-  align-items: center;
-  gap: .5rem;
-  padding: .6rem .85rem;
-  border: 1px solid rgb(255 255 255 / .24);
-  border-radius: 999px;
-  background: #101d30;
-  color: #e6ebf0;
-  font-size: .75rem;
-  cursor: pointer;
-}
-
-.ambient-background__control:hover { background: #1b3049; }
-.ambient-background__control:focus-visible { outline: 2px solid #f5b746; outline-offset: 3px; }
-.ambient-background[data-paused="true"] .ambient-motion { animation-play-state: paused; }
 
 @keyframes ambient-drift {
-  from { transform: translate3d(-5%, -3%, 0) scale(1); }
-  to { transform: translate3d(9%, 8%, 0) scale(1.12); }
+  from { transform: translate3d(-2%, 0, 0) scale(1); }
+  to { transform: translate3d(6%, 5%, 0) scale(1.08); }
 }
 
 @keyframes ambient-signal {
@@ -308,7 +286,6 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .ambient-motion { animation: none; }
-  .ambient-background__control { display: none; }
 }
 
 @media print {
