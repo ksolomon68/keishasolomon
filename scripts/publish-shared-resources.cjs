@@ -3,6 +3,7 @@ const fs = require("node:fs/promises");
 const path = require("node:path");
 const { createHash } = require("node:crypto");
 const mysql = require("mysql2/promise");
+const { restoreAssistantWorkbook } = require("./restore-assistant-workbook.cjs");
 
 const mimeTypes = { ".pdf": "application/pdf", ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document", ".txt": "text/plain", ".csv": "text/csv" };
 const hash = (value) => createHash("sha256").update(value).digest("hex");
@@ -92,9 +93,11 @@ async function publishSharedResources(options = {}) {
       await connection.query({ sql: "INSERT INTO resources (id, cohort_id, session_id, title, kind, link_url, file_id, created_by) VALUES (?, NULL, ?, ?, ?, NULL, ?, ?)", values: [asset.resourceId, asset.sessionId, asset.title, asset.kind, asset.fileId, owner], timeout: 20000 });
       added++;
     }
+    const restoredAssistant = await restoreAssistantWorkbook(connection, storage, path.resolve(root, "../session-materials/session-1/Personal-AI-Assistant-Workbook.docx"));
     await connection.commit();
     transaction = false;
     log(`==> Shared participant library: ${added} added, ${existing} already present. Available to every existing and future cohort.`);
+    if (restoredAssistant) log("==> Restored the original Build Your Personal AI Assistant download for every cohort.");
     return { added, existing };
   } catch (error) {
     if (transaction) await connection.rollback();

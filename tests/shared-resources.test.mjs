@@ -20,6 +20,7 @@ function database({ admin = true, failAt = -1 } = {}) {
       if (sql.includes("GET_LOCK")) { state.locks++; return [[{ acquired: 1 }]]; }
       if (sql.includes("RELEASE_LOCK")) return [[{ released: 1 }]];
       if (sql.startsWith("SELECT id FROM users")) return [admin ? [{ id: "instructor-id" }] : []];
+      if (sql.startsWith("SELECT f.id FROM files")) return [[]];
       if (sql.startsWith("SELECT id, file_id FROM resources")) return [state.resources.has(values[0]) ? [{ id: values[0], file_id: state.resources.get(values[0]).fileId }] : []];
       if (sql.startsWith("SELECT stored_name")) return [state.files.has(values[0]) ? [state.files.get(values[0])] : []];
       if (sql.startsWith("INSERT INTO files")) { state.files.set(values[0], { stored_name: values[3], size: values[5] }); return [{}]; }
