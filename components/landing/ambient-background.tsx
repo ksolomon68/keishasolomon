@@ -25,14 +25,14 @@ export function AmbientBackground() {
         <div className="ambient-background__glow ambient-background__glow--gold ambient-motion" />
         <svg className="ambient-background__network" viewBox="0 0 1280 800" preserveAspectRatio="xMidYMid slice" fill="none">
           <g stroke="currentColor" strokeWidth="1">
-            {connections.map((d) => <path key={d} d={d} opacity=".18" />)}
+            {connections.map((d) => <path key={d} d={d} opacity=".4" />)}
           </g>
-          <g className="ambient-background__signals ambient-motion" stroke="currentColor" strokeWidth="1.5" strokeDasharray="12 220">
+          <g className="ambient-background__signals ambient-motion" stroke="#a5eaf1" strokeWidth="2.5" strokeDasharray="24 208">
             {connections.slice(0, 4).map((d) => <path key={d} d={d} />)}
           </g>
           {nodes.map(([cx, cy], index) => <g key={`${cx}-${cy}`}>
-            <circle cx={cx} cy={cy} r="9" stroke="currentColor" opacity=".2" />
-            <circle cx={cx} cy={cy} r="2.5" fill={index % 3 === 0 ? "#d6ab63" : "currentColor"} opacity=".7" />
+            <circle cx={cx} cy={cy} r="9" stroke="currentColor" opacity=".45" />
+            <circle cx={cx} cy={cy} r="3.5" fill={index % 3 === 0 ? "#e5b66e" : "currentColor"} opacity=".9" />
           </g>)}
         </svg>
         <div className="ambient-background__shade" />

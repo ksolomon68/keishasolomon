@@ -11,8 +11,8 @@
   "/certificate/page": "app/certificate/page.js",
   "/onboarding/page": "app/onboarding/page.js",
   "/start/page": "app/start/page.js",
-  "/plans/page": "app/plans/page.js",
   "/admin/page": "app/admin/page.js",
   "/admin/guide/page": "app/admin/guide/page.js",
+  "/plans/page": "app/plans/page.js",
   "/dashboard/page": "app/dashboard/page.js"
 }
