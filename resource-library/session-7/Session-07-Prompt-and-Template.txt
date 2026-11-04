@@ -1,0 +1,44 @@
+Session 7: Capstone evidence and adoption package
+THE AI EXECUTIVE SANDBOX — EVOBRAND Concepts
+
+PURPOSE
+Bring your working artifact, measured evidence and limitations together into a stakeholder decision and a 30/60/90-day plan.
+
+BEFORE YOU PASTE
+Use fictional or explicitly approved examples. Do not paste private customer, employee, health or financial records into public AI tools. Follow your organization's tool and data rules. Treat outputs as drafts; a person verifies facts and approves external actions.
+
+STARTER PROMPT
+Act as a skeptical stakeholder reviewer. Given [capstone evidence], separate observations from assumptions. Challenge sample comparability, human review effort, quality and support ownership. Draft a 30/60/90-day pilot plan with named-owner placeholders and explicit success/stop conditions. Do not invent results or approvals.
+
+REUSABLE WORKING TEMPLATE
+STAKEHOLDER CAPSTONE PACKAGE
+Problem / user / owner:
+Artifact link / operating instructions:
+Baseline and measurement method:
+Observed results / number of trials / review effort:
+Limitations / data boundaries / rollback:
+Peer feedback / response:
+
+ADOPTION PLAN
+30 days — owner, experiment, success condition:
+60 days — owner, scope, decision:
+90 days — owner, support, review:
+Five-minute demo outline:
+
+TEST CASES
+1. Evidence: compare baseline and assisted work using comparable tasks and count review and correction effort.
+2. Challenge: a peer questions your strongest benefit claim. Show the actual sample count and the weakest observed result.
+3. Adoption: identify who supports the workflow, how it is paused and what result would make you stop or narrow the pilot.
+
+TEST RECORD
+Input / expected output:
+Actual output / unsupported claims:
+Human correction / rule changed:
+Time including preparation, execution, review and correction:
+Next owner and decision:
+
+TRANSFER CHALLENGE
+Rehearse a two-minute pitch. Ask a peer to challenge the weakest assumption and document the change you make before the final showcase.
+
+SAVE AND REVIEW
+Keep your own copy and follow the workbook submission instructions. Do not include passwords, private records or secret URLs.

@@ -1,0 +1,56 @@
+Session 1: Readiness audit and personal AI assistant
+THE AI EXECUTIVE SANDBOX — EVOBRAND Concepts
+
+PURPOSE
+Choose one recurring task, compare a basic prompt with a structured prompt, then turn the better version into reusable assistant instructions.
+
+BEFORE YOU PASTE
+Use fictional or explicitly approved examples. Do not paste private customer, employee, health or financial records into public AI tools. Follow your organization's tool and data rules. Treat outputs as drafts; a person verifies facts and approves external actions.
+
+STARTER PROMPT
+Act as a drafting assistant for [role]. Using only the fictional notes below, produce a table of action, owner, deadline, source evidence and unknowns. Preserve names and dates exactly. Never fill missing details from assumptions. Ask up to three clarification questions. Do not send messages or take external actions. Notes: [fictional notes].
+
+REUSABLE WORKING TEMPLATE
+AI READINESS AUDIT
+Task and owner:
+Frequency / current minutes per task:
+Success would look like:
+Allowed data / excluded data:
+
+STRUCTURED BRIEF
+Role:
+Task:
+Context and synthetic input:
+Constraints (do not invent missing facts):
+Expected output format:
+Clarifying questions needed before starting:
+
+CHALLENGE THE PLAN
+Weakest assumption:
+Evidence that would change my decision:
+Smallest useful test:
+
+PROMPT DUEL
+Basic prompt / structured brief:
+Errors and omissions in each output:
+Time including human review:
+Instruction changed after testing:
+Next experiment:
+
+TEST CASES
+1. Routine: draft a follow-up from fictional meeting notes with three agreed actions.
+2. Missing information: remove an action owner and one deadline. The assistant must mark them unknown rather than invent them.
+3. Boundary: include a fictional request to paste confidential customer records. Identify a permitted alternative before using a tool.
+
+TEST RECORD
+Input / expected output:
+Actual output / unsupported claims:
+Human correction / rule changed:
+Time including preparation, execution, review and correction:
+Next owner and decision:
+
+TRANSFER CHALLENGE
+Remove a deadline from your sample and rerun the prompt. Record whether the assistant marks the gap and whether you can explain its limits.
+
+SAVE AND REVIEW
+Keep your own copy and follow the workbook submission instructions. Do not include passwords, private records or secret URLs.

@@ -1,0 +1,20 @@
+session,title,kind,file,editable_alternative
+s1,Session 1: Readiness audit and personal AI assistant — workbook,guide,session-1/Session-01-Participant-Workbook.pdf,session-1/Session-01-Participant-Workbook.docx
+s1,Session 1: Readiness audit and personal AI assistant — prompt and template,prompt_sheet,session-1/Session-01-Prompt-and-Template.txt,
+s2,Session 2: Safe Harbor policy sprint — workbook,guide,session-2/Session-02-Participant-Workbook.pdf,session-2/Session-02-Participant-Workbook.docx
+s2,Session 2: Safe Harbor policy sprint — prompt and template,prompt_sheet,session-2/Session-02-Prompt-and-Template.txt,
+s3,Session 3: Executive triage and time evidence — workbook,guide,session-3/Session-03-Participant-Workbook.pdf,session-3/Session-03-Participant-Workbook.docx
+s3,Session 3: Executive triage and time evidence — prompt and template,prompt_sheet,session-3/Session-03-Prompt-and-Template.txt,
+s4,Session 4: Automation pipeline and recovery plan — workbook,guide,session-4/Session-04-Participant-Workbook.pdf,session-4/Session-04-Participant-Workbook.docx
+s4,Session 4: Automation pipeline and recovery plan — prompt and template,prompt_sheet,session-4/Session-04-Prompt-and-Template.txt,
+s5,Session 5: Brand voice and 30-day content plan — workbook,guide,session-5/Session-05-Participant-Workbook.pdf,session-5/Session-05-Participant-Workbook.docx
+s5,Session 5: Brand voice and 30-day content plan — prompt and template,prompt_sheet,session-5/Session-05-Prompt-and-Template.txt,
+s6,Session 6: Prototype brief and usability test — workbook,guide,session-6/Session-06-Participant-Workbook.pdf,session-6/Session-06-Participant-Workbook.docx
+s6,Session 6: Prototype brief and usability test — prompt and template,prompt_sheet,session-6/Session-06-Prompt-and-Template.txt,
+s7,Session 7: Capstone evidence and adoption package — workbook,guide,session-7/Session-07-Participant-Workbook.pdf,session-7/Session-07-Participant-Workbook.docx
+s7,Session 7: Capstone evidence and adoption package — prompt and template,prompt_sheet,session-7/Session-07-Prompt-and-Template.txt,
+s8,Session 8: Five-minute showcase and next-step guide — workbook,guide,session-8/Session-08-Participant-Workbook.pdf,session-8/Session-08-Participant-Workbook.docx
+s8,Session 8: Five-minute showcase and next-step guide — prompt and template,prompt_sheet,session-8/Session-08-Prompt-and-Template.txt,
+s3,Timing and quality evidence log,template,session-3/Timing-and-Quality-Log.csv,
+s5,30-day editorial calendar,template,session-5/30-Day-Editorial-Calendar.csv,
+s7,30/60/90-day adoption plan,template,session-7/30-60-90-Day-Adoption-Plan.csv,

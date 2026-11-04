@@ -1,0 +1,50 @@
+Session 4: Automation pipeline and recovery plan
+THE AI EXECUTIVE SANDBOX — EVOBRAND Concepts
+
+PURPOSE
+Build or simulate one intake-to-routing workflow with a clear human approval boundary and a safe response to failure.
+
+BEFORE YOU PASTE
+Use fictional or explicitly approved examples. Do not paste private customer, employee, health or financial records into public AI tools. Follow your organization's tool and data rules. Treat outputs as drafts; a person verifies facts and approves external actions.
+
+STARTER PROMPT
+Design a small test workflow for [fictional intake process]. Map trigger, validation, duplicate detection, draft, human approval, action and destination verification. Show a manual simulation alternative. Include valid, invalid, duplicate and partial-failure test cases. Never imply an external action happened without destination evidence.
+
+REUSABLE WORKING TEMPLATE
+PIPELINE HAND-OFF
+Owner / test or pilot status:
+Trigger / required inputs:
+Plan and expected output:
+Checks that must pass before action:
+Human approval point / exact version approved:
+Connected tools and minimum permissions (or manual simulation):
+
+DESTINATION LOG
+Item / intended destination / confirmed account:
+Intended time and time zone / actual recorded time:
+Destination identifier or link / status:
+
+TESTS
+Valid / invalid / duplicate / partial failure:
+Expected result / actual result / evidence:
+How to identify a safe retry:
+Failure alert / manual fallback / pause procedure:
+Approval needed before real use:
+
+TEST CASES
+1. Valid: a fictional intake contains all required fields; create the intended test record and a draft response.
+2. Invalid or duplicate: required email is missing, or the same test request arrives twice. Route to review or identify the existing record.
+3. Partial failure: the record is created but the response step fails. Identify the completed step before retrying so you do not create duplicate records or messages.
+
+TEST RECORD
+Input / expected output:
+Actual output / unsupported claims:
+Human correction / rule changed:
+Time including preparation, execution, review and correction:
+Next owner and decision:
+
+TRANSFER CHALLENGE
+Give a peer your recovery instructions. Can they identify what already happened and resume safely without your explanation? Record one improvement.
+
+SAVE AND REVIEW
+Keep your own copy and follow the workbook submission instructions. Do not include passwords, private records or secret URLs.

@@ -1,0 +1,48 @@
+Session 3: Executive triage and time evidence
+THE AI EXECUTIVE SANDBOX — EVOBRAND Concepts
+
+PURPOSE
+Build a repeatable triage workspace that turns fictional requests into a checked action list. Measure the complete task, including review.
+
+BEFORE YOU PASTE
+Use fictional or explicitly approved examples. Do not paste private customer, employee, health or financial records into public AI tools. Follow your organization's tool and data rules. Treat outputs as drafts; a person verifies facts and approves external actions.
+
+STARTER PROMPT
+Triage these fictional requests using only this priority policy: [policy]. Return priority, action, owner, deadline, evidence and uncertainty. Leave missing fields unknown. Flag conflicting instructions for human review; do not resolve them silently. Do not send, schedule, delete or update anything. Requests: [examples].
+
+REUSABLE WORKING TEMPLATE
+REUSABLE TRIAGE PLAYBOOK
+Owner / version / last-tested date:
+Task / baseline time / frequency:
+What stays the same each time:
+Inputs to supply each time:
+Priority and missing-data rules:
+Output columns (priority, action, owner, deadline, uncertainty):
+Example of an acceptable answer:
+Prompt or instructions:
+Where this playbook is saved / how to load it:
+
+TEST LOG
+Routine / missing-information / conflicting case:
+Expected result / actual result / correction:
+Time including review:
+Rule updated after the failed test:
+Who approves and acts on the result:
+
+TEST CASES
+1. Routine: five fictional requests with known owners and deadlines.
+2. Missing information: two requests have no deadline; one has no owner.
+3. Conflict: two notes give different deadlines for the same task. The output must flag the conflict for a person to resolve.
+
+TEST RECORD
+Input / expected output:
+Actual output / unsupported claims:
+Human correction / rule changed:
+Time including preparation, execution, review and correction:
+Next owner and decision:
+
+TRANSFER CHALLENGE
+Run three comparable trials. Calculate net savings = baseline minus (preparation + AI run + review + correction). Do not double-count overlapping time. Report quality failures alongside time.
+
+SAVE AND REVIEW
+Keep your own copy and follow the workbook submission instructions. Do not include passwords, private records or secret URLs.

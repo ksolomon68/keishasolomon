@@ -1,0 +1,55 @@
+Session 5: Brand voice and 30-day content plan
+THE AI EXECUTIVE SANDBOX — EVOBRAND Concepts
+
+PURPOSE
+Create a voice playbook, adapt one supported idea into three channels, and plan a realistic 30-day editorial window without assuming daily publication.
+
+BEFORE YOU PASTE
+Use fictional or explicitly approved examples. Do not paste private customer, employee, health or financial records into public AI tools. Follow your organization's tool and data rules. Treat outputs as drafts; a person verifies facts and approves external actions.
+
+STARTER PROMPT
+Using only [permitted source facts] and this voice playbook [rules], draft a short post, email and FAQ answer for [audience]. Adapt format without changing facts. Flag missing evidence instead of inventing claims or testimonials. Add a visual brief and suggested alt text. These are drafts for human approval; do not publish or schedule them.
+
+REUSABLE WORKING TEMPLATE
+BRAND VOICE PLAYBOOK
+Audience / their problem / communication goal:
+Three content pillars:
+Voice traits with do/don't examples:
+Phrases to use / avoid:
+Permitted sources / claims needing verification:
+
+ONE IDEA, THREE DRAFTS
+Source idea and supporting evidence:
+Channel 1 — audience, format, draft, call to action:
+Channel 2 — audience, format, draft, call to action:
+Channel 3 — audience, format, draft, call to action:
+Visual brief / rights / alt text:
+
+EDITORIAL CHECKS
+Facts / permissions / voice / links / accessibility:
+Changes made by the human editor:
+Exact version approved / approver / date:
+
+30-DAY CALENDAR
+Date / time / time zone / channel / topic / owner / status:
+Scheduling tool or manual simulation:
+Destination confirmation / item identifier / follow-up:
+How a failed or duplicate item is handled:
+
+TEST CASES
+1. Voice: compare a generic draft with a version using your own permitted examples and explicit do/don't rules.
+2. Evidence: include an unsupported statistic in a fictional brief. The editor must remove it or label it for verification before approval.
+3. Publication: simulate account, date, time zone and status checks. A drafted item is not a scheduled or published item.
+
+TEST RECORD
+Input / expected output:
+Actual output / unsupported claims:
+Human correction / rule changed:
+Time including preparation, execution, review and correction:
+Next owner and decision:
+
+TRANSFER CHALLENGE
+Have a peer edit one draft against the voice rules. Update the playbook and try a new topic; record whether review becomes easier without reducing accuracy.
+
+SAVE AND REVIEW
+Keep your own copy and follow the workbook submission instructions. Do not include passwords, private records or secret URLs.

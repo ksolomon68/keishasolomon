@@ -1,0 +1,51 @@
+Session 2: Safe Harbor policy sprint
+THE AI EXECUTIVE SANDBOX — EVOBRAND Concepts
+
+PURPOSE
+Use three realistic scenarios to draft a one-page organizational AI policy, then test whether a colleague can follow it.
+
+BEFORE YOU PASTE
+Use fictional or explicitly approved examples. Do not paste private customer, employee, health or financial records into public AI tools. Follow your organization's tool and data rules. Treat outputs as drafts; a person verifies facts and approves external actions.
+
+STARTER PROMPT
+Help draft a one-page internal AI usage guide for [fictional organization]. Use only these supplied rules: [rules]. Cover approved tools, permitted and prohibited data, human checks, disclosure, exceptions and incident escalation. Mark missing owners or decisions as 'approval needed'. Do not claim legal compliance. End with three scenarios to test whether the policy is understandable.
+
+REUSABLE WORKING TEMPLATE
+SAFE HARBOR POLICY DRAFT
+Scope / owner:
+Approval status / review date:
+Allowed tools and tasks:
+Prohibited data and actions:
+Ask-first situations / contact role:
+Required human checks:
+
+CONNECTED TOOL BOUNDARIES
+Tool / account owner:
+Read, draft, send, or publish permissions:
+Minimum access needed / access not needed:
+Who approves the exact output before an external action:
+How access can be revoked:
+
+SCENARIO TESTS
+Routine task — decision and reason:
+Sensitive request — decision and reason:
+Uncertain request — escalation:
+Open questions for organizational approval:
+
+TEST CASES
+1. A colleague wants to summarize a customer complaint containing personal information in a public chatbot. What must be removed, approved or avoided?
+2. A marketing draft includes a convincing but unsourced customer quote. Decide who verifies it and what happens if it cannot be verified.
+3. An employee asks AI to rank job applicants from their CVs. Identify the employment, privacy and fairness risks and the escalation owner before proceeding.
+
+TEST RECORD
+Input / expected output:
+Actual output / unsupported claims:
+Human correction / rule changed:
+Time including preparation, execution, review and correction:
+Next owner and decision:
+
+TRANSFER CHALLENGE
+Ask a peer to decide what to do in one scenario using only your policy. Replace ambiguous wording before seeking organizational approval.
+
+SAVE AND REVIEW
+Keep your own copy and follow the workbook submission instructions. Do not include passwords, private records or secret URLs.

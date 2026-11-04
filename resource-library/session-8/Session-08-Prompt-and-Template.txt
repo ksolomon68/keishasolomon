@@ -1,0 +1,40 @@
+Session 8: Five-minute showcase and next-step guide
+THE AI EXECUTIVE SANDBOX — EVOBRAND Concepts
+
+PURPOSE
+Demonstrate the problem, working solution, observed result and next decision in five minutes. Celebrate useful learning, including a well-evidenced decision not to deploy.
+
+BEFORE YOU PASTE
+Use fictional or explicitly approved examples. Do not paste private customer, employee, health or financial records into public AI tools. Follow your organization's tool and data rules. Treat outputs as drafts; a person verifies facts and approves external actions.
+
+STARTER PROMPT
+Turn this participant-supplied evidence [evidence] into a five-minute demo outline: problem, live workflow, observed result, limitation and next decision. Preserve uncertainty and sample counts. Do not invent savings, testimonials, approvals or certificate eligibility. Suggest a short fallback walkthrough if the live demo fails.
+
+REUSABLE WORKING TEMPLATE
+0:00-0:40 — problem, user and original effort
+0:40-2:40 — show one complete workflow and human check
+2:40-3:40 — measured result, method and sample count
+3:40-4:30 — limitations, governance and ownership
+4:30-5:00 — next decision and concrete ask
+Backup demonstration location
+Peer feedback: strongest evidence / unanswered question
+My next step / owner / review point
+What I will continue, change or stop
+
+TEST CASES
+1. Live demo: use fictional or approved examples and show the actual output and human check.
+2. Fallback: prepare screenshots or a walkthrough in case the tool, connection or account is unavailable.
+3. Challenge: answer a question about limitations, review effort or who will own the workflow after the course.
+
+TEST RECORD
+Input / expected output:
+Actual output / unsupported claims:
+Human correction / rule changed:
+Time including preparation, execution, review and correction:
+Next owner and decision:
+
+TRANSFER CHALLENGE
+Run once with a timer and once using only your fallback. Finish within five minutes and keep one clear action for after the course.
+
+SAVE AND REVIEW
+Keep your own copy and follow the workbook submission instructions. Do not include passwords, private records or secret URLs.

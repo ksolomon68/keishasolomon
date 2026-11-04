@@ -1,0 +1,44 @@
+Session 6: Prototype brief and usability test
+THE AI EXECUTIVE SANDBOX — EVOBRAND Concepts
+
+PURPOSE
+Create one complete interactive path for a specific visitor goal, then improve the first confusing step using observed feedback.
+
+BEFORE YOU PASTE
+Use fictional or explicitly approved examples. Do not paste private customer, employee, health or financial records into public AI tools. Follow your organization's tool and data rules. Treat outputs as drafts; a person verifies facts and approves external actions.
+
+STARTER PROMPT
+Help scope a prototype for [fictional visitor] to accomplish [one goal]. Propose a three-step journey with labels, success/error states and keyboard access. Use invented data only. Make simulated behavior explicit. List launch requirements separately; do not claim the prototype is production ready.
+
+REUSABLE WORKING TEMPLATE
+PROTOTYPE BRIEF
+Visitor / goal:
+Three-step journey:
+Primary action:
+Success / empty / error states:
+What is simulated:
+Prototype link:
+
+USABILITY CHECK
+Task given to tester:
+Mobile / keyboard observations:
+First confusion / change made:
+Next test and launch requirements:
+
+TEST CASES
+1. Success: a visitor completes the intended three-step task without your explanation.
+2. Recovery: an empty required field or invalid input produces a useful error and preserves entered information.
+3. Access: repeat on a phone and with keyboard only. Check labels, focus, readable text and the success message.
+
+TEST RECORD
+Input / expected output:
+Actual output / unsupported claims:
+Human correction / rule changed:
+Time including preparation, execution, review and correction:
+Next owner and decision:
+
+TRANSFER CHALLENGE
+Give a tester only the task, not instructions for the interface. Observe where they hesitate. Make one change and repeat before adding features.
+
+SAVE AND REVIEW
+Keep your own copy and follow the workbook submission instructions. Do not include passwords, private records or secret URLs.

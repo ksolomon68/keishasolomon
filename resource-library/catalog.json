@@ -1,0 +1,191 @@
+[
+  {
+    "sessionId": "s1",
+    "title": "Session 1: Readiness audit and personal AI assistant \u2014 workbook",
+    "kind": "guide",
+    "file": "session-1/Session-01-Participant-Workbook.pdf",
+    "sha256": "574c8b6c867fb9f4eecac2d23d763c8a42bfb9938fbd0d5eee07374f808e67ab"
+  },
+  {
+    "sessionId": "s1",
+    "title": "Session 1: Readiness audit and personal AI assistant \u2014 workbook (editable Word)",
+    "kind": "template",
+    "file": "session-1/Session-01-Participant-Workbook.docx",
+    "sha256": "a8176842b7b5e1ba3686962b1e2ad9bdc30bbd7d67f5dd22ea7eae63856b5933"
+  },
+  {
+    "sessionId": "s1",
+    "title": "Session 1: Readiness audit and personal AI assistant \u2014 prompt and template",
+    "kind": "prompt_sheet",
+    "file": "session-1/Session-01-Prompt-and-Template.txt",
+    "sha256": "f2337142f694dccf55c20896c0b799a2f57641e1270685ee29ead986c349cc23"
+  },
+  {
+    "sessionId": "s2",
+    "title": "Session 2: Safe Harbor policy sprint \u2014 workbook",
+    "kind": "guide",
+    "file": "session-2/Session-02-Participant-Workbook.pdf",
+    "sha256": "878d71bb346ef56b52041efac9fbb9a7af82ffd1e4d039d270e8fcb8cc03c92f"
+  },
+  {
+    "sessionId": "s2",
+    "title": "Session 2: Safe Harbor policy sprint \u2014 workbook (editable Word)",
+    "kind": "template",
+    "file": "session-2/Session-02-Participant-Workbook.docx",
+    "sha256": "ef88591bb84e2b60829aee54294e3af4c8b26868aa8dea1beb9c395d4df57e82"
+  },
+  {
+    "sessionId": "s2",
+    "title": "Session 2: Safe Harbor policy sprint \u2014 prompt and template",
+    "kind": "prompt_sheet",
+    "file": "session-2/Session-02-Prompt-and-Template.txt",
+    "sha256": "f398f25010f96cb9688d9e879ff8126234afea509cada8758bba5176a29c7e8c"
+  },
+  {
+    "sessionId": "s3",
+    "title": "Session 3: Executive triage and time evidence \u2014 workbook",
+    "kind": "guide",
+    "file": "session-3/Session-03-Participant-Workbook.pdf",
+    "sha256": "8f2c6967afaf4400237e542da5d4b5a8cfa9d801bc3db2c7a3cb54e764d9bde8"
+  },
+  {
+    "sessionId": "s3",
+    "title": "Session 3: Executive triage and time evidence \u2014 workbook (editable Word)",
+    "kind": "template",
+    "file": "session-3/Session-03-Participant-Workbook.docx",
+    "sha256": "00c3eb433da03b03feeab210a11e60b99ac39d333bb56a33fa4676fbb166c94a"
+  },
+  {
+    "sessionId": "s3",
+    "title": "Session 3: Executive triage and time evidence \u2014 prompt and template",
+    "kind": "prompt_sheet",
+    "file": "session-3/Session-03-Prompt-and-Template.txt",
+    "sha256": "7e7951d09930f875b1ad3bcc7b6210f9bbb6a8901768564e3c9fb30e8c325c3f"
+  },
+  {
+    "sessionId": "s4",
+    "title": "Session 4: Automation pipeline and recovery plan \u2014 workbook",
+    "kind": "guide",
+    "file": "session-4/Session-04-Participant-Workbook.pdf",
+    "sha256": "f281792410adb5a1b39f324a73dccc04955db7fa6e955fa05ba8efa7ade6ab2f"
+  },
+  {
+    "sessionId": "s4",
+    "title": "Session 4: Automation pipeline and recovery plan \u2014 workbook (editable Word)",
+    "kind": "template",
+    "file": "session-4/Session-04-Participant-Workbook.docx",
+    "sha256": "595e9a839fc62b131eb4819bb97ce5f94b3687a5a1d8083f9500338f080e18dd"
+  },
+  {
+    "sessionId": "s4",
+    "title": "Session 4: Automation pipeline and recovery plan \u2014 prompt and template",
+    "kind": "prompt_sheet",
+    "file": "session-4/Session-04-Prompt-and-Template.txt",
+    "sha256": "ef6c2d8b947611524475bc97561363420e53ecc1c1b29fc5f40f0d7d4d95cf95"
+  },
+  {
+    "sessionId": "s5",
+    "title": "Session 5: Brand voice and 30-day content plan \u2014 workbook",
+    "kind": "guide",
+    "file": "session-5/Session-05-Participant-Workbook.pdf",
+    "sha256": "abf4324aaa2a4fdbe1daa3222724291a17d3fa5e514ad05b306b1e82b7f976b2"
+  },
+  {
+    "sessionId": "s5",
+    "title": "Session 5: Brand voice and 30-day content plan \u2014 workbook (editable Word)",
+    "kind": "template",
+    "file": "session-5/Session-05-Participant-Workbook.docx",
+    "sha256": "833912a17f9ea50215739a925b0d9e5928cf661d29632b468ac05570c29cef94"
+  },
+  {
+    "sessionId": "s5",
+    "title": "Session 5: Brand voice and 30-day content plan \u2014 prompt and template",
+    "kind": "prompt_sheet",
+    "file": "session-5/Session-05-Prompt-and-Template.txt",
+    "sha256": "3cfb5387b507f233a2885cba576a0d32615c1c5cb97b63d2a251d32bb8508f71"
+  },
+  {
+    "sessionId": "s6",
+    "title": "Session 6: Prototype brief and usability test \u2014 workbook",
+    "kind": "guide",
+    "file": "session-6/Session-06-Participant-Workbook.pdf",
+    "sha256": "16ee583aa07cbe4266843dbff88e033bab4a2e560c174bccae50775b8bd1ba5f"
+  },
+  {
+    "sessionId": "s6",
+    "title": "Session 6: Prototype brief and usability test \u2014 workbook (editable Word)",
+    "kind": "template",
+    "file": "session-6/Session-06-Participant-Workbook.docx",
+    "sha256": "6892265630fd0fd55b938ba9a125eb66c40fb224197ffacde0079dfe6e6a6c79"
+  },
+  {
+    "sessionId": "s6",
+    "title": "Session 6: Prototype brief and usability test \u2014 prompt and template",
+    "kind": "prompt_sheet",
+    "file": "session-6/Session-06-Prompt-and-Template.txt",
+    "sha256": "917798831a490d14198d59fe01af383fdd1cea3c3ee725c30c442aad750a2f94"
+  },
+  {
+    "sessionId": "s7",
+    "title": "Session 7: Capstone evidence and adoption package \u2014 workbook",
+    "kind": "guide",
+    "file": "session-7/Session-07-Participant-Workbook.pdf",
+    "sha256": "234a9cf877721968d4c39a5333d21104ae1a848453fc4d0a56b4ee5a232fd480"
+  },
+  {
+    "sessionId": "s7",
+    "title": "Session 7: Capstone evidence and adoption package \u2014 workbook (editable Word)",
+    "kind": "template",
+    "file": "session-7/Session-07-Participant-Workbook.docx",
+    "sha256": "e5598ee1411d3c144c9f884287c77fe0d0bc4b9e44bebb287a3569decc87a97c"
+  },
+  {
+    "sessionId": "s7",
+    "title": "Session 7: Capstone evidence and adoption package \u2014 prompt and template",
+    "kind": "prompt_sheet",
+    "file": "session-7/Session-07-Prompt-and-Template.txt",
+    "sha256": "4128cc67bb91f16073a681442e4b2695269ae1f68af692476f1c1a91a2827375"
+  },
+  {
+    "sessionId": "s8",
+    "title": "Session 8: Five-minute showcase and next-step guide \u2014 workbook",
+    "kind": "guide",
+    "file": "session-8/Session-08-Participant-Workbook.pdf",
+    "sha256": "51a60f2b40930f31e3b81059e718e2e340a34c31c16699b1c17349bfc985ebf2"
+  },
+  {
+    "sessionId": "s8",
+    "title": "Session 8: Five-minute showcase and next-step guide \u2014 workbook (editable Word)",
+    "kind": "template",
+    "file": "session-8/Session-08-Participant-Workbook.docx",
+    "sha256": "242c5081aa20ee4bb5b8123bb7772536fa90b12d18fd25207b6a2f498e07698e"
+  },
+  {
+    "sessionId": "s8",
+    "title": "Session 8: Five-minute showcase and next-step guide \u2014 prompt and template",
+    "kind": "prompt_sheet",
+    "file": "session-8/Session-08-Prompt-and-Template.txt",
+    "sha256": "adde9bc8873c831ff773b43cb262e69b130d0f47d236b1e5a4a52c3566ab1305"
+  },
+  {
+    "sessionId": "s3",
+    "title": "Timing and quality evidence log",
+    "kind": "template",
+    "file": "session-3/Timing-and-Quality-Log.csv",
+    "sha256": "330c12a74a9286d24fbd5220c54c1fc35b17ba60c8d851f2779701bc5af80a40"
+  },
+  {
+    "sessionId": "s5",
+    "title": "30-day editorial calendar",
+    "kind": "template",
+    "file": "session-5/30-Day-Editorial-Calendar.csv",
+    "sha256": "7a6499ad772657233ee82f8fd5d955f90c0bae41c7f4fa05d92c49b60430411a"
+  },
+  {
+    "sessionId": "s7",
+    "title": "30/60/90-day adoption plan",
+    "kind": "template",
+    "file": "session-7/30-60-90-Day-Adoption-Plan.csv",
+    "sha256": "504937325cb80f817f1cf6d5f9b267b37b0cf74a43d056d554ee732df601b6a9"
+  }
+]

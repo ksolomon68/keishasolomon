@@ -97,6 +97,9 @@ echo "==> Build output shipped from git (.next). Skipping npm run build."
 # CLI flags override the larger build heap above, only for this migration process.
 UV_THREADPOOL_SIZE=1 node --v8-pool-size=1 --max-old-space-size=256 --env-file=.env.local scripts/migrate-tool-drafts.cjs
 
+# Publish the bundled participant pack once, shared with all existing and future cohorts.
+UV_THREADPOOL_SIZE=1 node --v8-pool-size=1 --max-old-space-size=256 --env-file=.env.local scripts/publish-shared-resources.cjs
+
 # 4) Assemble and validate the entire Next.js release before making it live.
 #    Previous static chunks are carried forward so open browser tabs can finish loading the old build.
 [ -f "$REPO_DIR/.next/BUILD_ID" ] || { echo "ERROR: committed .next/BUILD_ID is missing." >&2; exit 1; }
