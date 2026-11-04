@@ -1,14 +1,14 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Instrument_Sans, JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { PlatformChat } from "@/components/layout/platform-chat";
 import { instructor, site } from "@/data/cohortData";
 import "./globals.css";
 
-const display = Fraunces({ subsets: ["latin"], variable: "--font-fraunces", axes: ["opsz"] });
-const sans = Instrument_Sans({ subsets: ["latin"], variable: "--font-instrument" });
-const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains" });
+const display = localFont({ src: "./fonts/fraunces-latin.woff2", weight: "100 900", variable: "--font-fraunces", display: "swap" });
+const sans = localFont({ src: "./fonts/instrument-sans-latin.woff2", weight: "400 700", variable: "--font-instrument", display: "swap" });
+const mono = localFont({ src: "./fonts/jetbrains-mono-latin.woff2", weight: "100 800", variable: "--font-jetbrains", display: "swap" });
 
 const description =
   "An 8-session hands-on cohort for leaders, offered weekly or monthly: build real AI workflows, policies and automations in 90-minute sessions, with remote 1:1 coaching. Taught by Keisha Solomon, EVOBRAND Concepts.";

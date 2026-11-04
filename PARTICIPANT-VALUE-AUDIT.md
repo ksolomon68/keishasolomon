@@ -2,6 +2,8 @@
 
 Scope: source review of public discovery, Starter signup, invited registration, preparation, participant next steps, drafts, feedback, and support. Local validation is recorded below. This is not a production usability study or a claim about measured learning outcomes.
 
+Follow-up: onboarding now omits the calendar for both visitors and signed-in participants; cohort dates remain on the dashboard. The font-download build blocker described below was resolved by bundling the existing licensed Latin font assets locally. A fresh cPanel production build passed, along with production HTTP checks for visitor/participant onboarding, homepage and the updated coaching dashboard. Live deployment still requires cPanel to pull and deploy the new commit.
+
 ## Changes in this pass
 
 - Removed the home-page “Cohort 01” label. The current source already contains no visible calendar dates in the home-page components. Added explicit self-paced versus organization-scheduled guidance and direct activation/sign-in links near the hero actions.

@@ -1,10 +1,10 @@
 import Image from "next/image";
-import { Pinyon_Script } from "next/font/google";
+import localFont from "next/font/local";
 import { cohortStats, instructor, site } from "@/data/cohortData";
 
-// If the script face can't be fetched, fall back to the certificate's serif rather than a metric-matched sans.
-const script = Pinyon_Script({
-  subsets: ["latin"],
+// Keep the certificate face bundled, with a serif fallback.
+const script = localFont({
+  src: "../fonts/pinyon-script-latin.woff2",
   weight: "400",
   variable: "--font-script",
   adjustFontFallback: false,
