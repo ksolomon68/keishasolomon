@@ -1,5 +1,7 @@
 import nodemailer from "nodemailer";
 import { site } from "@/data/cohortData";
+import type { PlanInquiry } from "./store/types";
+import { inquiryNotification } from "./inquiry-notification";
 
 interface SendWelcomeEmailOptions {
   to: string;
@@ -9,7 +11,7 @@ interface SendWelcomeEmailOptions {
   password?: string;
 }
 
-function getTransporter() {
+function getTransporter(timeouts?: { connectionTimeout: number; greetingTimeout: number; socketTimeout: number }) {
   const host = process.env.SMTP_HOST;
   const user = process.env.SMTP_USER || "info@evobrandai.com";
   const pass = process.env.SMTP_PASS;
@@ -21,6 +23,7 @@ function getTransporter() {
   }
 
   return nodemailer.createTransport({
+    ...timeouts,
     host,
     port,
     secure,
@@ -32,6 +35,22 @@ function getTransporter() {
       rejectUnauthorized: process.env.SMTP_REJECT_UNAUTHORIZED === 'true',
     },
   });
+}
+
+/** The inquiry is already saved. Delivery failure must never discard it or invite duplicate submission. */
+export async function sendInquiryNotification(inquiry: PlanInquiry): Promise<{ sent: boolean; error?: string }> {
+  try {
+    const transporter = getTransporter({ connectionTimeout: 10000, greetingTimeout: 10000, socketTimeout: 20000 });
+    if (!transporter) return { sent: false, error: "SMTP not configured" };
+    await transporter.sendMail({
+      ...inquiryNotification(inquiry, site.url),
+      from: process.env.SMTP_FROM || `"The AI Executive Sandbox" <${process.env.SMTP_USER || "info@evobrandai.com"}>`,
+    });
+    return { sent: true };
+  } catch (error) {
+    const code = (error as { code?: string })?.code;
+    return { sent: false, error: code && /^[A-Z0-9_]+$/.test(code) ? code : "EMAIL_DELIVERY_FAILED" };
+  }
 }
 
 export async function sendWelcomeEmail({

@@ -7,6 +7,7 @@ import { requireAdmin } from "@/lib/auth/session";
 import { isLocked, recordFailure } from "@/lib/auth/rate-limit";
 import { getStore, type InquiryStatus } from "@/lib/store";
 import { fieldErrors, inquirySchema, textValues, type FormState } from "@/lib/validation";
+import { sendInquiryNotification } from "@/lib/email";
 
 /** Public form, so each address gets a small budget of inquiries rather than unlimited writes. */
 export async function createInquiryAction(_prev: FormState, formData: FormData): Promise<FormState> {
@@ -21,7 +22,9 @@ export async function createInquiryAction(_prev: FormState, formData: FormData):
   if (isLocked(limitKey)) return { message: "Too many requests from this connection. Please try again later.", values };
   recordFailure(limitKey);
 
-  await (await getStore()).createInquiry(parsed.data);
+  const inquiry = await (await getStore()).createInquiry(parsed.data);
+  const notification = await sendInquiryNotification(inquiry);
+  if (!notification.sent) console.error(`[Inquiry] Saved ${inquiry.id}; notification not delivered: ${notification.error}`);
   revalidatePath("/admin");
   revalidatePath("/admin/inquiries");
   return {

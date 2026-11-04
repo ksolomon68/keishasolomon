@@ -25,7 +25,7 @@ ADMIN_PASSWORD='choose-a-long-password' npm run admin:create -- "Keisha Solomon"
 
 ## Instructor guide
 
-**Public inquiries:** open `/admin/inquiries` or select **Team & program inquiries** at the top of the instructor dashboard. This inbox contains all submissions from the public Plans inquiry form, across all cohorts, and is available before the first cohort is created. Follow up using the submitted email and mark each request New, Contacted or Closed. This is separate from the participant support inbox; no inquiry email notification is sent automatically.
+**Public inquiries:** open `/admin/inquiries` or select **Team & program inquiries** at the top of the instructor dashboard. This inbox contains all submissions from the public Plans inquiry form, across all cohorts, and is available before the first cohort is created. After saving a new inquiry, the application attempts an email notification to **ks@evobrand.net** through the existing SMTP configuration, with the sender's details, request and a link to this inbox. Reply-To is the prospective customer's email; From remains the configured application sender. Follow up and mark each request New, Contacted or Closed. Notification failures are logged without deleting the saved inquiry or asking the visitor to resubmit. There is no automatic retry or notification backfill for older inquiries. This is separate from participant support notifications.
 
 ### One course coaching session
 

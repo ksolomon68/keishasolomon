@@ -4,16 +4,16 @@
   "/api/files/[id]/route": "/api/files/[id]",
   "/favicon.ico/route": "/favicon.ico",
   "/page": "/",
+  "/(auth)/login/page": "/login",
   "/(auth)/forgot-password/page": "/forgot-password",
   "/(auth)/register/page": "/register",
-  "/(auth)/login/page": "/login",
   "/(auth)/reset-password/page": "/reset-password",
   "/certificate/page": "/certificate",
+  "/onboarding/page": "/onboarding",
   "/start/page": "/start",
   "/plans/page": "/plans",
   "/admin/page": "/admin",
   "/admin/inquiries/page": "/admin/inquiries",
   "/admin/guide/page": "/admin/guide",
-  "/dashboard/page": "/dashboard",
-  "/onboarding/page": "/onboarding"
+  "/dashboard/page": "/dashboard"
 }
