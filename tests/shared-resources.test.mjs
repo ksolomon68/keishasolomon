@@ -20,9 +20,10 @@ function database({ admin = true, failAt = -1 } = {}) {
       if (sql.includes("GET_LOCK")) { state.locks++; return [[{ acquired: 1 }]]; }
       if (sql.includes("RELEASE_LOCK")) return [[{ released: 1 }]];
       if (sql.startsWith("SELECT id FROM users")) return [admin ? [{ id: "instructor-id" }] : []];
-      if (sql.startsWith("SELECT id FROM resources")) return [state.resources.has(values[0]) ? [{ id: values[0] }] : []];
+      if (sql.startsWith("SELECT id, file_id FROM resources")) return [state.resources.has(values[0]) ? [{ id: values[0], file_id: state.resources.get(values[0]).fileId }] : []];
       if (sql.startsWith("SELECT stored_name")) return [state.files.has(values[0]) ? [state.files.get(values[0])] : []];
       if (sql.startsWith("INSERT INTO files")) { state.files.set(values[0], { stored_name: values[3], size: values[5] }); return [{}]; }
+      if (sql.startsWith("UPDATE files SET stored_name")) { state.files.get(values[1]).stored_name = values[0]; return [{}]; }
       if (sql.startsWith("INSERT INTO resources")) {
         assert.match(sql, /VALUES \(\?, NULL, \?, \?, \?, NULL, \?, \?\)/, "every item is shared, with no external link");
         if (state.resources.size === failAt) throw Object.assign(new Error("synthetic database failure"), { code: "TEST_FAILURE" });
@@ -46,13 +47,26 @@ test("publishes all 27 checked files as shared resources, preserves existing row
     assert.equal(db.state.files.size, 27);
     assert.equal(db.state.resources.size, 27);
     assert.equal(new Set([...db.state.resources.values()].map((r) => r.session)).size, 8);
-    for (const item of await readCatalog(root)) assert.deepEqual(await readFile(path.join(storage, item.storedName)), item.content);
+    for (const item of await readCatalog(root)) {
+      assert.ok(item.storedName.length <= 80, "stored filename fits the deployed files schema");
+      assert.ok(item.originalName.length <= 255);
+      assert.ok(item.title.length <= 160);
+      assert.deepEqual(await readFile(path.join(storage, item.storedName)), item.content);
+    }
     const first = db.state.resources.values().next().value;
     first.title = "Instructor-edited title";
     assert.deepEqual(await publishSharedResources(opts), { added: 0, existing: 27 });
     assert.equal(first.title, "Instructor-edited title");
     assert.equal(db.state.commits, 2);
     assert.equal(db.state.closed, 2);
+    const asset = (await readCatalog(root))[0];
+    const prefix = asset.storedName.split("-").slice(0, 2).join("-");
+    db.state.files.get(asset.fileId).stored_name = `${prefix}-${asset.sha256}${path.extname(asset.file)}`.slice(0, 80);
+    await rm(path.join(storage, asset.storedName));
+    await publishSharedResources(opts);
+    assert.equal(db.state.files.get(asset.fileId).stored_name, asset.storedName);
+    assert.deepEqual(await readFile(path.join(storage, asset.storedName)), asset.content);
+    assert.equal(first.title, "Instructor-edited title");
     assert.ok(logs.every((line) => !line.includes(env.DB_PASSWORD)));
   } finally { await rm(storage, { recursive: true, force: true }); }
 });

@@ -28,7 +28,8 @@ async function readCatalog(root) {
     if (!mime) throw new Error("Unsupported library file type.");
     const content = await fs.readFile(filename);
     if (!content.length || content.length > 10 * 1024 * 1024 || hash(content) !== item.sha256) throw new Error("Resource integrity check failed.");
-    return { ...item, content, mime, originalName: path.basename(filename), storedName: `library-${hash(item.file).slice(0, 16)}-${item.sha256}${extension}`, fileId: libraryId("file", item.file), resourceId: libraryId("resource", item.file) };
+    // files.stored_name is VARCHAR(80); keep a content fingerprint without exceeding it.
+    return { ...item, content, mime, originalName: path.basename(filename), storedName: `library-${hash(item.file).slice(0, 16)}-${item.sha256.slice(0, 40)}${extension}`, fileId: libraryId("file", item.file), resourceId: libraryId("resource", item.file) };
   }));
 }
 
@@ -41,6 +42,14 @@ async function publishSharedResources(options = {}) {
   const root = options.root ?? path.resolve(__dirname, "../resource-library");
   const assets = await readCatalog(root);
   const storage = path.resolve(options.storage ?? env.UPLOAD_DIR ?? "./storage");
+  async function ensureStored(asset) {
+    const destination = path.join(storage, asset.storedName);
+    try { await fs.writeFile(destination, asset.content, { flag: "wx", mode: 0o600 }); }
+    catch (error) {
+      if (error.code !== "EEXIST") throw error;
+      if (hash(await fs.readFile(destination)) !== asset.sha256) throw new Error("Stored library file integrity check failed.");
+    }
+  }
   const connection = await (options.connect ?? mysql.createConnection)({ host: env.DB_HOST, port: Number(env.DB_PORT ?? 3306), database: env.DB_NAME, user: env.DB_USER, password: env.DB_PASSWORD ?? "", connectTimeout: 10000, charset: "utf8mb4" });
   let transaction = false;
   let lockHeld = false;
@@ -58,14 +67,22 @@ async function publishSharedResources(options = {}) {
     await fs.mkdir(storage, { recursive: true });
     let added = 0, existing = 0;
     for (const asset of assets) {
-      const [current] = await connection.query({ sql: "SELECT id FROM resources WHERE id = ?", values: [asset.resourceId], timeout: 20000 });
-      if (current.length) { existing++; continue; }
-      const destination = path.join(storage, asset.storedName);
-      try { await fs.writeFile(destination, asset.content, { flag: "wx", mode: 0o600 }); }
-      catch (error) {
-        if (error.code !== "EEXIST") throw error;
-        if (hash(await fs.readFile(destination)) !== asset.sha256) throw new Error("Stored library file integrity check failed.");
+      const [current] = await connection.query({ sql: "SELECT id, file_id FROM resources WHERE id = ?", values: [asset.resourceId], timeout: 20000 });
+      if (current.length) {
+        // Repair only this publisher's exact asset, including names truncated by permissive MySQL.
+        // Preserve instructor-edited resource fields and any manually substituted file.
+        if (current[0].file_id === asset.fileId) {
+          const [records] = await connection.query({ sql: "SELECT stored_name, size FROM files WHERE id = ?", values: [asset.fileId], timeout: 20000 });
+          const legacyName = `library-${hash(asset.file).slice(0, 16)}-${asset.sha256}${path.extname(asset.file)}`;
+          if (records.length && [asset.storedName, legacyName, legacyName.slice(0, 80)].includes(records[0].stored_name)) {
+            await ensureStored(asset);
+            if (records[0].stored_name !== asset.storedName) await connection.query({ sql: "UPDATE files SET stored_name = ? WHERE id = ?", values: [asset.storedName, asset.fileId], timeout: 20000 });
+          }
+        }
+        existing++;
+        continue;
       }
+      await ensureStored(asset);
       const [files] = await connection.query({ sql: "SELECT stored_name, size FROM files WHERE id = ?", values: [asset.fileId], timeout: 20000 });
       if (files.length) {
         if (files[0].stored_name !== asset.storedName || Number(files[0].size) !== asset.content.length) throw new Error("Existing library file metadata differs; no records were changed.");
