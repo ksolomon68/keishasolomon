@@ -82,6 +82,10 @@ export function OnboardingChecklist() {
         </Button>
       </div>
 
+      <p className="mt-3 text-sm text-muted">
+        Checklist progress is kept in this browser, rather than your account. Use Print to keep a copy when switching devices.
+      </p>
+
       <div className="mt-8 grid gap-8 lg:grid-cols-2">
         {groups.map((group) => (
           <fieldset key={group.key} className="min-w-0 border border-line bg-white p-5 sm:p-7">

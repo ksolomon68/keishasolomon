@@ -35,7 +35,7 @@ export function SyllabusTimeline() {
           id="syllabus-title"
           eyebrow="Curriculum & Roadmap"
           title="Eight sessions. Seven working assets. One showcase."
-          intro="Each session pairs a hook, a strategy framework and a live build lab. Filter by focus area and open a session to see what you'll build."
+          intro="Explore the learning sequence below. Each session pairs a strategy framework with a hands-on lab and a clear outcome. Your organization confirms the cohort schedule; filter by focus area to see what you'll build."
         />
 
         <div className="mt-10 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">

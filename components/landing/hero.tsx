@@ -15,7 +15,7 @@ export function Hero() {
       <div className="mx-auto grid max-w-7xl gap-12 px-4 pb-16 pt-12 sm:px-6 sm:pt-16 lg:grid-cols-[1.1fr_0.9fr] lg:gap-10 lg:px-8 lg:pb-20 lg:pt-20">
         <div className="animate-rise">
           <p className="label flex flex-wrap items-center gap-x-3 gap-y-1 text-amber">
-            <span>Cohort 01</span>
+            <span>Learn at your pace or with your team</span>
             <span aria-hidden="true" className="h-px w-8 bg-amber/60" />
             <span>8-Session Executive Cohort</span>
           </p>
@@ -41,6 +41,19 @@ export function Hero() {
             </Link>
             <VideoCta />
           </div>
+
+          <p className="mt-5 max-w-2xl text-sm text-on-navy">
+            Start free anytime. Guided cohort dates are confirmed with your organization.
+            {" "}Already invited?{" "}
+            <Link href="/register" className="font-semibold text-white underline underline-offset-4 hover:text-amber">
+              Activate with your access code
+            </Link>
+            . Already have an account?{" "}
+            <Link href="/login" className="font-semibold text-white underline underline-offset-4 hover:text-amber">
+              Sign in
+            </Link>
+            .
+          </p>
 
           <figure className="mt-10 flex max-w-xl items-center gap-4 border-l-2 border-amber pl-5">
             <div

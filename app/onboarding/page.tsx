@@ -38,7 +38,7 @@ export default async function OnboardingPage() {
 
       <div className="mx-auto max-w-7xl space-y-16 px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
         <OnboardingChecklist />
-        <SessionLogistics />
+        {cohort && <SessionLogistics />}
 
         <section aria-labelledby="safe-harbor-notice" className="border-l-4 border-cyan-deep bg-white p-6 sm:p-8">
           <h2 id="safe-harbor-notice" className="flex items-center gap-3 font-display text-2xl text-navy-900">
@@ -55,7 +55,7 @@ export default async function OnboardingPage() {
           </ul>
         </section>
 
-        <section aria-labelledby="dates-title">
+        {cohort ? <section aria-labelledby="dates-title">
           <h2 id="dates-title" className="font-display text-3xl text-navy-900">
             Cohort dates &amp; milestone schedule
           </h2>
@@ -82,13 +82,20 @@ export default async function OnboardingPage() {
               </tbody>
             </table>
           </div>
-        </section>
+        </section> : <section aria-labelledby="schedule-title" className="border border-line bg-white p-6 sm:p-8">
+          <h2 id="schedule-title" className="font-display text-3xl text-navy-900">Your cohort schedule</h2>
+          <p className="mt-3 max-w-2xl text-muted">
+            Guided sessions follow your organization&rsquo;s calendar. Sign in to your cohort account to see your dates,
+            or use the access code in your invitation to join. Free Starter learning is self-paced and has no start date.
+          </p>
+        </section>}
 
         <div className="no-print flex flex-wrap items-center gap-4 border-t border-line pt-10">
-          <p className="font-display text-2xl text-navy-900">Ready to log your first friction point?</p>
-          <Link href="/register" className={buttonStyles({ variant: "secondary" })}>
-            Create your account
+          <p className="font-display text-2xl text-navy-900">{user ? "Ready to put your learning into practice?" : "Choose your next step"}</p>
+          <Link href={user ? "/dashboard" : "/register"} className={buttonStyles({ variant: "secondary" })}>
+            {user ? "Go to my dashboard" : "Activate with an access code"}
           </Link>
+          {!user && <Link href="/start" className={buttonStyles({ variant: "outline" })}>Start free without a code</Link>}
         </div>
       </div>
     </>
