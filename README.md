@@ -84,6 +84,8 @@ Never commit `.env.local` (it is git-ignored). Copy `.env.example` when configur
 
 ## Deploying (cPanel Git deployment)
 
+**Private Server Actions key:** production builds are sanitized by `npm run build` so the generated encryption key is never committed. Deployment sanitizes the staged artifacts again. `server.js` and `npm start` supply Next.js's supported `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY` runtime override. If the environment does not supply a key, startup generates a 32-byte random key in `UPLOAD_DIR/.server-actions-key` (default `storage/.server-actions-key`, mode 0600), preserved across deployments. Never publish that file, log it or commit it. Keep it private and shared across instances if scaling to multiple servers. Do not launch sanitized artifacts with a bare `next start`; use `npm start` or the cPanel `server.js` entrypoint. After migrating from an exposed build key, open pages should be refreshed before submitting forms. Historical GitGuardian incidents can be marked resolved after the new deployment has restarted successfully; old commits still contain their retired generated keys.
+
 The repo includes `.cpanel.yml`, which runs [`scripts/cpanel-deploy.sh`](scripts/cpanel-deploy.sh). On each deploy it copies the
 code to `~/sandbox-app`, keeps the server's `.env.local`, `storage/` and `node_modules/`, and installs dependencies only
 when the lockfile changes. The committed `.next` build is staged in a versioned release directory, validated, and switched

@@ -4,11 +4,13 @@
  * Passenger supplies the listening socket/port; PORT is honoured when set.
  */
 const { createServer } = require("node:http");
-const next = require("next");
 const { loadEnvConfig } = require("@next/env");
+const { ensureServerActionKey } = require("./scripts/server-action-key.cjs");
 
 // Explicitly load .env and .env.local from the app directory for Phusion Passenger
 loadEnvConfig(__dirname);
+ensureServerActionKey(__dirname);
+const next = require("next");
 
 process.env.NODE_ENV ??= "production";
 

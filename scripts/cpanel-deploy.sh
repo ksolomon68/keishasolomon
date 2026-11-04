@@ -123,6 +123,8 @@ rm -rf "$RELEASE_TMP"
 mkdir -p "$RELEASE_TMP"
 
 rsync -a --delete --exclude='cache' "$REPO_DIR/.next/" "$RELEASE_TMP/"
+# Remove generated build keys defensively; server.js supplies a private persistent runtime key.
+node scripts/sanitize-build.cjs "$RELEASE_TMP"
 # Preserve immutable, hashed assets from earlier deployments without replacing files from the new build.
 if [ -d "$APP_DIR/.next/static" ]; then
   rsync -a --ignore-existing "$APP_DIR/.next/static/" "$RELEASE_TMP/static/"

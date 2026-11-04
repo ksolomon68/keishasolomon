@@ -5,14 +5,14 @@
   "/favicon.ico/route": "/favicon.ico",
   "/page": "/",
   "/(auth)/forgot-password/page": "/forgot-password",
-  "/(auth)/register/page": "/register",
   "/(auth)/login/page": "/login",
   "/(auth)/reset-password/page": "/reset-password",
+  "/(auth)/register/page": "/register",
   "/certificate/page": "/certificate",
   "/onboarding/page": "/onboarding",
   "/start/page": "/start",
+  "/plans/page": "/plans",
   "/admin/page": "/admin",
   "/admin/guide/page": "/admin/guide",
-  "/plans/page": "/plans",
   "/dashboard/page": "/dashboard"
 }
