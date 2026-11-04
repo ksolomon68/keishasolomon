@@ -6,13 +6,13 @@ import { OnboardingPreview } from "@/components/landing/onboarding-preview";
 import { SafeHarborPledge } from "@/components/landing/safe-harbor";
 import { SyllabusTimeline } from "@/components/landing/syllabus-timeline";
 import { ValueMatrix } from "@/components/landing/value-matrix";
-import { ScrollSequence } from "@/components/landing/scroll-sequence";
+import { AmbientBackground } from "@/components/landing/ambient-background";
 import { PlansOverview } from "@/components/landing/plans-overview";
 
 export default function HomePage() {
   return (
     <div className="relative min-h-screen">
-      <ScrollSequence />
+      <AmbientBackground />
       <div className="relative z-10">
         <Hero />
         <ValueMatrix />
