@@ -1,4 +1,4 @@
-// File: /workspace/keishasolomon/app/(auth)/reset-password/page.tsx
+// File: /home/user/keishasolomon/app/(auth)/reset-password/page.tsx
 import * as entry from '../../../../../app/(auth)/reset-password/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
