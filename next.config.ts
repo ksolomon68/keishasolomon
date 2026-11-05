@@ -12,6 +12,9 @@ const nextConfig: NextConfig = {
     // Deliverable and resource uploads travel through Server Actions (10 MB file cap + multipart overhead).
     serverActions: { bodySizeLimit: "12mb" },
   },
+  images: {
+    remotePatterns: [{ protocol: "https", hostname: "img.youtube.com" }],
+  },
   webpack: (config, { dev }) => {
     if (dev) {
       config.watchOptions = {

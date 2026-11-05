@@ -1,18 +1,11 @@
-import Image from "next/image";
 import { instructor } from "@/data/cohortData";
+import { InstructorVideo } from "@/components/landing/instructor-video";
 
 export function InstructorBlock() {
   return (
     <section aria-labelledby="instructor-title" className="home-section">
       <div className="home-shell home-surface-light grid items-center gap-10 md:grid-cols-[auto_1fr]">
-        <div className="relative size-32 shrink-0 overflow-hidden border-2 border-navy-900 bg-navy-900 sm:size-40">
-          <Image
-            src="/home.png"
-            alt={instructor.name}
-            fill
-            className="object-cover object-center"
-          />
-        </div>
+        <InstructorVideo name={instructor.name} />
         <div className="max-w-3xl">
           <p className="label text-amber-deep">{instructor.role}</p>
           <h2 id="instructor-title" className="mt-2 font-display text-4xl font-light text-navy-900">
