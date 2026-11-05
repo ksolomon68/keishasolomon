@@ -5,15 +5,15 @@
   "/favicon.ico/route": "app/favicon.ico/route.js",
   "/page": "app/page.js",
   "/(auth)/forgot-password/page": "app/(auth)/forgot-password/page.js",
-  "/(auth)/login/page": "app/(auth)/login/page.js",
   "/(auth)/register/page": "app/(auth)/register/page.js",
+  "/(auth)/login/page": "app/(auth)/login/page.js",
   "/(auth)/reset-password/page": "app/(auth)/reset-password/page.js",
   "/certificate/page": "app/certificate/page.js",
-  "/start/page": "app/start/page.js",
   "/onboarding/page": "app/onboarding/page.js",
+  "/plans/page": "app/plans/page.js",
   "/admin/page": "app/admin/page.js",
   "/admin/inquiries/page": "app/admin/inquiries/page.js",
   "/admin/guide/page": "app/admin/guide/page.js",
-  "/plans/page": "app/plans/page.js",
+  "/start/page": "app/start/page.js",
   "/dashboard/page": "app/dashboard/page.js"
 }

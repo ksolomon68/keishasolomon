@@ -4,7 +4,7 @@ import { InstructorVideo } from "@/components/landing/instructor-video";
 export function InstructorBlock() {
   return (
     <section aria-labelledby="instructor-title" className="home-section">
-      <div className="home-shell home-surface-light grid items-center gap-10 md:grid-cols-[auto_1fr]">
+      <div className="home-shell home-surface-light grid items-center gap-10 md:grid-cols-[minmax(0,420px)_1fr]">
         <InstructorVideo name={instructor.name} />
         <div className="max-w-3xl">
           <p className="label text-amber-deep">{instructor.role}</p>

@@ -5,15 +5,15 @@
   "/favicon.ico/route": "/favicon.ico",
   "/page": "/",
   "/(auth)/forgot-password/page": "/forgot-password",
-  "/(auth)/login/page": "/login",
   "/(auth)/register/page": "/register",
+  "/(auth)/login/page": "/login",
   "/(auth)/reset-password/page": "/reset-password",
   "/certificate/page": "/certificate",
-  "/start/page": "/start",
   "/onboarding/page": "/onboarding",
+  "/plans/page": "/plans",
   "/admin/page": "/admin",
   "/admin/inquiries/page": "/admin/inquiries",
   "/admin/guide/page": "/admin/guide",
-  "/plans/page": "/plans",
+  "/start/page": "/start",
   "/dashboard/page": "/dashboard"
 }
