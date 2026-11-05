@@ -14,7 +14,7 @@ export function InstructorVideo({ name }: { name: string }) {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="group relative size-32 shrink-0 overflow-hidden border-2 border-navy-900 bg-navy-900 sm:size-40"
+        className="group relative size-44 shrink-0 overflow-hidden border-2 border-navy-900 bg-navy-900 sm:size-56"
         aria-label={`Play video: ${name}`}
       >
         <Image
@@ -24,8 +24,8 @@ export function InstructorVideo({ name }: { name: string }) {
           className="object-cover object-center"
         />
         <span className="absolute inset-0 grid place-items-center bg-navy-900/30 transition-colors group-hover:bg-navy-900/50">
-          <span className="grid size-10 place-items-center rounded-full border border-amber/60 bg-navy-900/60 text-amber">
-            <Play className="size-4 fill-current" aria-hidden="true" />
+          <span className="grid size-12 place-items-center rounded-full border border-amber/60 bg-navy-900/60 text-amber">
+            <Play className="size-5 fill-current" aria-hidden="true" />
           </span>
         </span>
       </button>
