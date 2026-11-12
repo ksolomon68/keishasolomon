@@ -1,3 +1,4 @@
+import { PromptGenerator } from "./prompt-generator";
 import Link from "next/link";
 import { ArrowRight, Lock, ShieldCheck } from "lucide-react";
 import { AiFitCheck } from "@/components/dashboard/ai-fit-check";
@@ -70,7 +71,8 @@ export function StarterDashboard({ user, friction }: { user: User; friction: Fri
         </StarterSection>
 
         <StarterSection id="prompt-workshop" eyebrow="Step 2" title="Write a request AI can follow" intro="Clear requests get useful answers. Fill in each part, then copy the result into the AI tool you're allowed to use.">
-          <PromptWorkshop />
+          <PromptGenerator />
+          <details className="mt-4 border border-line bg-white p-4"><summary className="min-h-11 cursor-pointer font-semibold">Advanced: build a reusable playbook</summary><PromptWorkshop /></details>
         </StarterSection>
 
         <StarterSection id="safe-rules" eyebrow="Step 3" title="Four rules that keep you safe">

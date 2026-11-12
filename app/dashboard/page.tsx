@@ -1,3 +1,4 @@
+import { LearningJourney } from "@/components/dashboard/learning-journey";
 import { CapstoneTracker } from "@/components/dashboard/capstone-tracker";
 import { DeliverableHub, type FileInfo } from "@/components/dashboard/deliverable-hub";
 import { FrictionLog } from "@/components/dashboard/friction-log";
@@ -83,8 +84,7 @@ export default async function DashboardPage() {
             Welcome back, {firstName}.
           </h1>
           <p className="mt-2 max-w-2xl text-[0.9375rem] text-on-navy sm:mt-3 sm:text-base">
-            Your workspace for the eight-session cohort: prepare for the next session, note workplace problems AI could help with,
-            submit your work and keep your capstone on track.
+            Your learning adventure starts here. Explore bite-sized guides, generate useful prompts, and earn practice badges as you build real skills. Your saved work and instructor feedback are always available below.
           </p>
         </div>
       </section>
@@ -105,6 +105,7 @@ export default async function DashboardPage() {
 
       <SectionNav
         sections={[
+          { id: "learning-path", label: "Learn & play" },
           { id: "deliverables", label: "My work", badge: `${submitted}/${deliverableSessions.length}` },
           { id: "tools", label: "Tools" },
           { id: "progress", label: "Progress" },
@@ -114,6 +115,7 @@ export default async function DashboardPage() {
       />
 
       <div className="mx-auto max-w-7xl space-y-10 px-4 py-10 sm:space-y-14 sm:px-6 sm:py-16 lg:px-8">
+        <LearningJourney key={user.id} userId={user.id} schedule={schedule} />
         <DashSection
           id="deliverables"
           eyebrow="Start here"

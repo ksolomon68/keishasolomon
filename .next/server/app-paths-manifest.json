@@ -10,10 +10,10 @@
   "/(auth)/reset-password/page": "app/(auth)/reset-password/page.js",
   "/certificate/page": "app/certificate/page.js",
   "/onboarding/page": "app/onboarding/page.js",
-  "/plans/page": "app/plans/page.js",
+  "/start/page": "app/start/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
   "/admin/page": "app/admin/page.js",
   "/admin/inquiries/page": "app/admin/inquiries/page.js",
   "/admin/guide/page": "app/admin/guide/page.js",
-  "/start/page": "app/start/page.js",
-  "/dashboard/page": "app/dashboard/page.js"
+  "/plans/page": "app/plans/page.js"
 }

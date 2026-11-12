@@ -20,15 +20,15 @@ export function NextStep({ deliverables, hasFriction, schedule }: { deliverables
     body: revision.feedback || "Your instructor has requested a revision. Open the deliverable to review the criteria and update your work.",
     label: "Review feedback", target: `deliverable-${revision.sessionId}`,
   } : !hasFriction ? {
-    title: "Start with one task you want to improve.",
-    body: "Think of a repetitive task from this week. Record how often you do it and the minutes it takes. Your instructor will use this to shape the labs.",
-    label: "Log my first problem", target: "friction",
+    title: "Your first learning adventure is ready.",
+    body: "Pick a module, follow the short guide, and try its prompt generator. Finish the self-check to earn your first badge. No live instructor needed to get started.",
+    label: "Start learning", target: "learning-path",
   } : outstanding ? {
     title: `${started ? "Continue" : "Start"} your ${outstanding.deliverable.title}.`,
     body: started
       ? "Pick up where you left off, then save a draft or send your work for instructor feedback."
-      : "Open the preparation guide and success checklist first. It takes a few minutes and shows exactly what to submit.",
-    label: started ? "Continue my work" : "Start my work", target: `deliverable-${outstanding.id}`,
+      : "Follow Learn, Generate, and Self-check in the learning path. Each module includes instructions, examples, and a clear next action.",
+    label: started ? "Continue my work" : "Explore the learning path", target: started ? `deliverable-${outstanding.id}` : "learning-path",
   } : next ? {
     title: `Get ready for Session ${next.number}.`,
     body: learningGuides[next.id]?.prepare ?? "Prepare your five-minute demonstration: the problem, your working solution, the measured result, and what you learned.",

@@ -10,10 +10,10 @@
   "/(auth)/reset-password/page": "/reset-password",
   "/certificate/page": "/certificate",
   "/onboarding/page": "/onboarding",
-  "/plans/page": "/plans",
+  "/start/page": "/start",
+  "/dashboard/page": "/dashboard",
   "/admin/page": "/admin",
   "/admin/inquiries/page": "/admin/inquiries",
   "/admin/guide/page": "/admin/guide",
-  "/start/page": "/start",
-  "/dashboard/page": "/dashboard"
+  "/plans/page": "/plans"
 }

@@ -160,6 +160,14 @@ server.js            startup file for cPanel Node.js hosting (Passenger)
 
 `npm run dev` · `build` · `start` · `lint` · `typecheck` · `db:migrate` · `admin:create`
 
+## Self-guided learning
+
+The participant dashboard's **Learn & play** path opens all eight modules without waiting for a class date. Each module offers a guide and worked example, a prompt generator, and a success checklist. Decision labs provide immediate practice feedback where available. Schedule/materials and assignment links lead back to the existing course workspaces.
+
+Completing a module's self-check earns 100 practice XP once. First spark, Building momentum, and Trailblazer badges recognize one, three, and all completed modules. This self-reported practice progress is stored per account in the current browser, resumes after reload, and does not change instructor reviews or certificate eligibility. If browser storage is blocked, progress lasts only for the current visit. Submitted assignments and capstone milestones continue to use the existing account storage.
+
+The prompt playground provides planning, summarizing, message drafting, and idea-testing recipes, with copy/download controls and fictional example input. It assembles text locally; it does not call an AI service. Inputs clear when leaving the generator, so copy or download prompts to keep them. Starter participants can also use these generators. Run focused checks with `node --import tsx --test tests/learning-journey.test.ts tests/participant-path.test.ts tests/program-completion.test.ts`.
+
 ## Guided practice and instructor feedback
 
 The dashboard includes a reusable prompt workshop and seven decision exercises adapted from the supplied cohort source summary. See `CONTENT-SOURCE-NOTES.md` for the source mapping, editorial choices, and validation limits. Core guides live in `data/learning-guides.ts`; no AI API or paid scheduling tool is required to use them.
