@@ -1,4 +1,4 @@
-# The AI Executive Sandbox — evobrandacademy.com
+# The AI Executive Sandbox — evobrandai.com
 
 Cohort platform for **The AI Executive Sandbox: Applied Leadership & Innovation**, taught by Keisha Solomon ([EVOBRAND Concepts](https://evobrand.net)).
 
@@ -80,7 +80,7 @@ The public landing page still shows the program's default schedule from `data/co
 | `UPLOAD_DIR` | Where uploaded files are stored. Must be a **persistent** directory in production. |
 | `NEXT_PUBLIC_CONTACT_EMAIL` | Optional. Shown in the footer when set. |
 | `SMTP_HOST` `SMTP_PORT` `SMTP_SECURE` `SMTP_USER` `SMTP_PASS` `SMTP_FROM` | Outbound email for welcome messages and **password reset links**. Without them, self-serve password reset cannot reach anyone. |
-| `NEXT_PUBLIC_SITE_URL` | Canonical public URL used in metadata, invitations, certificates and the footer. Set to `https://evobrandacademy.com`. |
+| `NEXT_PUBLIC_SITE_URL` | Canonical public URL used in metadata, invitations, certificates and the footer. Set to `https://evobrandai.com`. |
 
 Never commit `.env.local` (it is git-ignored). Copy `.env.example` when configuring a new environment.
 

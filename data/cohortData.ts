@@ -8,7 +8,7 @@ export const site = {
   name: "The AI Executive Sandbox",
   tagline: "Applied Leadership & Innovation",
   headline: "Applied AI for Leadership & Business Innovation",
-  url: process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://evobrandacademy.com",
+  url: process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://evobrandai.com",
   contactEmail: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "",
   format: "8-session cohort · weekly or monthly · 90-minute in-person sessions · remote 1:1 coaching",
 } as const;
